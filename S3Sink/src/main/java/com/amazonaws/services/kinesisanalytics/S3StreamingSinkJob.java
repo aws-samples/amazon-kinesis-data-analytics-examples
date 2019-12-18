@@ -18,7 +18,7 @@ import java.util.Properties;
 public class S3StreamingSinkJob {
     private static final String region = "us-west-2";
     private static final String inputStreamName = "ExampleInputStream";
-    private static final String s3SinkPath = "s3a://ka-app-fletpatr/data";
+    private static final String s3SinkPath = "s3a://ka-app-<username>/data";
 
     private static DataStream<String> createSourceFromStaticConfig(StreamExecutionEnvironment env) {
 
