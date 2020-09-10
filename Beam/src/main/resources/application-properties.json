@@ -1,0 +1,10 @@
+[
+  {
+    "PropertyGroupId": "BeamApplicationProperties",
+    "PropertyMap": {
+      "InputStreamName": "beam-test-in",
+      "OutputStreamName": "beam-test-out",
+      "AwsRegion": "eu-west-1"
+    }
+  }
+]
