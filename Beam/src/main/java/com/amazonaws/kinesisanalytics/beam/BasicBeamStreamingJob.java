@@ -5,9 +5,8 @@ import com.amazonaws.services.kinesis.clientlibrary.lib.worker.InitialPositionIn
 import org.apache.beam.runners.flink.FlinkRunner;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.kinesis.KinesisIO;
+import org.apache.beam.sdk.io.kinesis.KinesisPartitioner;
 import org.apache.beam.sdk.io.kinesis.KinesisRecord;
-import org.apache.beam.sdk.metrics.Counter;
-import org.apache.beam.sdk.metrics.Metrics;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.options.PipelineOptionsValidator;
 import org.apache.beam.sdk.transforms.DoFn;
@@ -17,20 +16,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class BasicBeamStreamingJob {
+    public static final String BEAM_APPLICATION_PROPERTIES = "BeamApplicationProperties";
+
     private static class PingPongFn extends DoFn<KinesisRecord, byte[]> {
         private static final Logger LOG = LoggerFactory.getLogger(PingPongFn.class);
-
-        private final Counter pings = Metrics.counter(PingPongFn.class, "pings");
 
         @ProcessElement
         public void processElement(ProcessContext c) {
             String content = new String(c.element().getDataAsBytes(), StandardCharsets.UTF_8);
             if (content.trim().equalsIgnoreCase("ping")) {
                 LOG.info("Ponged!");
-                pings.inc();
                 c.output("pong\n".getBytes(StandardCharsets.UTF_8));
             } else {
                 LOG.info("No action for: " + content);
@@ -39,8 +38,20 @@ public class BasicBeamStreamingJob {
         }
     }
 
+    private static final class SimpleHashPartitioner implements KinesisPartitioner {
+        @Override
+        public String getPartitionKey(byte[] value) {
+            return String.valueOf(Arrays.hashCode(value));
+        }
+
+        @Override
+        public String getExplicitHashKey(byte[] value) {
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
-        String[] kinesisArgs = BasicBeamStreamingJobOptions.argsFromKinesisApplicationProperties(args,"BeamApplicationProperties");
+        String[] kinesisArgs = BasicBeamStreamingJobOptionsParser.argsFromKinesisApplicationProperties(args, BEAM_APPLICATION_PROPERTIES);
         BasicBeamStreamingJobOptions options = PipelineOptionsFactory.fromArgs(ArrayUtils.addAll(args, kinesisArgs)).as(BasicBeamStreamingJobOptions.class);
         options.setRunner(FlinkRunner.class);
         Regions region = Optional
@@ -68,7 +79,7 @@ public class BasicBeamStreamingJob {
                 .withStreamName(options.getOutputStreamName())
                 .withAWSClientsProvider(new DefaultCredentialsProviderClientsProvider(region))
                 // for this to properly balance across shards, the keys would need to be supplied dynamically
-                .withPartitionKey("staticKey")
+                .withPartitioner(new SimpleHashPartitioner())
         );
 
         p.run().waitUntilFinish();
