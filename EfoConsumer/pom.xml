@@ -39,11 +39,6 @@
             <artifactId>aws-kinesisanalytics-runtime</artifactId>
             <version>1.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-kinesisanalytics-flink</artifactId>
-            <version>2.0.0</version>
-        </dependency>
     </dependencies>
 
     <build>
