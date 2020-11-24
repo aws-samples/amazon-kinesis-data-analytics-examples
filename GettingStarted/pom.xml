@@ -13,6 +13,7 @@
         <java.version>1.8</java.version>
         <scala.binary.version>2.11</scala.binary.version>
         <kda.version>1.1.0</kda.version>
+        <kda.runtime.version>1.2.0</kda.runtime.version>
     </properties>
 
     <dependencyManagement>
@@ -32,7 +33,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-kinesisanalytics-runtime</artifactId>
-            <version>${kda.version}</version>
+            <version>${kda.runtime.version}</version>
         </dependency>
 
         <dependency>
