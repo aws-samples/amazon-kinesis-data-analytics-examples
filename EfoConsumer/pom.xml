@@ -13,7 +13,7 @@
     <name>KDA EFO Application</name>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1.11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <flink-connector.version>1.8.2-EFO</flink-connector.version>
@@ -46,8 +46,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
+								    <release>11</release>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>
@@ -55,7 +56,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.1</version>
                 <executions>
                     <!-- Run shade goal on package phase -->
                     <execution>

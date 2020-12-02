@@ -11,7 +11,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
+        <java.version>1.11</java.version>
         <scala.binary.version>2.12</scala.binary.version>
         <kda-runtime.version>1.2.0</kda-runtime.version>
         <beam.version>2.23.0</beam.version>
@@ -24,7 +24,7 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
                 <!-- Get the latest SDK version from https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bom -->
-                <version>1.11.852</version>
+                <version>1.11.903</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -83,8 +83,9 @@
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.8.1</version>
         <configuration>
+				    <release>11</release>
             <source>${java.version}</source>
             <target>${java.version}</target>
         </configuration>
@@ -94,7 +95,7 @@
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.2.1</version>
         <executions>
         <!-- Run shade goal on package phase -->
         <execution>
