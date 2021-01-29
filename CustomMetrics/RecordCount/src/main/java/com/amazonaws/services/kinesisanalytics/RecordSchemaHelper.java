@@ -13,7 +13,7 @@
         private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
      
         public static Map<String, Object> convertJsonStringToMap(String inputString) throws IOException {
-            TypeReference<?> typeReference = new TypeReference<HashMap<String, Object>>() {
+            TypeReference<HashMap<String, Object>> typeReference = new TypeReference<HashMap<String, Object>>() {
             };
             Map<String, Object> jsonMapping = OBJECT_MAPPER.readValue(inputString, typeReference);
             return jsonMapping;
