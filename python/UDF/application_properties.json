@@ -2,8 +2,8 @@
   {
           "PropertyGroupId": "kinesis.analytics.flink.run.options",
           "PropertyMap": {
-            "python": "S3Sink/streaming-file-sink.py",
-            "jarfile": "S3Sink/lib/amazon-kinesis-connector-flink-2.0.0.jar"
+            "python": "UDF/udf.py",
+            "jarfile": "UDF/lib/amazon-kinesis-connector-flink-2.0.0.jar"
           }
         },
         {
@@ -15,8 +15,10 @@
           }
         },
   {
-    "PropertyGroupId": "sink.config.0",
+    "PropertyGroupId": "producer.config.0",
     "PropertyMap": {
-      "output.bucket.name": "thebucketofjeremy"
+      "output.stream.name": "output-stream",
+      "shard.count": "1",
+      "aws.region": "us-east-1"
     }
   }]

@@ -22,35 +22,8 @@ env_settings = (
     EnvironmentSettings.new_instance().in_streaming_mode().use_blink_planner().build()
 )
 table_env = StreamTableEnvironment.create(environment_settings=env_settings)
-statement_set = table_env.create_statement_set()
-
 
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
-
-is_local = (
-    True if os.environ.get("IS_LOCAL") else False
-)  # set this env var in your local environment
-
-if is_local:
-    # only for local, overwrite variable to properties and pass in your jars delimited by a semicolon (;)
-    APPLICATION_PROPERTIES_FILE_PATH = "application_properties.json"  # local
-
-    CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-    table_env.get_config().get_configuration().set_string(
-        "pipeline.jars",
-        "file:///"
-        + CURRENT_DIR
-        + "/lib/amazon-kinesis-connector-flink-2.0.0.jar;file:///"
-        + CURRENT_DIR
-        + "/plugins/flink-s3-fs-hadoop/flink-s3-fs-hadoop-1.11.2.jar",
-    )
-
-    table_env.get_config().get_configuration().set_string(
-        "execution.checkpointing.mode", "EXACTLY_ONCE"
-    )
-    table_env.get_config().get_configuration().set_string(
-        "execution.checkpointing.interval", "1min"
-    )
 
 
 def get_application_properties():
@@ -109,7 +82,7 @@ def create_sink_table(table_name, bucket_name):
         table_name, bucket_name)
 
 
-def count_by_word(input_table_name):
+def perform_tumbling_window_aggregation(input_table_name):
     # use SQL Table in the Table API
     input_table = table_env.from_path(input_table_name)
 
@@ -166,12 +139,14 @@ def main():
 
     # 4. Queries from the Source Table and creates a tumbling window over 1 minute to calculate the average price
     # over the window.
-    tumbling_window_table = count_by_word(input_table_name)
+    tumbling_window_table = perform_tumbling_window_aggregation(input_table_name)
+    table_env.create_temporary_view("tumbling_window_table", tumbling_window_table)
 
     # 5. These tumbling windows are inserted into the sink table (S3)
-    tumbling_window_table.execute_insert(output_table_name).wait()
+    table_result = table_env.execute_sql("INSERT INTO {0} SELECT * FROM {1}"
+                                          .format(output_table_name, "tumbling_window_table"))
 
-    statement_set.execute()
+    print(table_result.get_job_client().get_job_status())
 
 
 if __name__ == "__main__":
