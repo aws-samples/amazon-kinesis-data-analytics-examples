@@ -1,0 +1,24 @@
+[
+  {
+          "PropertyGroupId": "kinesis.analytics.flink.run.options",
+          "PropertyMap": {
+            "python": "SlidingWindows/sliding-windows.py",
+            "jarfile": "SlidingWindows/lib/amazon-kinesis-connector-flink-2.0.0.jar"
+          }
+        },
+        {
+          "PropertyGroupId": "consumer.config.0",
+          "PropertyMap": {
+            "input.stream.name": "KinesisAnalyticsPenTestInputStream",
+            "flink.stream.initpos": "LATEST",
+            "aws.region": "us-east-1"
+          }
+        },
+  {
+    "PropertyGroupId": "producer.config.0",
+    "PropertyMap": {
+      "output.stream.name": "KinesisAnalyticsPenTestOutputStream",
+      "shard.count": "1",
+      "aws.region": "us-east-1"
+    }
+  }]
