@@ -16,9 +16,8 @@
         <java.version>1.11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <flink-connector.version>1.8.2-EFO</flink-connector.version>
         <flink.version>1.11.1</flink.version>
-        <amazon-kinesis-connector-flink.version>2.0.0</amazon-kinesis-connector-flink.version>
+        <amazon-kinesis-connector-flink.version>2.0.3</amazon-kinesis-connector-flink.version>
         <main-class>software.amazon.kinesis.EfoApplication</main-class>
     </properties>
 

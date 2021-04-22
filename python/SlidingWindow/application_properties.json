@@ -3,7 +3,7 @@
           "PropertyGroupId": "kinesis.analytics.flink.run.options",
           "PropertyMap": {
             "python": "SlidingWindows/sliding-windows.py",
-            "jarfile": "SlidingWindows/lib/amazon-kinesis-connector-flink-2.0.0.jar"
+            "jarfile": "SlidingWindows/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar"
           }
         },
         {

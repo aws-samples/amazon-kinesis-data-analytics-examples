@@ -34,7 +34,7 @@ if is_local:
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
     table_env.get_config().get_configuration().set_string(
         "pipeline.jars",
-        "file:///" + CURRENT_DIR + "/lib/amazon-kinesis-connector-flink-2.0.0.jar",
+        "file:///" + CURRENT_DIR + "/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar",
     )
 
 

@@ -40,7 +40,7 @@ if is_local:
         "pipeline.jars",
         "file:///"
         + CURRENT_DIR
-        + "/lib/amazon-kinesis-connector-flink-2.0.0.jar;file:///"
+        + "/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar;file:///"
         + CURRENT_DIR
         + "/plugins/flink-s3-fs-hadoop/flink-s3-fs-hadoop-1.11.2.jar",
     )
