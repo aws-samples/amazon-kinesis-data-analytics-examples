@@ -20,6 +20,7 @@ import static software.amazon.kinesis.connectors.flink.config.ConsumerConfigCons
 import static software.amazon.kinesis.connectors.flink.config.ConsumerConfigConstants.RECORD_PUBLISHER_TYPE;
 
 public class EfoApplication {
+
 	public static void main(String[] args) throws Exception {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
