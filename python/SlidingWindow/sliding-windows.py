@@ -59,13 +59,12 @@ def property_map(props, property_group_id):
 
 def create_table(table_name, stream_name, region, stream_initpos):
     return """ CREATE TABLE {0} (
-                ticker VARCHAR(6),
-                price DOUBLE,
-                event_time TIMESTAMP(3),
-                WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
-
+                TICKER VARCHAR(6),
+                PRICE DOUBLE,
+                EVENT_TIME TIMESTAMP(3),
+                WATERMARK FOR EVENT_TIME AS EVENT_TIME - INTERVAL '5' SECOND
               )
-              PARTITIONED BY (ticker)
+              PARTITIONED BY (TICKER)
               WITH (
                 'connector' = 'kinesis',
                 'stream' = '{1}',
@@ -73,6 +72,7 @@ def create_table(table_name, stream_name, region, stream_initpos):
                 'scan.stream.initpos' = '{3}',
                 'sink.partitioner-field-delimiter' = ';',
                 'sink.producer.collection-max-count' = '100',
+                'sink.producer.aggregation-enabled' = 'false',
                 'format' = 'json',
                 'json.timestamp-format.standard' = 'ISO-8601'
               ) """.format(
@@ -88,11 +88,11 @@ def perform_sliding_window_aggregation(input_table_name):
         input_table.window(
             Slide.over("10.seconds")
             .every("5.seconds")
-            .on("event_time")
+            .on("EVENT_TIME")
             .alias("ten_second_window")
         )
-        .group_by("ticker, ten_second_window")
-        .select("ticker, price.min as price, ten_second_window.end as event_time")
+        .group_by("TICKER, ten_second_window")
+        .select("TICKER, PRICE.min as PRICE, ten_second_window.end as EVENT_TIME")
     )
 
     return sliding_window_table
