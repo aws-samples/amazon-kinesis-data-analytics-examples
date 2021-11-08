@@ -8,6 +8,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMap
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows; //flink 1.13
 import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
 import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisProducer;
 import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
@@ -67,13 +68,14 @@ public class SlidingWindowStreamingJobWithParallelism {
         ObjectMapper jsonParser = new ObjectMapper();
         input.map(value -> { // Parse the JSON
             JsonNode jsonNode = jsonParser.readValue(value, JsonNode.class);
-            return new Tuple2<>(jsonNode.get("TICKER").asText(), jsonNode.get("PRICE").asDouble());
+            return new Tuple2<>(jsonNode.get("TICKER").toString(), jsonNode.get("PRICE").asDouble());
         }).returns(Types.TUPLE(Types.STRING, Types.DOUBLE))
                 .keyBy(0) // Logically partition the stream per stock symbol
-                .timeWindow(Time.seconds(10), Time.seconds(5)) // Sliding window definition
+                //.timeWindow(Time.seconds(10), Time.seconds(5)) // Sliding window definition (Flink 1.11)
+		.window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5))) //Flink 1.13
                 .min(1) // Calculate minimum price per stock over the window
                 .setParallelism(3) // Set parallelism for the min operator
-                .map(value -> value.f0 + ":  (with parallelism 3) - " + value.f1.toString() + "\n")
+                .map(value -> value.f0 + String.format(",%.2f", value.f1) + "\n")
                 .addSink(createSinkFromStaticConfig());
 
         env.execute("Min Stock Price");
