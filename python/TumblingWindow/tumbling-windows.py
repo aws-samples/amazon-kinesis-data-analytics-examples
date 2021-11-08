@@ -8,7 +8,7 @@ This module:
     2. Creates a source table from a Kinesis Data Stream
     3. Creates a sink table writing to a Kinesis Data Stream
     4. Queries from the Source Table and
-       creates a tumbling window over 10 seconds to calculate the cumulative price over the window.
+       creates a tumbling window over 10 seconds to calculate the cumulative PRICE over the window.
     5. These tumbling window results are inserted into the Sink table.
 """
 
@@ -59,13 +59,12 @@ def property_map(props, property_group_id):
 
 def create_table(table_name, stream_name, region, stream_initpos):
     return """ CREATE TABLE {0} (
-                ticker VARCHAR(6),
-                price DOUBLE,
-                event_time TIMESTAMP(3),
-                WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
-
+                TICKER VARCHAR(6),
+                PRICE DOUBLE,
+                EVENT_TIME TIMESTAMP(3),
+                WATERMARK FOR EVENT_TIME AS EVENT_TIME - INTERVAL '5' SECOND
               )
-              PARTITIONED BY (ticker)
+              PARTITIONED BY (TICKER)
               WITH (
                 'connector' = 'kinesis',
                 'stream' = '{1}',
@@ -73,6 +72,7 @@ def create_table(table_name, stream_name, region, stream_initpos):
                 'scan.stream.initpos' = '{3}',
                 'sink.partitioner-field-delimiter' = ';',
                 'sink.producer.collection-max-count' = '100',
+                'sink.producer.aggregation-enabled' = 'false',
                 'format' = 'json',
                 'json.timestamp-format.standard' = 'ISO-8601'
               ) """.format(
@@ -86,10 +86,10 @@ def perform_tumbling_window_aggregation(input_table_name):
 
     tumbling_window_table = (
         input_table.window(
-            Tumble.over("10.seconds").on("event_time").alias("ten_second_window")
+            Tumble.over("10.seconds").on("EVENT_TIME").alias("ten_second_window")
         )
-        .group_by("ticker, ten_second_window")
-        .select("ticker, price.sum as price, ten_second_window.end as event_time")
+        .group_by("TICKER, ten_second_window")
+        .select("TICKER, PRICE.sum as PRICE, ten_second_window.end as EVENT_TIME")
     )
 
     return tumbling_window_table
@@ -134,7 +134,7 @@ def main():
         create_table(output_table_name, output_stream, output_region, stream_initpos)
     )
 
-    # 4. Queries from the Source Table and creates a tumbling window over 10 seconds to calculate the cumulative price
+    # 4. Queries from the Source Table and creates a tumbling window over 10 seconds to calculate the cumulative PRICE
     # over the window.
     tumbling_window_table = perform_tumbling_window_aggregation(input_table_name)
 
