@@ -35,7 +35,7 @@ public class AwsLambdaSink<T> extends RichSinkFunction<T> implements Checkpointe
     private final Class<T> recordType;
     private boolean skipBadRecords = true;
     private int maxRecordsPerFunctionCall = 100;
-    private int maxConcurrency = 100; // Maximum concurrent lambda invocation
+    private int maxConcurrency = 5; // Maximum concurrent lambda invocation
     private long maxBufferTimeInMillis = 60 * 1000; // 1 minute
     private static final long MAX_PAYLOAD_BYTES = 256 * 1000; // 256 KB for async lambda invocation
     private List<T> bufferedRecords;
@@ -55,6 +55,18 @@ public class AwsLambdaSink<T> extends RichSinkFunction<T> implements Checkpointe
     public AwsLambdaSink(String functionName, Class<T> recordType) {
         this.functionName = functionName;
         this.recordType = recordType;
+    }
+
+
+    /**
+     * Sets awsLambdaAsync Client
+     *
+     * @param asyncClient Pre-built awsLambdaAsync client to use. Overrides default created with {@link AWSLambdaAsyncClientBuilder#defaultClient()}
+     * @return this object for chaining
+     */
+    public AwsLambdaSink<T> withAwsLambdaClient(AWSLambdaAsync asyncClient) {
+        this.awsLambdaAsync = asyncClient;
+        return this;
     }
 
     /**
@@ -82,7 +94,7 @@ public class AwsLambdaSink<T> extends RichSinkFunction<T> implements Checkpointe
     /**
      * Sets maxConcurrency
      *
-     * @param maxConcurrency Maximum number of lambda function calls to be done concurrently. Default: 100
+     * @param maxConcurrency Maximum number of lambda function calls to be done concurrently. Default: 5
      * @return this object for chaining
      */
     public AwsLambdaSink<T> withMaxConcurrency(int maxConcurrency) {
@@ -102,15 +114,18 @@ public class AwsLambdaSink<T> extends RichSinkFunction<T> implements Checkpointe
     }
 
     @Override
-    public void open(Configuration parameters) throws Exception {
-        this.awsLambdaAsync = AWSLambdaAsyncClientBuilder.defaultClient();
+    public void open(Configuration parameters) {
+        if (this.awsLambdaAsync == null)
+            this.awsLambdaAsync = AWSLambdaAsyncClientBuilder.defaultClient();
         this.bufferedRecords = new ArrayList<>();
+        this.lastPublishTime = System.currentTimeMillis();
+        LOG.debug("Opening new sink. lastPublishTime set to " + lastPublishTime);
     }
 
     @Override
     public void invoke(T value, Context context) throws Exception {
         // Ensure all records are under max lambda payload size
-        byte[] valueAsBytes = jsonParser.writeValueAsBytes(value);
+        byte[] valueAsBytes = jsonParser.writeValueAsBytes(value); // All json parsing exceptions will be thrown from here early
         if (valueAsBytes.length > MAX_PAYLOAD_BYTES) {
             if (skipBadRecords) {
                 LOG.warn("Skipping record with MD5 hash " + DigestUtils.md5Hex(valueAsBytes) + " as it exceeds max allowed lambda function payload size.");
@@ -130,21 +145,23 @@ public class AwsLambdaSink<T> extends RichSinkFunction<T> implements Checkpointe
             long bytesInCurrentBatch = 0;
             batches.add(new ArrayList<>());
             for (T bufferedRecord : bufferedRecords) {
-                if (recordsInCurrentBatch < maxRecordsPerFunctionCall
-                        || bytesInCurrentBatch < (MAX_PAYLOAD_BYTES - (bufferedRecords.size() * 2L) - 4)
+                String record = jsonParser.writeValueAsString(bufferedRecord);
+                recordsInCurrentBatch++;
+                bytesInCurrentBatch += record.getBytes().length;
+
+                if (recordsInCurrentBatch > maxRecordsPerFunctionCall
+                        || bytesInCurrentBatch > (MAX_PAYLOAD_BYTES - (bufferedRecords.size() * 2L) - 4)
                     // current batch will be converted as array which adds 4 bytes for bracket & 2 bytes for each comma
                     // {rec1} = 20 bytes, {rec2} = 40 bytes will be converted to
                     // [{rec1},{rec2}] here array square bracket adds 2 character & one comma per record which all occupies 2 bytes each
                 ) {
-                    String record = jsonParser.writeValueAsString(bufferedRecord);
-                    batches.get(currentBatchIndex).add(bufferedRecord);
-                    recordsInCurrentBatch++;
-                    bytesInCurrentBatch += record.getBytes().length;
-                } else {
                     batches.add(++currentBatchIndex, new ArrayList<>());
-                    recordsInCurrentBatch = 0;
+                    recordsInCurrentBatch = 1;
+                    bytesInCurrentBatch = record.getBytes().length;
                 }
+                batches.get(currentBatchIndex).add(bufferedRecord);
             }
+            LOG.info("Flushing " + batches.size() + " buffered batches lastPublishTime: " + lastPublishTime + ", bufferedRecords: " + bufferedRecords.size() + ", buffedBytes: " + buffedBytes);
 
             batches.parallelStream().forEach(batch -> {
                 try {
@@ -153,8 +170,7 @@ public class AwsLambdaSink<T> extends RichSinkFunction<T> implements Checkpointe
                             .withInvocationType(InvocationType.Event)
                             .withPayload(jsonParser.writeValueAsString(batch)));
                 } catch (JsonProcessingException e) {
-                    LOG.error(e.getMessage(), e);
-                    throw new RuntimeException(e.getMessage(), e);
+                    // Ignore, This is unreachable
                 }
             });
 
@@ -174,9 +190,13 @@ public class AwsLambdaSink<T> extends RichSinkFunction<T> implements Checkpointe
      * @return true if any of above defined condition is met, false otherwise
      */
     private boolean shouldPublish() {
-        return bufferedRecords.size() > maxRecordsPerFunctionCall * maxConcurrency
-                || (buffedBytes / MAX_PAYLOAD_BYTES) > maxConcurrency
-                || (lastPublishTime + maxBufferTimeInMillis) > System.currentTimeMillis();
+        boolean maxRecordsReached = bufferedRecords.size() >= maxRecordsPerFunctionCall * maxConcurrency;
+        boolean maxBufferedBytesReached = (buffedBytes / MAX_PAYLOAD_BYTES) >= maxConcurrency;
+        boolean maxTimeInBufferReached = (lastPublishTime + maxBufferTimeInMillis) <= System.currentTimeMillis();
+        LOG.debug("Should publish - maxRecordsReached: " + maxRecordsReached + ", maxBufferedBytesReached: " + maxBufferedBytesReached + ", maxTimeInBufferReached: " + maxTimeInBufferReached);
+        return maxRecordsReached
+                || maxBufferedBytesReached
+                || maxTimeInBufferReached;
     }
 
     @Override
