@@ -1,2 +1,6 @@
 .idea/
 */target/
+HudiConnector/.settings/
+HudiConnector/.project
+HudiConnector/.dependency-reduced.xml
+
