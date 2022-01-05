@@ -1,9 +1,0 @@
-[
-    {
-        "Classification": "flink-conf",
-        "Properties": {
-          "taskmanager.numberOfTaskSlots":"4"
-        }
-    }
-]
-  
