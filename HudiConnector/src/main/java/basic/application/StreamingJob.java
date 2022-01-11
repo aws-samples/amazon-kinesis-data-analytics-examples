@@ -14,6 +14,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * This file has been extended from the Apache Flink project skeleton.
  */
 
 package basic.application;
@@ -28,7 +30,7 @@ import java.util.Properties;
 import java.util.Map;
 
 /**
- * Skeleton for a Flink Streaming Job.
+ * Skeleton for a Hudi Flink Streaming Job.
  *
  * <p>For a tutorial how to write a Flink streaming application, check the
  * tutorials and examples on the <a href="https://flink.apache.org/docs/stable/">Flink Website</a>.
@@ -38,6 +40,8 @@ import java.util.Map;
  *
  * <p>If you change the name of the main class (with the public static void main(String[] args))
  * method, change the respective entry in the POM.xml file (simply search for 'mainClass').
+ *
+ * <p>Disclaimer: This core is not production ready.</p>
  */
 public class StreamingJob {
 	private static final Logger LOG = LoggerFactory.getLogger(StreamingJob.class);
@@ -88,7 +92,6 @@ public class StreamingJob {
 
 			Configuration configuration = streamTableEnvironment.getConfig().getConfiguration();
 			configuration.setString("execution.checkpointing.interval", "1 min");
-//			configuration.setString("table-exec-source-idle-timeout", "30 sec");
 
 			final String createTableStmt = "CREATE TABLE IF NOT EXISTS CustomerTable (\n" +
 					"  `event_time` TIMESTAMP(3) METADATA FROM 'value.source.timestamp' VIRTUAL,  -- from Debezium format\n" +
