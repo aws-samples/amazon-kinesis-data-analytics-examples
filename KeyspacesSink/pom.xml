@@ -11,9 +11,10 @@
 
 <properties>
     <java.version>1.11</java.version>
-    <scala.binary.version>2.12</scala.binary.version>
+    <scala.binary.version>2.11</scala.binary.version>
     <kda.version>2.0.0</kda.version>
     <kda.runtime.version>1.2.0</kda.runtime.version>
+    <flink.version>1.13.2</flink.version>
 </properties>
 
 <dependencyManagement>
@@ -30,15 +31,27 @@
 </dependencyManagement>
 
 <dependencies>
+
+    <!-- Flink Core Dependencies -->
     <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-connector-kinesis_2.11</artifactId>
-        <version>1.13.2</version>
+        <artifactId>flink-streaming-scala_2.11</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
     </dependency>
     <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-connector-cassandra_2.11</artifactId>
-        <version>1.13.2</version>
+        <artifactId>flink-clients_2.12</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+
+    <!-- KDA Dependencies -->
+    <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-kinesisanalytics-flink</artifactId>
+        <version>${kda.version}</version>
     </dependency>
     <dependency>
         <groupId>com.amazonaws</groupId>
@@ -46,36 +59,19 @@
         <version>${kda.runtime.version}</version>
     </dependency>
 
+    <!--  Flink Connectors  -->
     <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-streaming-java_2.11</artifactId>
-        <version>1.13.2</version>
+        <artifactId>flink-connector-cassandra_2.11</artifactId>
+        <version>${flink.version}</version>
     </dependency>
-
     <dependency>
         <groupId>org.apache.flink</groupId>
-        <artifactId>flink-streaming-java_2.11</artifactId>
-        <version>1.13.2</version>
-        <scope>provided</scope>
+        <artifactId>flink-connector-kinesis_2.11</artifactId>
+        <version>${flink.version}</version>
     </dependency>
 
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-kinesisanalytics-flink</artifactId>
-        <version>${kda.version}</version>
-    </dependency>
-
-    <dependency>
-        <groupId>org.apache.flink</groupId>
-        <artifactId>flink-streaming-scala_2.11</artifactId>
-        <version>1.4.2</version>
-    </dependency>
-
-    <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-logs</artifactId>
-        <!-- scope>compile</scope -->
-    </dependency>
+    <!-- Extra Dependencies -->
     <dependency>
         <groupId>com.jayway.jsonpath</groupId>
         <artifactId>json-path</artifactId>
@@ -86,6 +82,7 @@
         <artifactId>aws-sigv4-auth-cassandra-java-driver-plugin_3</artifactId>
         <version>3.0.3</version>
     </dependency>
+
 </dependencies>
 
 <build>
