@@ -8,7 +8,6 @@ package com.amazonaws.services.kinesisanalytics;
  import org.apache.flink.api.common.functions.MapFunction;
  import org.apache.flink.api.common.functions.ReduceFunction;
  import org.apache.flink.api.common.serialization.SimpleStringSchema;
- import org.apache.flink.api.java.tuple.Tuple5;
  import org.apache.flink.streaming.api.datastream.DataStream;
  import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
@@ -41,8 +40,8 @@ public class TurbineSpeedAggregator {
 
         DataStream<TurbineAggregatedRecord> result = input
                 .map(new WindTurbineInputMap())
-                .keyBy(v -> v.f0)
-                .window(TumblingProcessingTimeWindows.of(Time.minutes(1)))
+                .keyBy(t -> t.turbineId)
+                .window(TumblingProcessingTimeWindows.of(Time.minutes(5)))
                 .reduce(new AggregateReducer())
                 .map(new AggregateMap());
 
@@ -78,26 +77,38 @@ public class TurbineSpeedAggregator {
         env.execute("Wind Turbine Data Aggregator");
     }
 
-    public static class WindTurbineInputMap implements MapFunction<String, Tuple5<String, Long, Long, Long,Long>> {
+    public static class WindTurbineInputMap implements MapFunction<String, TurbineSensorMessageModel> {
         @Override
-        public Tuple5<String, Long, Long, Long, Long> map(String value) throws Exception {
-            String turbineID = JsonPath.read(value, "$.turbineId");
-            Long speed = Long.parseLong(JsonPath.read(value, "$.speed").toString());
-            return new Tuple5<>(turbineID, speed, 1L, speed, speed);
+        public TurbineSensorMessageModel map(String value) throws Exception {
+            TurbineSensorMessageModel sensorMessageModel = new TurbineSensorMessageModel();
+            sensorMessageModel.turbineId = JsonPath.read(value, "$.turbineId");
+            Long speed = Long.parseLong(JsonPath.read(value, "$.speed").toString());;
+            sensorMessageModel.speed = speed;
+            sensorMessageModel.sumSpeed = speed;
+            sensorMessageModel.minSpeed = speed;
+            sensorMessageModel.maxSpeed = speed;
+            return sensorMessageModel;
         }
     }
 
-    public static class AggregateReducer implements ReduceFunction<Tuple5<String, Long, Long, Long, Long>> {
+    public static class AggregateReducer implements ReduceFunction<TurbineSensorMessageModel> {
         @Override
-        public Tuple5<String, Long, Long, Long, Long> reduce(Tuple5<String, Long, Long, Long, Long> value1, Tuple5<String, Long, Long, Long, Long> value2) {
-            return new Tuple5<>(value1.f0, value1.f1 + value2.f1, value1.f2 + 1, value2.f3 < value1.f3 ? value2.f3 : value1.f3, value2.f4 > value1.f4 ? value2.f4 : value1.f4);
+        public TurbineSensorMessageModel reduce(TurbineSensorMessageModel value1, TurbineSensorMessageModel value2) {
+            TurbineSensorMessageModel reducedSensorMessageModel = new TurbineSensorMessageModel();
+            reducedSensorMessageModel.turbineId = value2.turbineId;
+            reducedSensorMessageModel.speed = value2.speed;
+            reducedSensorMessageModel.messageCount = value1.messageCount + value2.messageCount;
+            reducedSensorMessageModel.sumSpeed = value1.sumSpeed + value2.sumSpeed;
+            reducedSensorMessageModel.minSpeed = value1.minSpeed < value2.sumSpeed ? value1.minSpeed : value2.minSpeed;
+            reducedSensorMessageModel.maxSpeed = value1.maxSpeed > value2.maxSpeed ? value1.maxSpeed : value2.maxSpeed;
+            return reducedSensorMessageModel;
         }
     }
 
-    public static class AggregateMap implements MapFunction<Tuple5<String, Long, Long, Long, Long> , TurbineAggregatedRecord> {
+    public static class AggregateMap implements MapFunction<TurbineSensorMessageModel , TurbineAggregatedRecord> {
         @Override
-        public TurbineAggregatedRecord map(Tuple5<String, Long, Long, Long, Long> value) throws Exception {
-            return new TurbineAggregatedRecord(value.f0,System.currentTimeMillis()/1000, value.f4, value.f3, value.f1/value.f2);
+        public TurbineAggregatedRecord map(TurbineSensorMessageModel value) throws Exception {
+            return new TurbineAggregatedRecord(value.turbineId,System.currentTimeMillis()/1000, value.maxSpeed, value.minSpeed, value.sumSpeed/value.messageCount);
 
         }
     }
