@@ -19,11 +19,13 @@
  */
 
 package basic.application;
+
 import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Properties;
@@ -39,9 +41,9 @@ import java.util.Map;
  * 'mvn clean package' on the command line.
  *
  * <p>If you change the name of the main class (with the public static void main(String[] args))
- * method, change the respective entry in the POM.xml file (simply search for 'mainClass').
+ * method, change the respective entry in the pom.xml file (simply search for 'mainClass').
  *
- * <p>Disclaimer: This core is not production ready.</p>
+ * <p>Disclaimer: This code is not production ready.</p>
  */
 public class StreamingJob {
 	private static final Logger LOG = LoggerFactory.getLogger(StreamingJob.class);
@@ -50,8 +52,7 @@ public class StreamingJob {
 		// set up the streaming execution environment
 
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		ParameterTool parameter;
-		parameter = ParameterTool.fromArgs(args);
+		final ParameterTool parameter = ParameterTool.fromArgs(args);
 
 		//read the parameters from the Kinesis Analytics environment
 		Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
@@ -80,14 +81,14 @@ public class StreamingJob {
 		kafkaProps.setProperty("bootstrap.servers", brokers);
 
 		//Process stream using sql API
-		StreamingSQLAPI.process(env, kafkaTopic, s3Path , kafkaProps);
+		KafkaHudiSqlExample.createAndDeployJob(env, kafkaTopic, s3Path , kafkaProps);
 	}
 
 
-	public static class StreamingSQLAPI {
+	public static class KafkaHudiSqlExample {
 
-		public static void process(StreamExecutionEnvironment env, String kafkaTopic, String s3Path, Properties kafkaProperties)  {
-			org.apache.flink.table.api.bridge.java.StreamTableEnvironment streamTableEnvironment = org.apache.flink.table.api.bridge.java.StreamTableEnvironment.create(
+		public static void createAndDeployJob(StreamExecutionEnvironment env, String kafkaTopic, String s3Path, Properties kafkaProperties)  {
+			StreamTableEnvironment streamTableEnvironment = StreamTableEnvironment.create(
 					env, EnvironmentSettings.newInstance().useBlinkPlanner().build());
 
 			Configuration configuration = streamTableEnvironment.getConfig().getConfiguration();
