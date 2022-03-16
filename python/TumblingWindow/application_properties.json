@@ -9,7 +9,7 @@
         {
           "PropertyGroupId": "consumer.config.0",
           "PropertyMap": {
-            "input.stream.name": "KinesisAnalyticsPenTestInputStream",
+            "input.stream.name": "input-stream",
             "flink.stream.initpos": "LATEST",
             "aws.region": "us-east-1"
           }
@@ -17,7 +17,7 @@
   {
     "PropertyGroupId": "producer.config.0",
     "PropertyMap": {
-      "output.stream.name": "KinesisAnalyticsPenTestOutputStream",
+      "output.stream.name": "output-stream",
       "shard.count": "1",
       "aws.region": "us-east-1"
     }

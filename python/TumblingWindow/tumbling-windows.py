@@ -22,7 +22,6 @@ env_settings = (
     EnvironmentSettings.new_instance().in_streaming_mode().use_blink_planner().build()
 )
 table_env = StreamTableEnvironment.create(environment_settings=env_settings)
-statement_set = table_env.create_statement_set()
 
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
 
@@ -137,11 +136,14 @@ def main():
     # 4. Queries from the Source Table and creates a tumbling window over 10 seconds to calculate the cumulative PRICE
     # over the window.
     tumbling_window_table = perform_tumbling_window_aggregation(input_table_name)
+    table_env.create_temporary_view("tumbling_window_table", tumbling_window_table)
 
     # 5. These tumbling windows are inserted into the sink table
-    tumbling_window_table.execute_insert(output_table_name).wait()
+    table_result = table_env.execute_sql("INSERT INTO {0} SELECT * FROM {1}"
+                                         .format(output_table_name, "tumbling_window_table"))
 
-    statement_set.execute()
+    # get job status through TableResult
+    print(table_result.get_job_client().get_job_status())
 
 
 if __name__ == "__main__":
