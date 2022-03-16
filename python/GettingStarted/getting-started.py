@@ -19,7 +19,6 @@ env_settings = (
     EnvironmentSettings.new_instance().in_streaming_mode().use_blink_planner().build()
 )
 table_env = StreamTableEnvironment.create(environment_settings=env_settings)
-statement_set = table_env.create_statement_set()
 
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
 
@@ -77,20 +76,6 @@ def create_table(table_name, stream_name, region, stream_initpos):
     )
 
 
-def create_print_table(table_name, stream_name, region, stream_initpos):
-    return """ CREATE TABLE {0} (
-                ticker VARCHAR(6),
-                price DOUBLE,
-                event_time TIMESTAMP(3),
-                WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
-
-              )
-              WITH (
-                'connector' = 'print'
-              ) """.format(
-        table_name, stream_name, region, stream_initpos
-    )
-
 def main():
     # Application Property Keys
     input_property_group_key = "consumer.config.0"
@@ -132,13 +117,10 @@ def main():
 
     # 4. Inserts the source table data into the sink table
     table_result = table_env.execute_sql("INSERT INTO {0} SELECT * FROM {1}"
-                                         .format(output_table_name, input_table_name))
+                           .format(output_table_name, input_table_name))
 
-    if is_local:
-        table_result.wait()
-    else:
-        # get job status through TableResult
-        print(table_result.get_job_client().get_job_status())
+    # get job status through TableResult
+    print(table_result.get_job_client().get_job_status())
 
 
 if __name__ == "__main__":
