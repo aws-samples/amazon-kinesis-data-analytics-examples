@@ -3,7 +3,7 @@
           "PropertyGroupId": "kinesis.analytics.flink.run.options",
           "PropertyMap": {
             "python": "TumblingWindows/tumbling-windows.py",
-            "jarfile": "TumblingWindows/lib/amazon-kinesis-connector-flink-2.0.0.jar"
+            "jarfile": "TumblingWindows/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar"
           }
         },
         {

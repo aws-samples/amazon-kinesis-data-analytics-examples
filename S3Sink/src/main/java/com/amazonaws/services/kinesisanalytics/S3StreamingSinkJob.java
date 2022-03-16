@@ -2,10 +2,14 @@ package com.amazonaws.services.kinesisanalytics;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
 import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
@@ -45,27 +49,19 @@ public class S3StreamingSinkJob {
 
         DataStream<String> input = createSourceFromStaticConfig(env);
 
-        input.flatMap(new Tokenizer()) // Tokenizer for generating words
+        ObjectMapper jsonParser = new ObjectMapper();
+
+        input.map(value -> { // Parse the JSON
+            JsonNode jsonNode = jsonParser.readValue(value, JsonNode.class);
+            return new Tuple2<>(jsonNode.get("TICKER").toString(), 1);
+        }).returns(Types.TUPLE(Types.STRING, Types.INT))
                 .keyBy(0) // Logically partition the stream for each word
-                .timeWindow(Time.minutes(1)) // Tumbling window definition
-                .sum(1) // Sum the number of words per partition
+                // .timeWindow(Time.minutes(1)) // Tumbling window definition // Flink 1.11
+                .window(TumblingProcessingTimeWindows.of(Time.minutes(1))) // Flink 1.13
+                .sum(1) // Count the appearances by ticker per partition
                 .map(value -> value.f0 + " count: " + value.f1.toString() + "\n")
                 .addSink(createS3SinkFromStaticConfig());
 
         env.execute("Flink S3 Streaming Sink Job");
-    }
-
-    public static final class Tokenizer
-            implements FlatMapFunction<String, Tuple2<String, Integer>> {
-
-        @Override
-        public void flatMap(String value, Collector<Tuple2<String, Integer>> out) {
-            String[] tokens = value.toLowerCase().split("\\W+");
-            for (String token : tokens) {
-                if (token.length() > 0) {
-                    out.collect(new Tuple2<>(token, 1));
-                }
-            }
-        }
     }
 }

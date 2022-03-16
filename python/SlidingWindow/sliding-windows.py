@@ -25,6 +25,20 @@ table_env = StreamTableEnvironment.create(environment_settings=env_settings)
 
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
 
+is_local = (
+    True if os.environ.get("IS_LOCAL") else False
+)  # set this env var in your local environment
+
+if is_local:
+    # only for local, overwrite variable to properties and pass in your jars delimited by a semicolon (;)
+    APPLICATION_PROPERTIES_FILE_PATH = "application_properties.json"  # local
+
+    CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+    table_env.get_config().get_configuration().set_string(
+        "pipeline.jars",
+        "file:///" + CURRENT_DIR + "/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar",
+    )
+
 
 def get_application_properties():
     if os.path.isfile(APPLICATION_PROPERTIES_FILE_PATH):
@@ -44,13 +58,12 @@ def property_map(props, property_group_id):
 
 def create_table(table_name, stream_name, region, stream_initpos):
     return """ CREATE TABLE {0} (
-                ticker VARCHAR(6),
-                price DOUBLE,
-                event_time TIMESTAMP(3),
-                WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
-
+                TICKER VARCHAR(6),
+                PRICE DOUBLE,
+                EVENT_TIME TIMESTAMP(3),
+                WATERMARK FOR EVENT_TIME AS EVENT_TIME - INTERVAL '5' SECOND
               )
-              PARTITIONED BY (ticker)
+              PARTITIONED BY (TICKER)
               WITH (
                 'connector' = 'kinesis',
                 'stream' = '{1}',
@@ -58,6 +71,7 @@ def create_table(table_name, stream_name, region, stream_initpos):
                 'scan.stream.initpos' = '{3}',
                 'sink.partitioner-field-delimiter' = ';',
                 'sink.producer.collection-max-count' = '100',
+                'sink.producer.aggregation-enabled' = 'false',
                 'format' = 'json',
                 'json.timestamp-format.standard' = 'ISO-8601'
               ) """.format(
@@ -73,11 +87,11 @@ def perform_sliding_window_aggregation(input_table_name):
         input_table.window(
             Slide.over("10.seconds")
             .every("5.seconds")
-            .on("event_time")
+            .on("EVENT_TIME")
             .alias("ten_second_window")
         )
-        .group_by("ticker, ten_second_window")
-        .select("ticker, price.min as price, ten_second_window.end as event_time")
+        .group_by("TICKER, ten_second_window")
+        .select("TICKER, PRICE.min as PRICE, ten_second_window.end as EVENT_TIME")
     )
 
     return sliding_window_table

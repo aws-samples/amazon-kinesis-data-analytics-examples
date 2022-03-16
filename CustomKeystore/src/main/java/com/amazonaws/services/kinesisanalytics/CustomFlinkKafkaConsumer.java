@@ -22,8 +22,8 @@ public class CustomFlinkKafkaConsumer<T> extends FlinkKafkaConsumer<T> {
      */
     @Override
     public void open(Configuration configuration) throws Exception {
-        // write keystore to /tmp
-        // NOTE: make sure that keystore is in JKS format for KDA/Flink. See README for details
+        // write truststore to /tmp
+        // NOTE: make sure that truststore is in JKS format for KDA/Flink. See README for details
         dropFile("/tmp");
 
         super.open(configuration);

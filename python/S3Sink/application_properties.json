@@ -2,8 +2,9 @@
   {
           "PropertyGroupId": "kinesis.analytics.flink.run.options",
           "PropertyMap": {
-            "python": "S3Sink/streaming-file-sink.py",
-            "jarfile": "S3Sink/lib/amazon-kinesis-connector-flink-2.0.0.jar"
+            "python": "StreamingFileSink/streaming-file-sink.py",
+            "jarfile": "StreamingFileSink/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar"
+
           }
         },
         {
