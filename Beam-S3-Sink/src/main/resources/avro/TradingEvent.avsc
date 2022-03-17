@@ -1,0 +1,9 @@
+{"namespace": "samples.trading.avro",
+  "type": "record",
+  "name": "TradeEvent",
+  "fields": [
+    {"name": "TICKER", "type": "string"},
+    {"name": "EVENT_TIME",  "type": "string"},
+    {"name": "PRICE",  "type": "double"}
+  ]
+}
