@@ -15,6 +15,18 @@ import java.util.Properties;
 
 public class KDAFlinkStreamingJob {
 
+	public static void main(String[] args) throws Exception {
+		// set up the streaming execution environment
+		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+		DataStream<String> input = createKafkaSourceFromApplicationProperties(env);
+
+		// Add sink
+		input.addSink(createKafkaSinkFromApplicationProperties());
+
+		env.execute("Flink Streaming Java With Custom Keystore");
+	}
+
 	private static DataStream<String> createKafkaSourceFromApplicationProperties(StreamExecutionEnvironment env) throws IOException {
 		Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
 		Properties sourceProps = applicationProperties.get("KafkaSource");
@@ -37,23 +49,11 @@ public class KDAFlinkStreamingJob {
 				new KeyedSerializationSchemaWrapper(new SimpleStringSchema());
 
 		// Configure FlinkProducer for exactly-once semantics
-		FlinkKafkaProducer<String> sink = new FlinkKafkaProducer<>(
+		return new CustomFlinkKafkaProducer<>(
 				(String) applicationProperties.get("KafkaSink").get("topic"),
 				keyedSerializationSchema,
 				applicationProperties.get("KafkaSink"),
 				FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
-		return sink;
 	}
 
-	public static void main(String[] args) throws Exception {
-		// set up the streaming execution environment
-		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
-		DataStream<String> input = createKafkaSourceFromApplicationProperties(env);
-
-		// Add sink
-		input.addSink(createKafkaSinkFromApplicationProperties());
-
-		env.execute("Flink Streaming Java With Custom Keystore");
-	}
 }
