@@ -6,7 +6,7 @@
 
 <groupId>com.amazonaws</groupId>
 <artifactId>turbine-average-speeds</artifactId>
-<version>1.0.4</version>
+<version>1.0.0</version>
 <packaging>jar</packaging>
 
 <properties>
