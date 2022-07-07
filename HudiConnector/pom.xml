@@ -33,7 +33,7 @@ This file has been modified to include additional dependencies.
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<flink.version>1.13.2</flink.version>
-		<hudi.version>0.10.0</hudi.version>
+		<hudi.version>0.11.1</hudi.version>
 		<target.java.version>1.8</target.java.version>
 		<scala.binary.version>2.11</scala.binary.version>
 		<maven.compiler.source>${target.java.version}</maven.compiler.source>
@@ -128,9 +128,20 @@ This file has been modified to include additional dependencies.
 		</dependency>
 		<!-- Shaded dependencies -->
 		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-glue</artifactId>
+			<version>1.12.22</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-s3-fs-hadoop</artifactId>
 			<version>${flink.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.amazonaws.handlers</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
@@ -144,7 +155,7 @@ This file has been modified to include additional dependencies.
 		</dependency>
 		<dependency>
 			<groupId>org.apache.hudi</groupId>
-			<artifactId>hudi-flink-bundle_${scala.binary.version}</artifactId>
+			<artifactId>hudi-flink1.13-bundle_${scala.binary.version}</artifactId>
 			<version>${hudi.version}</version>
 			<exclusions>
 				<exclusion>
@@ -163,8 +174,23 @@ This file has been modified to include additional dependencies.
 			<artifactId>kryo-shaded</artifactId>
 			<version>4.0.2</version>
 		</dependency>
+		<!-- Hive Sync -->
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-common</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hive</groupId>
+			<artifactId>hive-exec</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-mapreduce-client-core</artifactId>
+			<version>2.10.1</version>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 
@@ -207,6 +233,12 @@ This file has been modified to include additional dependencies.
 							<goal>shade</goal>
 						</goals>
 						<configuration>
+							<relocations>
+								<relocation>
+									<pattern>com.amazonaws.*</pattern>
+									<shadedPattern>com.shaded.amazonaws.*</shadedPattern>
+								</relocation>
+							</relocations>
 							<artifactSet>
 								<excludes>
 									<exclude>org.apache.flink:force-shading</exclude>
