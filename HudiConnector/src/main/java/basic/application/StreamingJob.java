@@ -111,27 +111,43 @@ public class StreamingJob {
 					"  'value.format' = 'debezium-json'\n" +
 					")";
 
-			final String s3Sink = "CREATE TABLE IF NOT EXISTS `customer_hudi` (\n" +
-					"  ts TIMESTAMP(3),\n" +
-					"  customer_id BIGINT,\n" +
-					"  name STRING,\n" +
-					"  mktsegment STRING,\n" +
-					"  PRIMARY KEY (`customer_id`) NOT Enforced\n" +
-					")\n" +
-					"PARTITIONED BY (`mktsegment`)\n" +
-					"WITH (\n" +
-					"  'connector' = 'hudi',\n" +
-					"  'read.streaming.enabled' = 'true',\n" +
-					"  'write.tasks' = '4',\n" +
-					"  'path' = '" + s3Path + "',\n" +
-					"  'hoodie.datasource.query.type' = 'snapshot',\n" +
-					"  'table.type' = 'MERGE_ON_READ' --  MERGE_ON_READ table or, by default is COPY_ON_WRITE\n" +
-					")";
+			final String s3Sink = "CREATE TABLE CustomerHudi (\n" +
+					"      `event_time` TIMESTAMP(3),\n" +
+					"      `origin_table` STRING, -- from Debezium format\n" +
+					"      `record_time` TIMESTAMP(3),\n" +
+					"      `customer_id` BIGINT,\n" +
+					"      `name` STRING,\n" +
+					"      `mktsegment` STRING,\n" +
+					"       PRIMARY KEY (`customer_id`) NOT Enforced\n" +
+					"    ) PARTITIONED BY (`mktsegment`)\n" +
+					"    WITH (\n" +
+					"    'connector' = 'hudi',\n" +
+					"    'compaction.tasks'='2',\n" +
+					"    'changelog.enabled'='true',\n" +
+					"    'read.streaming.enabled' = 'true',\n" +
+					"    'read.streaming.skip_compaction' = 'true',\n" +
+					"    'write.task.max.size'='4096',\n" +
+					"    'write.bucket_assign.tasks'='1',\n" +
+					"    'compaction.delta_seconds'='120',\n" +
+					"    'compaction.delta_commits'='2',\n" +
+					"    'compaction.trigger.strategy'='num_or_time',\n" +
+					"    'compaction.max_memory'='2048',\n" +
+					"    'write.merge.max_memory'='1024',\n" +
+					"    'write.tasks' = '4',\n" +
+					"    'hive_sync.enable' = 'true',\n" +
+					"    'hive_sync.db' = 'hudi',\n" +
+					"    'hive_sync.table' = 'customer_hudi_auto',\n" +
+					"    'hive_sync.mode' = 'glue',\n" +
+					"    'hive_sync.partition_fields' = 'mktsegment',\n" +
+					"    'hive_sync.use_jdbc' = 'false',\n" +
+					"    'path' = '" + s3Path + "',\n" +
+					"    'table.type' = 'MERGE_ON_READ' --  MERGE_ON_READ table or, by default is COPY_ON_WRITE\n" +
+					"    )";
 
 			streamTableEnvironment.executeSql(createTableStmt);
 			streamTableEnvironment.executeSql(s3Sink);
 
-			final String insertSql = "insert into customer_hudi select event_time, CUST_ID,  NAME , MKTSEGMENT from CustomerTable";
+			final String insertSql = "insert into CustomerHudi select * from CustomerTable";
 			streamTableEnvironment.executeSql(insertSql);
 		}
 	}

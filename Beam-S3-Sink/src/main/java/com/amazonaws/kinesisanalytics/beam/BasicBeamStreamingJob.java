@@ -16,8 +16,10 @@ import org.apache.beam.sdk.io.parquet.ParquetIO;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.options.PipelineOptionsValidator;
 import org.apache.beam.sdk.transforms.DoFn;
+import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.windowing.*;
+import org.apache.beam.sdk.values.TypeDescriptor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.joda.time.Duration;
@@ -37,6 +39,7 @@ public class BasicBeamStreamingJob {
 
         @ProcessElement
         public void processElement(ProcessContext c) throws Exception {
+
             byte[] payload = c.element().getDataAsBytes();
             JsonNode jsonNode = jsonParser.readValue(payload, JsonNode.class);
             TradeEvent output = TradeEvent.newBuilder()
@@ -61,9 +64,11 @@ public class BasicBeamStreamingJob {
     }
 
     public static void main(String[] args) {
+
         String[] kinesisArgs = BasicBeamStreamingJobOptionsParser.argsFromKinesisApplicationProperties(args, BEAM_APPLICATION_PROPERTIES);
         BasicBeamStreamingJobOptions options = PipelineOptionsFactory.fromArgs(ArrayUtils.addAll(args, kinesisArgs)).as(BasicBeamStreamingJobOptions.class);
         options.setRunner(FlinkRunner.class);
+
         Regions region = Optional
                 .ofNullable(Regions.getCurrentRegion())
                 .map(r -> Regions.fromName(r.getName()))
@@ -84,7 +89,15 @@ public class BasicBeamStreamingJob {
                 ParDo.of(new DeserializeAvro())
         )
         .setCoder(
-                AvroCoder.of(GenericRecord.class, TradeEvent.SCHEMA$))
+                AvroCoder.of(GenericRecord.class, TradeEvent.SCHEMA$)
+        )
+        .apply("Map elements into",
+            MapElements.into(TypeDescriptor.of(GenericRecord.class))
+                        .via((GenericRecord r) -> r)
+        )
+        .setCoder(
+                        AvroCoder.of(GenericRecord.class, TradeEvent.SCHEMA$)
+        )
         .apply(
                 Window.into(FixedWindows.of(Duration.standardSeconds(60)))
         )
@@ -95,7 +108,7 @@ public class BasicBeamStreamingJob {
                                 .sink(TradeEvent.SCHEMA$)
                                 .withCompressionCodec(CompressionCodecName.SNAPPY)
                         )
-                        .to("s3://aws-alialem-contents/beam-s3-sink/")
+                        .to("s3://<YOUR S3 PREFIX>")
                         .withSuffix(".parquet")
         );
 
