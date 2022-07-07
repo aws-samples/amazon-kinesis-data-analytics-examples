@@ -227,12 +227,6 @@ This file has been modified to include additional dependencies.
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<relocations>
-								<relocation>
-									<pattern>com.amazonaws.*</pattern>
-									<shadedPattern>com.shaded.amazonaws.*</shadedPattern>
-								</relocation>
-							</relocations>
 							<artifactSet>
 								<excludes>
 									<exclude>org.apache.flink:force-shading</exclude>
