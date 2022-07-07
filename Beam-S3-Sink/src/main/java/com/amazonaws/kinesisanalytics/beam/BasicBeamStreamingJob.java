@@ -108,7 +108,7 @@ public class BasicBeamStreamingJob {
                                 .sink(TradeEvent.SCHEMA$)
                                 .withCompressionCodec(CompressionCodecName.SNAPPY)
                         )
-                        .to("s3://aws-alialem-contents/beam-s3-sink/")
+                        .to("s3://<YOUR S3 PREFIX>")
                         .withSuffix(".parquet")
         );
 
