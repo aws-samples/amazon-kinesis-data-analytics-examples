@@ -14,7 +14,6 @@
         <scala.binary.version>2.12</scala.binary.version>
         <kda.version>2.0.0</kda.version>
         <kda.runtime.version>1.2.0</kda.runtime.version>
-        <flink.version>1.13.2</flink.version>
     </properties>
 
     <dependencyManagement>
@@ -63,7 +62,7 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka_2.11</artifactId>
-            <version>1.13.2</version>
+            <version>${flink.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
