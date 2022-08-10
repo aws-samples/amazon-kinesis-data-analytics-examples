@@ -12,7 +12,7 @@ import org.apache.flink.util.Collector;
 
 public class PartitionPreLoadEnrichmentData extends RichFlatMapFunction<Customer, Customer> {
 
-    private ValueState<Location> locationState = null;
+    private transient ValueState<Location> locationState = null;
     S3LoadData s3Data = null;
 
     @Override

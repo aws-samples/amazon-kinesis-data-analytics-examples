@@ -17,7 +17,7 @@ public class KinesisStreamInitialiser {
     private static final Logger LOG = LoggerFactory.getLogger(KinesisStreamInitialiser.class);
     private static final String DEFAULT_REGION_NAME = Regions.getCurrentRegion()==null ? "eu-west-2" : Regions.getCurrentRegion().getName();
 
-    public Properties getKinesisConsumerConfig(ParameterTool parameter) {
+    public static Properties getKinesisConsumerConfig(ParameterTool parameter) {
         Properties kinesisConsumerConfig = new Properties();
         kinesisConsumerConfig.setProperty(AWSConfigConstants.AWS_REGION, parameter.get("Region", DEFAULT_REGION_NAME));kinesisConsumerConfig.setProperty(AWSConfigConstants.AWS_CREDENTIALS_PROVIDER, "AUTO");
         kinesisConsumerConfig.setProperty(ConsumerConfigConstants.SHARD_GETRECORDS_INTERVAL_MILLIS, "1000");
@@ -25,7 +25,7 @@ public class KinesisStreamInitialiser {
         return kinesisConsumerConfig;
     }
 
-    public DataStreamSource<Customer> getKinesisStream(StreamExecutionEnvironment env, Properties kinesisConsumerConfig, String streamName) {
+    public static DataStreamSource<Customer> getKinesisStream(StreamExecutionEnvironment env, Properties kinesisConsumerConfig, String streamName) {
         return env.addSource(new FlinkKinesisConsumer<>(
                 streamName,
                 new JsonDeserializationSchema<>(Customer.class),

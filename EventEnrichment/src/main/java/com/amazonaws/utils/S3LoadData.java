@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This example shows how to query data from S3Select and consume the response in the form of an
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
  */
 
 public class S3LoadData {
-
+    private static final Logger LOG = LoggerFactory.getLogger(S3LoadData.class);
     private static final String BUCKET_NAME = "event-data-enrichment";
     private static final String CSV_OBJECT_KEY = "location_data.csv";
     private static final String QUERY_PER_ROLE = "SELECT s.location FROM s3object s WHERE s.role = '%s'";
@@ -50,8 +52,6 @@ public class S3LoadData {
                     new InputStreamReader(resultInputStream, StandardCharsets.UTF_8))
                     .lines()
                     .collect(Collectors.joining("\n"));
-
-            //System.out.println(location);
 
         }
 
@@ -101,9 +101,6 @@ public class S3LoadData {
                 String building = roleLocation.split(",")[1];
                 locationMap.put(role, new Location(role, building));
             }
-
-            //System.out.println(locationMap);
-
         }
 
         /*
@@ -137,32 +134,25 @@ public class S3LoadData {
     }
 
     public Location loadReferenceLocationData(String key) throws Exception {
-        System.out.println();
-        System.out.println("***************************************");
-        System.out.println("Loading Location Reference Data for key: " +  key);
+        LOG.info("***************************************");
+        LOG.info("Loading Location Reference Data for key: " +  key);
+        LOG.info("***************************************");
 
         Location location = new Location(key, getLocation(key));
-
-        System.out.println(location);
-        System.out.println("***************************************");
-        System.out.println();
 
         return location;
     }
 
     public Map<String, Location> loadReferenceLocationData() throws Exception {
-        System.out.println();
-        System.out.println("***************************************");
-        System.out.println("Load Location Reference Data");
+        LOG.info("***************************************");
+        LOG.info("Load Location Reference Data");
 
         Map<String, Location> map = getLocation();
-
-        System.out.println("Printing map values");
+        LOG.info("Printing map values");
         for (Map.Entry<String, Location> entry : map.entrySet()) {
             System.out.println(entry.getKey() + ":" + entry.getValue().getBuildingNo());
         }
-        System.out.println("***************************************");
-        System.out.println();
+        LOG.info("***************************************");
 
         return map;
     }

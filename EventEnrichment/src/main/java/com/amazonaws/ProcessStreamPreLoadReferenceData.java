@@ -22,12 +22,10 @@ public class ProcessStreamPreLoadReferenceData {
         //read the parameters specified from the command line
         ParameterTool parameter = ParameterTool.fromArgs(args);
 
-        KinesisStreamInitialiser ksi = new KinesisStreamInitialiser();
-
-        Properties kinesisConsumerConfig = ksi.getKinesisConsumerConfig(parameter);
+        Properties kinesisConsumerConfig = KinesisStreamInitialiser.getKinesisConsumerConfig(parameter);
 
         //create Kinesis source
-        DataStream<Customer> customerStream = ksi.getKinesisStream(env, kinesisConsumerConfig, DATA_STREAM_NAME);
+        DataStream<Customer> customerStream = KinesisStreamInitialiser.getKinesisStream(env, kinesisConsumerConfig, DATA_STREAM_NAME);
 
         customerStream = customerStream
                 //remove all events that aren't CustomerEvent

@@ -9,13 +9,15 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 
 public class PeriodicPerPartitionLoadEnrichmentData extends KeyedProcessFunction<String, Customer, Customer> {
-
-    private ValueState<Location> locationState = null;
+    private transient ValueState<Location> locationState = null;
     private S3LoadData s3Data = null;
+    private static final Logger LOG = LoggerFactory.getLogger(PeriodicPerPartitionLoadEnrichmentData.class);
 
     @Override
     public void open(Configuration parameters) throws Exception {
@@ -46,9 +48,7 @@ public class PeriodicPerPartitionLoadEnrichmentData extends KeyedProcessFunction
     public void onTimer(long timestamp, OnTimerContext ctx, Collector<Customer> out) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        System.out.println();
-        System.out.println(String.format("Timer function triggered at %s to reload reference data again", sdf.format(timestamp)));
-        System.out.println();
+        LOG.info(String.format("Timer function triggered at %s to reload reference data again", sdf.format(timestamp)));
 
         locationState.update(s3Data.loadReferenceLocationData(ctx.getCurrentKey()));
     }
