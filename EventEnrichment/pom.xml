@@ -56,7 +56,7 @@ under the License.
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.12.162</version>
+            <version>1.12.261</version>
         </dependency>
 
         <dependency>
