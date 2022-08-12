@@ -43,7 +43,7 @@ public class PeriodicPerPartitionLoadEnrichmentData extends KeyedProcessFunction
         customer.setBuildingNo(locationState.value().getBuildingNo());
         collector.collect(customer);
 
-        //Invoke reference data load every 60 seconds.
+        //Invalidate reference data load every 60 seconds.
         //Register timer once per key and not for every element.
         if (!timerConfiguredKeys.contains(customer.getRole())) {
             context.timerService().registerProcessingTimeTimer(everyNthSeconds(context.timerService().currentProcessingTime(), 60));
@@ -58,11 +58,11 @@ public class PeriodicPerPartitionLoadEnrichmentData extends KeyedProcessFunction
         timerConfiguredKeys.remove(ctx.getCurrentKey());
         LOG.info("Removed key from the list of timers: " + ctx.getCurrentKey());
 
+        //Invalidate reference data
+        locationState.update(null);
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        LOG.info(String.format("Timer function triggered at %s to reload reference data again", sdf.format(timestamp)));
-
-        locationState.update(s3Data.loadReferenceLocationData(ctx.getCurrentKey()));
+        LOG.info(String.format("Timer function triggered at %s to invalidate state to force reload next time", sdf.format(timestamp)));
     }
 
     private long everyNthSeconds(long currentProcessingTime, int seconds) {
