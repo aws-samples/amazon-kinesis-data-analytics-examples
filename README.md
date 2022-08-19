@@ -1,6 +1,6 @@
-## Amazon Kinesis Data Analytics Java Examples
+## Amazon Kinesis Data Analytics Examples
 
-Example Java applications for Kinesis Data Analytics, demonstrating sources, sinks, and operators.
+Example applications in Java, Python and SQL for Kinesis Data Analytics, demonstrating sources, sinks, and operators.
 
 ## License Summary
 
