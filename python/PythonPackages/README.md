@@ -36,15 +36,6 @@ Now, you may be wondering how to ensure that you don't include unnecessary packa
 
 NOTE: The location of `site_packages` for a conda env is `miniforge/envs/<your_env>/lib/python3.8/site_packages`. Replace `<your_env>` with the name of your conda env.
 
-## App-specific dependencies
-
-In addition to pip-installed dependencies, you may also have modules containing code besides your main application's `.py` file. You have a couple of options for including these additional Python files:
-
-1. `--pyFiles` flag: when deploying to Kinesis Data Analytics, you can specify this argument as part of the `kinesis.analytics.flink.run.options` property group (similar to `jarfiles`).
-2. The [`add_python_file`](https://nightlies.apache.org/flink/flink-docs-release-1.15/docs/dev/python/faq/#adding-python-files) method. 
-
-NOTE: You only need to use one of the two methods above.
-
 ## Ensure your used connector is included
 
 Copy the version of the connector you are using (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in the lib directory. 
