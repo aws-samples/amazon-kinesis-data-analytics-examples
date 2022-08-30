@@ -1,9 +1,8 @@
 # Packaging Instructrions for PyFlink on Kinesis Data Analytics
 
-## Copy contents of site-packges
+## Pip-installed dependencies
 
-Copy the files and folders that are located within your python environments `site-packages` folder in this folder. 
-If you are using boto3 with Amazon Kinesis Data Analytics your file structure will look similar to this:
+First, let's look at how to include pip-installed dependencies in your application package. The following "diagram" illustrates what your file structure needs to look like: 
 
 ```
 PythonPackages
@@ -25,6 +24,26 @@ PythonPackages
 ...
 
 ```
+
+At a high level, you have to copy the files and folders that are located within your python environments `site-packages` folder as shown in the depiction above. Btw, we recommend [miniconda](https://docs.conda.io/en/latest/miniconda.html) for environment management.
+
+Now, you may be wondering how to ensure that you don't include unnecessary packages while also ensuring that you don't leave out any transitive dependencies. For instance, if you take a dependency on boto3, it in turn references botocore; in other words, botocore is a transitive dependency of boto3. To take this into account, we recommend the following approach:
+
+1. Create a standalone Python environment (conda or similar) on your local machine.
+2. Take note of the initial list of packages in that environment's site_packages. You'll see packages like `wheel`, which you don't want to include.
+3. Now pip-install all dependencies that your app needs. In our case, it's just `boto3`.
+4. Note the packages that were *added* to the site_packages folder after step 3 above. These are the folders you need to include in your package, organized as shown above. You're essentially capturing a "diff" of the packages between steps 2 and 3 above to identify the right package dependencies for your application.
+
+NOTE: The location of `site_packages` for a conda env is `miniforge/envs/<your_env>/lib/python3.8/site_packages`. Replace `<your_env>` with the name of your conda env.
+
+## App-specific dependencies
+
+In addition to pip-installed dependencies, you may also have modules containing code besides your main application's `.py` file. You have a couple of options for including these additional Python files:
+
+1. `--pyFiles` flag: when deploying to Kinesis Data Analytics, you can specify this argument as part of the `kinesis.analytics.flink.run.options` property group (similar to `jarfiles`).
+2. The [`add_python_file`](https://nightlies.apache.org/flink/flink-docs-release-1.15/docs/dev/python/faq/#adding-python-files) method. 
+
+NOTE: You only need to use one of the two methods above.
 
 ## Ensure your used connector is included
 
