@@ -1,8 +1,8 @@
-# Packaging Instructrions for PyFlink on Kinesis Data Analytics
+# Packaging Instructions for PyFlink on Kinesis Data Analytics
 
 ## Pip-installed dependencies
 
-First, let's look at how to include pip-installed dependencies in your application package. The following "diagram" illustrates what your file structure needs to look like: 
+Let's look at how to include pip-installed dependencies in your application package. The following "diagram" illustrates what your file structure should look like: 
 
 ```
 PythonPackages
