@@ -4,7 +4,7 @@ This sample shows how to drop certificate files associated with [custom keystore
 
 This sample also shows how to package a fat jar containing both the underlying Kafka connector as well as our custom initialization.
 
-IMPORTANT: This sample targets the Kafka connector in Flink 1.13 specifically. For other versions, you'd have to follow a similar approach overall but the details may differ.
+**IMPORTANT: This sample targets the Kafka connector in Flink 1.13 specifically. For other versions, you'd have to follow a similar approach overall but the details may differ. The Implementation Details section below goes over the overall approach.**
 
 ## Steps for building/packaging
 
