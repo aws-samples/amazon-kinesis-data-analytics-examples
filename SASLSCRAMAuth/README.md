@@ -61,4 +61,4 @@ WITH (
 )
 ```
 
-Please make sure that you replace the bootstrap servers along with username and password in the jass.config entry above.
+Please make sure that you replace the bootstrap servers along with username and password in the jaas.config entry above.
