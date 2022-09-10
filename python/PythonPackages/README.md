@@ -1,6 +1,6 @@
 # Packaging Instructions for PyFlink on Kinesis Data Analytics
 
-## Including dependencies
+## Including Python dependencies
 
 Let's look at how to include dependencies in your application package. The following "diagram" illustrates what your file structure should look like: 
 
@@ -48,7 +48,9 @@ The location of `site_packages` for a *conda env* is `miniforge/envs/<your_env>/
 
 Copy the version of the connector you are using (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in the lib directory. Make sure the connector version corresponds to the used Apache Flink version in Kinesis Data Analytics.
 
-*Important*: You also have to specify this dependency using the `jarfile` property in the `kinesis.analytics.flink.run.options` property group when you create your application. Please see the "Configure the Application" section [here](https://docs.aws.amazon.com/kinesisanalytics/latest/java/gs-python-createapp.html).
+If you have multiple dependencies, you have to create a fat jar and then include it using the `jarfile` property as described below. This is a Flink requirement as described [here](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/python/dependency_management/#jar-dependencies).
+
+*Important*: You have to specify dependencies using the `jarfile` property in the `kinesis.analytics.flink.run.options` property group when you create your application. Please see the "Configure the Application" section [here](https://docs.aws.amazon.com/kinesisanalytics/latest/java/gs-python-createapp.html).
 
 ## Package the application
 
