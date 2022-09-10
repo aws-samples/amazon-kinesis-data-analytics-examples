@@ -46,11 +46,11 @@ The location of `site_packages` for a *conda env* is `miniforge/envs/<your_env>/
 
 ## JAR dependencies
 
-If your application depends on a connector, be sure to include the connector jar (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in your package; `lib` in the tree structure shown above. Make sure the connector version corresponds to the appropriate Apache Flink version in your Kinesis Data Analytics application.
+If your application depends on a connector, be sure to include the connector jar (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in your package; under the `lib` folder in the tree structure shown above. Note that you don't have to name the folder `lib`, you just have to include it somewhere in your package and also ensure that you specify the jar dependency using the `jarfile` property as described below. Make sure the connector version corresponds to the appropriate Apache Flink version in your Kinesis Data Analytics application.
 
 If you have multiple dependencies, you have to create a fat jar and then include it using the `jarfile` property as described below. This is a Flink requirement as described [here](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/python/dependency_management/#jar-dependencies).
 
-*Important*: You have to specify dependencies using the `jarfile` property in the `kinesis.analytics.flink.run.options` property group when you create your application. Please see the "Configure the Application" section [here](https://docs.aws.amazon.com/kinesisanalytics/latest/java/gs-python-createapp.html).
+*Important*: In addition to including the jar dependency in your package, you have to specify dependencies using the `jarfile` property in the `kinesis.analytics.flink.run.options` property group when you create your application. Please see the "Configure the Application" section [here](https://docs.aws.amazon.com/kinesisanalytics/latest/java/gs-python-createapp.html).
 
 ## Package the application
 
