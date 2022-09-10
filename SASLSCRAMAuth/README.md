@@ -10,7 +10,7 @@ sasl.jaas.config = org.apache.flink.kafka.shaded.org.apache.kafka.common.securit
 
 In order to be able to reference the ScramLoginModule in Kinesis Data Analytics apps we need to build a fat jar containing the Kafka SQL/Table API connector as well as the kafka-clients library. This sample illustrates how to do that.
 
-NOTE: The kafka-clients library needs to be included *without relocation* so that the SASL/SCRAM login module that we've specified in the jaas config above can be found.
+NOTE: The kafka-clients library needs to be included *without relocation* so that the SASL/SCRAM login module that we've specified in the jaas config above can be found. This sample uses *Flink 1.13* but you could follow a similar approach for other versions of Flink as well.
 
 ### Building and generating fat jar
 
