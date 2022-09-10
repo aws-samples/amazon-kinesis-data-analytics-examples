@@ -44,9 +44,9 @@ Now, you may be wondering how to ensure that you don't include unnecessary packa
 The location of `site_packages` for a *conda env* is `miniforge/envs/<your_env>/lib/python3.8/site_packages`. Replace `<your_env>` with the name of your conda env. And lastly, you can also include your own dependencies in the same way - by putting the corresponding Python files in `my_deps`. Note that you don't have to name the folder `my_deps`; the important part is "registering" the dependencies using either `pyFiles` or `add_python_file`.
 
 
-## Ensure your used connector is included
+## JAR dependencies
 
-Copy the version of the connector you are using (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in the lib directory. Make sure the connector version corresponds to the used Apache Flink version in Kinesis Data Analytics.
+If your application depends on a connector, be sure to include the connector jar (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in your package; `lib` in the tree structure shown above. Make sure the connector version corresponds to the appropriate Apache Flink version in your Kinesis Data Analytics application.
 
 If you have multiple dependencies, you have to create a fat jar and then include it using the `jarfile` property as described below. This is a Flink requirement as described [here](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/python/dependency_management/#jar-dependencies).
 
