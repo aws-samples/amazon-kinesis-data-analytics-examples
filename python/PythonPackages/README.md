@@ -36,7 +36,7 @@ Now, you may be wondering how to ensure that you don't include unnecessary packa
 
 1. Create a standalone Python environment (conda or similar) on your local machine.
 2. Take note of the initial list of packages in that environment's site_packages. You'll see packages like `wheel`, which you don't want to include.
-3. Now pip-install all dependencies that your app needs. In our case, it's just `boto3`.
+3. Now pip-install all dependencies that your app needs.
 4. Note the packages that were *added* to the site_packages folder after step 3 above. These are the folders you need to include in your package (under the `my_deps` folder), organized as shown above. You're essentially capturing a "diff" of the packages between steps 2 and 3 above to identify the right package dependencies for your application.
 5. Supply `my_deps/` as an argument for the `pyFiles` property in the `kinesis.analytics.flink.run.options` property group as described below for the `jarfiles` property. Flink also allows you to specify python dependencies using the [`add_python_file` function](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/python/dependency_management/#python-dependencies), but it's important to keep in mind that you only need to specify one or the other - not both.
 
