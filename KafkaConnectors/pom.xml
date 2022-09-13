@@ -11,8 +11,8 @@
 
   <properties>
     <java.version>1.11</java.version>
-    <scala.binary.version>2.12</scala.binary.version>
     <kda.version>2.0.0</kda.version>
+    <flink.version>1.15.2</flink.version>
     <kda.runtime.version>1.2.0</kda.runtime.version>
   </properties>
 
@@ -24,7 +24,6 @@
       <version>${kda.runtime.version}</version>
     </dependency>
 
-
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-kinesisanalytics-flink</artifactId>
@@ -33,14 +32,14 @@
 
     <dependency>
       <groupId>org.apache.flink</groupId>
-      <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+      <artifactId>flink-streaming-java</artifactId>
       <version>${flink.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.flink</groupId>
-      <artifactId>flink-connector-kafka_2.11</artifactId>
+      <artifactId>flink-connector-kafka</artifactId>
       <version>${flink.version}</version>
     </dependency>
 

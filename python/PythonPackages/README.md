@@ -20,7 +20,7 @@ PythonPackages
 │   │   auth.py
 │       ...
 └───lib
-│    │ flink-sql-connector-kinesis_2.11-1.13.2.jar 
+│    │ flink-sql-connector-kinesis-1.15.2.jar 
 │    │ ...
 ...
 
@@ -28,7 +28,7 @@ PythonPackages
 
 ## Ensure your used connector is included
 
-Copy the version of the connector you are using (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in the lib directory. 
+Copy the version of the connector you are using (e.g. `flink-sql-connector-kinesis-1.15.2.jar`) in the lib directory. 
 Make sure the connector version corresponds to the used Apache Flink version in Kinesis Data Analytics.
 
 ## Package the application

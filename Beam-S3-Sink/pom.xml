@@ -12,14 +12,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.11</java.version>
-        <scala.binary.version>2.12</scala.binary.version>
         <kda-runtime.version>1.2.0</kda-runtime.version>
-        <beam.version>2.37.0</beam.version>
-        <jackson.version>2.12.1</jackson.version>
+        <beam.version>2.40.0</beam.version>
+        <jackson.version>2.13.3</jackson.version>
         <avro.version>1.11.0</avro.version>
-        <flink.version>1.13.2</flink.version>
-        <flink.version.major>1.13</flink.version.major>
-        <hadoop.version>3.1.2</hadoop.version>
+        <flink.version>1.15.2</flink.version>
+        <flink.version.major>1.15</flink.version.major>
+        <hadoop.version>3.3.2</hadoop.version>
     </properties>
 
     <dependencyManagement>
@@ -28,7 +27,7 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
                 <!-- Get the latest SDK version from https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bom -->
-                <version>1.12.86</version>
+                <version>1.12.281</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -43,9 +42,9 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+            <artifactId>flink-streaming-java</artifactId>
             <version>${flink.version}</version>
-<!--            scope provided would be used when deploying jar to KDA, locally this would be omitted-->
+            <!-- Scope provided would be used when deploying jar to KDA, locally this would be omitted -->
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -114,11 +113,31 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-				    <release>11</release>
+			<release>11</release>
             <source>${java.version}</source>
             <target>${java.version}</target>
         </configuration>
     </plugin>
+
+    <!-- Avro code generator -->
+    <plugin>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro-maven-plugin</artifactId>
+        <version>${avro.version}</version>
+        <executions>
+            <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                    <goal>schema</goal>
+                </goals>
+                <configuration>
+                    <sourceDirectory>${project.basedir}/src/main/resources/avro/</sourceDirectory>
+                    <outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+
     <!-- We use the maven-shade plugin to create a fat jar that contains all necessary dependencies. -->
     <!-- Change the value of <mainClass>...</mainClass> if your program entry point changes. -->
     <plugin>

@@ -11,8 +11,8 @@
 
     <properties>
         <java.version>1.11</java.version>
-        <scala.binary.version>2.12</scala.binary.version>
-        <kda.version>1.1.0</kda.version>
+        <flink.version>1.15.2</flink.version>
+        <kda.version>2.0.0</kda.version>
         <kda.runtime.version>1.2.0</kda.runtime.version>
     </properties>
 
@@ -22,7 +22,7 @@
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
                 <!-- Get the latest SDK version from https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bom -->
-                <version>1.11.903</version>
+                <version>1.12.281</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -38,13 +38,13 @@
 
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kinesis_${scala.binary.version}</artifactId>
+            <artifactId>flink-connector-kinesis</artifactId>
             <version>${flink.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+            <artifactId>flink-streaming-java</artifactId>
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -58,7 +58,6 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-logs</artifactId>
-            <!-- scope>compile</scope -->
         </dependency>
     </dependencies>
 
