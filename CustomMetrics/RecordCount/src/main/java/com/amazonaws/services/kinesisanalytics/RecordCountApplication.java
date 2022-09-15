@@ -62,7 +62,6 @@
             String outputRegion = outputConfig.getProperty("aws.region");
             Properties producerConfig = new Properties();
             producerConfig.put("aws.region", outputRegion);
-            producerConfig.put("AggregationEnabled", "false");
      
             // Add the Kinesis sink as output
             KinesisStreamsSink<String> sink = KinesisStreamsSink.<String>builder()

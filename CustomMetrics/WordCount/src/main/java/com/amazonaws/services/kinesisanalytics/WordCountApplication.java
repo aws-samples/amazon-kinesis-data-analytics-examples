@@ -34,7 +34,6 @@
         private static KinesisStreamsSink<String> createSinkFromStaticConfig() {
             Properties producerConfig = new Properties();
             producerConfig.setProperty(ConsumerConfigConstants.AWS_REGION, region);
-            producerConfig.setProperty("AggregationEnabled", "false");
 
             return KinesisStreamsSink.<String>builder()
                     .setKinesisClientProperties(producerConfig)

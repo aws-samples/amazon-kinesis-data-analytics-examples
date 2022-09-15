@@ -35,6 +35,7 @@ public class KafkaGettingStartedJob {
         Properties sinkProperties = KinesisAnalyticsRuntime.getApplicationProperties().get("KafkaSink");
 
         return KafkaSink.<String>builder()
+                .setBootstrapServers(sinkProperties.getProperty("bootstrap.servers"))
                 .setRecordSerializer(KafkaRecordSerializationSchema.builder()
                         .setTopic((String) sinkProperties.get("topic"))
                         .setKeySerializationSchema(new SimpleStringSchema())
