@@ -2,6 +2,7 @@ package com.amazonaws;
 
 import com.amazonaws.operators.PeriodicPerPartitionLoadEnrichmentData;
 import com.amazonaws.pojo.Customer;
+import com.amazonaws.utils.AppProperties;
 import com.amazonaws.utils.KinesisStreamInitialiser;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -22,10 +23,14 @@ public class ProcessStreamPeriodicPartitionPreLoadReferenceData {
         //read the parameters specified from the command line
         ParameterTool parameter = ParameterTool.fromArgs(args);
 
+        //read Kinesis stream name from config
+        AppProperties properties = new AppProperties();
+        final String dataStream = properties.getProperty("kinesis.stream");
+
         Properties kinesisConsumerConfig = KinesisStreamInitialiser.getKinesisConsumerConfig(parameter);
 
         //create Kinesis source
-        DataStream<Customer> customerStream = KinesisStreamInitialiser.getKinesisStream(env, kinesisConsumerConfig, DATA_STREAM_NAME);
+        DataStream<Customer> customerStream = KinesisStreamInitialiser.getKinesisStream(env, kinesisConsumerConfig, dataStream);
 
         customerStream = customerStream
                 //remove all events that aren't CustomerEvent
@@ -37,7 +42,7 @@ public class ProcessStreamPeriodicPartitionPreLoadReferenceData {
         customerStream.print();
 
 
-        LOG.info("Reading events from stream {}", parameter.get("InputStreamName", DATA_STREAM_NAME));
+        LOG.info("Reading events from stream {}", parameter.get("InputStreamName", dataStream));
 
         env.execute();
     }

@@ -15,7 +15,8 @@ Use the Kinesis Data Generator to generate sample data to Kinesis stream. Flink 
 
 To use the Kinesis Data Generator to generate sample events, we need to setup the Cognito. Follow the instructions (https://awslabs.github.io/amazon-kinesis-data-generator/web/help.html) to create Cognito user pool required for Amazon Kinesis Data Generator along with instruction to setup the events.
 
-Create a Kinesis Data Stream and S3 bucket in a region.
+Create a Kinesis Data Stream and S3 bucket in the same region where the application is running. 
+Configure the stream name and S3 bucket name in `config.properties` under resources.
 
 The sample event data in Kinesis Data Generator is generated using the following template -
 
