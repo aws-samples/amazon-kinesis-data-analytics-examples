@@ -48,7 +48,7 @@ public class SQSSinkJob {
                     JsonNode jsonNode = jsonParser.readValue(value, JsonNode.class);
                     return new Tuple2<>(jsonNode.get("ticker").toString(), 1);
                 }).returns(Types.TUPLE(Types.STRING, Types.INT))
-                .keyBy(0) // Logically partition the stream for each word
+                .keyBy(v -> v.f0) // Logically partition the stream for each word
                 // .timeWindow(Time.minutes(1)) // Tumbling window definition // Flink 1.11
                 .window(TumblingProcessingTimeWindows.of(Time.minutes(1))) // Flink 1.13
                 .sum(1) // Count the appearances by ticker per partition
