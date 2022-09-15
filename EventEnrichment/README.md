@@ -6,14 +6,14 @@ Use the Kinesis Data Generator to generate sample data to Kinesis stream. Flink 
 
 <br>
 
-| DISCLAIMER: In the sample code, to query the reference data from S3, we have used S3 Select. S3 Select can support upto 5,500 GET/HEAD requests per second per prefix in an Amazon S3 bucket. So if you have high volume of data flowing through KDA application for which you need to make more than 5500 concurrent request, its recommended to choose some other data store that can scale better.|
+| DISCLAIMER: In the sample code, to query the reference data from S3, [S3 Select](https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html) is used. S3 Select can support upto 5,500 GET/HEAD requests per second per prefix in an Amazon S3 bucket. So if you have high volume of data flowing through KDA application for which you need to make more than 5500 concurrent request, its recommended to choose some other data store that can scale better.|
 | --- |
 
 <br>
 
 ## Setup
 
-To use the Kinesis Data Generator to generate sample events, we need to setup the Cognito. Follow the instructions (https://awslabs.github.io/amazon-kinesis-data-generator/web/help.html) to create Cognito user pool required for Amazon Kinesis Data Generator along with instruction to setup the events.
+To use the Kinesis Data Generator to generate sample events, you need to setup the Cognito. Follow the instructions (https://awslabs.github.io/amazon-kinesis-data-generator/web/help.html) to create Cognito user pool required for Amazon Kinesis Data Generator along with instruction to setup the events.
 
 Create a Kinesis Data Stream and S3 bucket in the same region where the application is running. 
 Configure the stream name and S3 bucket name in `config.properties` under resources.
