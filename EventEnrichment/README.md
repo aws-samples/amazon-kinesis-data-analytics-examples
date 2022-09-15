@@ -4,6 +4,13 @@ Use the Kinesis Data Generator to generate sample data to Kinesis stream. Flink 
 
 ![High level architecture to enrich events coming from Kinesis Data Streams with the static reference data stored in S3](src/main/resources/arch.jpg)
 
+<br>
+
+| DISCLAIMER: In the sample code, to query the reference data from S3, we have used S3 Select. S3 Select can support upto 5,500 GET/HEAD requests per second per prefix in an Amazon S3 bucket. So if you have high volume of data flowing through KDA application for which you need to make more than 5500 concurrent request, its recommended to choose some other data store that can scale better.|
+| --- |
+
+<br>
+
 ## Setup
 
 To use the Kinesis Data Generator to generate sample events, we need to setup the Cognito. Follow the instructions (https://awslabs.github.io/amazon-kinesis-data-generator/web/help.html) to create Cognito user pool required for Amazon Kinesis Data Generator along with instruction to setup the events.
@@ -20,7 +27,7 @@ The sample event data in Kinesis Data Generator is generated using the following
     }
 
 
-The reference location data (`location_data.csv`) we are using in the S3 for the sample code, looks like this -
+The reference location data (`src/main/resources/location_data.csv`) we are using in the S3 for the sample code, looks like this -
 
     role,location
     developer,Building-I
