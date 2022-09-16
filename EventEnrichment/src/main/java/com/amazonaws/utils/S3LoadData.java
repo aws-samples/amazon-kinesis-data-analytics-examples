@@ -23,16 +23,18 @@ import org.slf4j.LoggerFactory;
 
 public class S3LoadData {
     private static final Logger LOG = LoggerFactory.getLogger(S3LoadData.class);
-    private static final String BUCKET_NAME = "event-data-enrichment";
     private static final String CSV_OBJECT_KEY = "location_data.csv";
     private static final String QUERY_PER_ROLE = "SELECT s.location FROM s3object s WHERE s.role = '%s'";
     private static final String QUERY_ALL_OBJECTS = "SELECT role, location FROM s3object";
 
     private String getLocation(String role) throws Exception {
+        //Read S3 bucket name from config
+        AppProperties properties = new AppProperties();
+        final String bucketName = properties.getProperty("s3.bucket");
         final AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
         String location = "";
 
-        SelectObjectContentRequest request = generateBaseCSVRequest(BUCKET_NAME, CSV_OBJECT_KEY, String.format(QUERY_PER_ROLE, role));
+        SelectObjectContentRequest request = generateBaseCSVRequest(bucketName, CSV_OBJECT_KEY, String.format(QUERY_PER_ROLE, role));
         final AtomicBoolean isResultComplete = new AtomicBoolean(false);
         try (SelectObjectContentResult result = s3Client.selectObjectContent(request)) {
             InputStream resultInputStream = result.getPayload().getRecordsInputStream(
@@ -67,11 +69,14 @@ public class S3LoadData {
     }
 
     private Map<String, Location> getLocation() throws Exception {
+        //Read S3 bucket name from config
+        AppProperties properties = new AppProperties();
+        final String bucketName = properties.getProperty("s3.bucket");
         final AmazonS3 s3Client = AmazonS3ClientBuilder.defaultClient();
         String location = "";
         Map<String, Location> locationMap = new HashMap<>();
 
-        SelectObjectContentRequest request = generateBaseCSVRequest(BUCKET_NAME, CSV_OBJECT_KEY, QUERY_ALL_OBJECTS);
+        SelectObjectContentRequest request = generateBaseCSVRequest(bucketName, CSV_OBJECT_KEY, QUERY_ALL_OBJECTS);
         final AtomicBoolean isResultComplete = new AtomicBoolean(false);
         try (SelectObjectContentResult result = s3Client.selectObjectContent(request)) {
             InputStream resultInputStream = result.getPayload().getRecordsInputStream(

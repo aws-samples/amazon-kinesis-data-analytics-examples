@@ -13,14 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PeriodicPerPartitionLoadEnrichmentData extends KeyedProcessFunction<String, Customer, Customer> {
     private transient ValueState<Location> locationState = null;
     private S3LoadData s3Data = null;
     private static final Logger LOG = LoggerFactory.getLogger(PeriodicPerPartitionLoadEnrichmentData.class);
-    private List<String> timerConfiguredKeys = new ArrayList();
 
     @Override
     public void open(Configuration parameters) throws Exception {
@@ -44,20 +41,13 @@ public class PeriodicPerPartitionLoadEnrichmentData extends KeyedProcessFunction
         collector.collect(customer);
 
         //Invoke reference data load every 60 seconds.
-        //Register timer once per key and not for every element.
-        if (!timerConfiguredKeys.contains(customer.getRole())) {
-            context.timerService().registerProcessingTimeTimer(everyNthSeconds(context.timerService().currentProcessingTime(), 60));
-
-            timerConfiguredKeys.add(customer.getRole());
-            LOG.info("Added key to list of timers: " + customer.getRole());
-        }
+        //Flink uses timer coalescing to register one timer per key per timestamp.
+        //Here the timestamp is rounded to every minute.
+        context.timerService().registerProcessingTimeTimer(everyNthSeconds(context.timerService().currentProcessingTime(), 60));
     }
 
     @Override
     public void onTimer(long timestamp, OnTimerContext ctx, Collector<Customer> out) throws Exception {
-        timerConfiguredKeys.remove(ctx.getCurrentKey());
-        LOG.info("Removed key from the list of timers: " + ctx.getCurrentKey());
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         LOG.info(String.format("Timer function triggered at %s to reload reference data again", sdf.format(timestamp)));
