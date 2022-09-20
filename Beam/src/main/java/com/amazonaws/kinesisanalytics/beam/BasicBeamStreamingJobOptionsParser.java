@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 public class BasicBeamStreamingJobOptionsParser {
-    private static final Logger LOG = LoggerFactory.getLogger(BasicBeamStreamingJobOptions.class);
+    private static Logger LOG = LoggerFactory.getLogger(BasicBeamStreamingJobOptions.class);
 
     static String[] argsFromKinesisApplicationProperties(String[] args, String applicationPropertiesName) {
         Properties beamProperties;
@@ -33,7 +33,7 @@ public class BasicBeamStreamingJobOptionsParser {
             throw new IllegalStateException("Failed to retrieve application properties", e);
         }
 
-        return beamProperties
+        String[] kinesisOptions = beamProperties
                 .entrySet()
                 .stream()
                 .map(property -> String.format("--%s%s=%s",
@@ -42,5 +42,7 @@ public class BasicBeamStreamingJobOptionsParser {
                         property.getValue()
                 ))
                 .toArray(String[]::new);
+
+        return kinesisOptions;
     }
 }

@@ -20,7 +20,6 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
 import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
@@ -68,26 +67,31 @@ public class CustomSinkStreamingJob {
     private static final String CLOUD_WATCH_LOG_STREAM = "StockPriceStatistics";
     private static final int LOG_RETENTION_IN_DAYS = 3;
 
-    private static DataStream<String> createSourceFromStaticConfig(StreamExecutionEnvironment env) {
+    private static DataStream<String> createSourceFromStaticConfig(
+            StreamExecutionEnvironment env) {
         Properties inputProperties = new Properties();
         inputProperties.setProperty(ConsumerConfigConstants.AWS_REGION, region);
-        inputProperties.setProperty(ConsumerConfigConstants.STREAM_INITIAL_POSITION, "LATEST");
+        inputProperties.setProperty(ConsumerConfigConstants.STREAM_INITIAL_POSITION,
+                "LATEST");
 
-        return env.addSource(new FlinkKinesisConsumer<>(inputStreamName, new SimpleStringSchema(), inputProperties));
+        return env.addSource(new FlinkKinesisConsumer<>(inputStreamName,
+                new SimpleStringSchema(), inputProperties));
     }
 
     public static void main(String[] args) throws Exception {
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        final StreamExecutionEnvironment env =
+                StreamExecutionEnvironment.getExecutionEnvironment();
         setupLogGroupAndStream(region, CLOUD_WATCH_LOG_GROUP, CLOUD_WATCH_LOG_STREAM);
 
         DataStream<String> input = createSourceFromStaticConfig(env);
         ObjectMapper jsonParser = new ObjectMapper();
         input.map(value -> {
             JsonNode jsonNode = jsonParser.readValue(value, JsonNode.class);
-            return new Tuple2<>(jsonNode.get("ticker").asText(), jsonNode.get("price").asDouble());
+            return new Tuple2<>(jsonNode.get("TICKER").asText(), jsonNode.get("PRICE").asDouble());
         }).returns(Types.TUPLE(Types.STRING, Types.DOUBLE))
-                .keyBy(v -> v.f0)
-                .window(SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5)))
+                .keyBy(0)
+                .timeWindow(Time.seconds(10), Time.seconds(5))
                 .max(1)
                 .map(value -> value.f0 + ":  max - " + value.f1.toString() + "\n")
                 .addSink(new CloudWatchLogSink(region, CLOUD_WATCH_LOG_GROUP, CLOUD_WATCH_LOG_STREAM));

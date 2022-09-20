@@ -14,6 +14,12 @@ from pyflink.table import EnvironmentSettings, StreamTableEnvironment
 import os
 import json
 
+# 1. Creates a Table Environment
+env_settings = (
+    EnvironmentSettings.new_instance().in_streaming_mode().use_blink_planner().build()
+)
+table_env = StreamTableEnvironment.create(environment_settings=env_settings)
+
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
 
 is_local = (
@@ -27,8 +33,9 @@ if is_local:
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
     table_env.get_config().get_configuration().set_string(
         "pipeline.jars",
-        "file:///" + CURRENT_DIR + "/lib/flink-sql-connector-kinesis-1.15.2.jar",
+        "file:///" + CURRENT_DIR + "/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar",
     )
+
 
 def get_application_properties():
     if os.path.isfile(APPLICATION_PROPERTIES_FILE_PATH):
@@ -46,23 +53,27 @@ def property_map(props, property_group_id):
             return prop["PropertyMap"]
 
 
-def create_table(table_name, stream_name, region, stream_initpos = None):
-    init_pos = "\n'scan.stream.initpos' = '{0}',".format(stream_initpos) if stream_initpos is not None else ''
-
+def create_table(table_name, stream_name, region, stream_initpos):
     return """ CREATE TABLE {0} (
                 ticker VARCHAR(6),
                 price DOUBLE,
                 event_time TIMESTAMP(3),
                 WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+
               )
               PARTITIONED BY (ticker)
               WITH (
                 'connector' = 'kinesis',
                 'stream' = '{1}',
-                'aws.region' = '{2}',{3}
+                'aws.region' = '{2}',
+                'scan.stream.initpos' = '{3}',
+                'sink.partitioner-field-delimiter' = ';',
+                'sink.producer.collection-max-count' = '100',
                 'format' = 'json',
                 'json.timestamp-format.standard' = 'ISO-8601'
-              ) """.format(table_name, stream_name, region, init_pos)
+              ) """.format(
+        table_name, stream_name, region, stream_initpos
+    )
 
 
 def main():
@@ -72,14 +83,14 @@ def main():
 
     input_stream_key = "input.stream.name"
     input_region_key = "aws.region"
-    input_starting_position_key = "scan.stream.initpos"
+    input_starting_position_key = "flink.stream.initpos"
 
     output_stream_key = "output.stream.name"
     output_region_key = "aws.region"
 
     # tables
-    input_table_name = "ExampleInputStream"
-    output_table_name = "ExampleOutputStream"
+    input_table_name = "input_table"
+    output_table_name = "output_table"
 
     # get application properties
     props = get_application_properties()
@@ -94,18 +105,19 @@ def main():
     output_stream = output_property_map[output_stream_key]
     output_region = output_property_map[output_region_key]
 
-    # 1. Creates a Table Environment
-    env_settings = EnvironmentSettings.in_streaming_mode()
-    table_env = StreamTableEnvironment.create(environment_settings=env_settings)
-
     # 2. Creates a source table from a Kinesis Data Stream
-    table_env.execute_sql(create_table(input_table_name, input_stream, input_region, stream_initpos))
+    table_env.execute_sql(
+        create_table(input_table_name, input_stream, input_region, stream_initpos)
+    )
 
     # 3. Creates a sink table writing to a Kinesis Data Stream
-    table_env.execute_sql(create_table(output_table_name, output_stream, output_region))
+    table_env.execute_sql(
+        create_table(output_table_name, output_stream, output_region, stream_initpos)
+    )
 
     # 4. Inserts the source table data into the sink table
-    table_result = table_env.execute_sql("INSERT INTO {0} SELECT * FROM {1}".format(output_table_name, input_table_name))
+    table_result = table_env.execute_sql("INSERT INTO {0} SELECT * FROM {1}"
+                           .format(output_table_name, input_table_name))
 
     # get job status through TableResult
     print(table_result.get_job_client().get_job_status())
