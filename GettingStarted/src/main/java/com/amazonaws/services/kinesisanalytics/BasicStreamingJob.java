@@ -2,11 +2,10 @@ package com.amazonaws.services.kinesisanalytics;
 
 import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.connector.kinesis.sink.KinesisStreamsSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
-import org.apache.flink.streaming.connectors.kinesis.config.AWSConfigConstants;
+import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisProducer;
 import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
 
 import java.io.IOException;
@@ -36,40 +35,40 @@ public class BasicStreamingJob {
                 applicationProperties.get("ConsumerConfigProperties")));
     }
 
-    private static KinesisStreamsSink<String> createSinkFromStaticConfig() {
+    private static FlinkKinesisProducer<String> createSinkFromStaticConfig() {
         Properties outputProperties = new Properties();
-        outputProperties.setProperty(AWSConfigConstants.AWS_REGION, region);
+        outputProperties.setProperty(ConsumerConfigConstants.AWS_REGION, region);
+        outputProperties.setProperty("AggregationEnabled", "false");
 
-        return KinesisStreamsSink.<String>builder()
-                .setKinesisClientProperties(outputProperties)
-                .setSerializationSchema(new SimpleStringSchema())
-                .setStreamName(outputProperties.getProperty("OUTPUT_STREAM", "ExampleOutputStream"))
-                .setPartitionKeyGenerator(element -> String.valueOf(element.hashCode()))
-                .build();
+        FlinkKinesisProducer<String> sink = new FlinkKinesisProducer<>(new SimpleStringSchema(), outputProperties);
+        sink.setDefaultStream(outputStreamName);
+        sink.setDefaultPartition("0");
+        return sink;
     }
 
-    private static KinesisStreamsSink<String> createSinkFromApplicationProperties() throws IOException {
-        return KinesisStreamsSink.<String>builder()
-                .setKinesisClientProperties(KinesisAnalyticsRuntime.getApplicationProperties().get("ProducerConfigProperties"))
-                .setSerializationSchema(new SimpleStringSchema())
-                .setStreamName(outputStreamName)
-                .setPartitionKeyGenerator(element -> String.valueOf(element.hashCode()))
-                .build();
+    private static FlinkKinesisProducer<String> createSinkFromApplicationProperties() throws IOException {
+        Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
+        FlinkKinesisProducer<String> sink = new FlinkKinesisProducer<>(new SimpleStringSchema(),
+                applicationProperties.get("ProducerConfigProperties"));
+
+        sink.setDefaultStream(outputStreamName);
+        sink.setDefaultPartition("0");
+        return sink;
     }
 
     public static void main(String[] args) throws Exception {
-        // Set up the streaming execution environment
+        // set up the streaming execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        /* If you would like to use runtime configuration properties, uncomment the lines below
+        /* if you would like to use runtime configuration properties, uncomment the lines below
          * DataStream<String> input = createSourceFromApplicationProperties(env);
          */
         DataStream<String> input = createSourceFromStaticConfig(env);
 
-        /* If you would like to use runtime configuration properties, uncomment the lines below
-         * input.sinkTo(createSinkFromApplicationProperties())
+        /* if you would like to use runtime configuration properties, uncomment the lines below
+         * input.addSink(createSinkFromApplicationProperties())
          */
-        input.sinkTo(createSinkFromStaticConfig());
+        input.addSink(createSinkFromStaticConfig());
 
         env.execute("Flink Streaming Java API Skeleton");
     }

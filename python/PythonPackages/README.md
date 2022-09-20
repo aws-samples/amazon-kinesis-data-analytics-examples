@@ -24,7 +24,7 @@ PythonPackages
        │   │   mymodulefile2.py
             ...
 └───lib
-│    │ flink-sql-connector-kinesis-1.15.2.jar 
+│    │ flink-sql-connector-kinesis_2.11-1.13.2.jar 
 │    │ ...
 ...
 
@@ -46,7 +46,7 @@ The location of `site_packages` for a *conda env* is `miniforge/envs/<your_env>/
 
 ## JAR dependencies
 
-If your application depends on a connector, be sure to include the connector jar (e.g. `flink-sql-connector-kinesis-1.15.2.jar`) in your package; under the `lib` folder in the tree structure shown above. Note that you don't have to name the folder `lib`, you just have to include it somewhere in your package and also ensure that you specify the jar dependency using the `jarfile` property as described below. Make sure the connector version corresponds to the appropriate Apache Flink version in your Kinesis Data Analytics application.
+If your application depends on a connector, be sure to include the connector jar (e.g. `flink-sql-connector-kinesis_2.11-1.13.2.jar`) in your package; under the `lib` folder in the tree structure shown above. Note that you don't have to name the folder `lib`, you just have to include it somewhere in your package and also ensure that you specify the jar dependency using the `jarfile` property as described below. Make sure the connector version corresponds to the appropriate Apache Flink version in your Kinesis Data Analytics application.
 
 If you have multiple dependencies, you have to create a fat jar and then include it using the `jarfile` property as described below. This is a Flink requirement as described [here](https://nightlies.apache.org/flink/flink-docs-master/docs/dev/python/dependency_management/#jar-dependencies).
 

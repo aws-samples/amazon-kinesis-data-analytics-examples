@@ -16,32 +16,27 @@
         <java.version>1.11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <flink.version>1.15.2</flink.version>
-        <kda.runtime.version>1.2.0</kda.runtime.version>
+        <flink.version>1.11.1</flink.version>
+        <amazon-kinesis-connector-flink.version>2.0.3</amazon-kinesis-connector-flink.version>
         <main-class>software.amazon.kinesis.EfoApplication</main-class>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java</artifactId>
+            <artifactId>flink-streaming-java_2.11</artifactId>
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kinesis</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-aws-kinesis-streams</artifactId>
-            <version>${flink.version}</version>
+            <groupId>software.amazon.kinesis</groupId>
+            <artifactId>amazon-kinesis-connector-flink</artifactId>
+            <version>${amazon-kinesis-connector-flink.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-kinesisanalytics-runtime</artifactId>
-            <version>${kda.runtime.version}</version>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
 
@@ -52,7 +47,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>11</release>
+								    <release>11</release>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                 </configuration>

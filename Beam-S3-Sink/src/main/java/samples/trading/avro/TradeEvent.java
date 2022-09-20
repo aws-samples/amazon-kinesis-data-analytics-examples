@@ -14,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 5638896660846976630L;
+  private static final long serialVersionUID = 2523669237574015394L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"TradeEvent\",\"namespace\":\"samples.trading.avro\",\"fields\":[{\"name\":\"ticker\",\"type\":\"string\"},{\"name\":\"event_time\",\"type\":\"string\"},{\"name\":\"price\",\"type\":\"double\"}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"TradeEvent\",\"namespace\":\"samples.trading.avro\",\"fields\":[{\"name\":\"TICKER\",\"type\":\"string\"},{\"name\":\"EVENT_TIME\",\"type\":\"string\"},{\"name\":\"PRICE\",\"type\":\"double\"}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -73,9 +73,9 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
     return DECODER.decode(b);
   }
 
-  private java.lang.CharSequence ticker;
-  private java.lang.CharSequence event_time;
-  private double price;
+  private java.lang.CharSequence TICKER;
+  private java.lang.CharSequence EVENT_TIME;
+  private double PRICE;
 
   /**
    * Default constructor.  Note that this does not initialize fields
@@ -86,14 +86,14 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
 
   /**
    * All-args constructor.
-   * @param ticker The new value for ticker
-   * @param event_time The new value for event_time
-   * @param price The new value for price
+   * @param TICKER The new value for TICKER
+   * @param EVENT_TIME The new value for EVENT_TIME
+   * @param PRICE The new value for PRICE
    */
-  public TradeEvent(java.lang.CharSequence ticker, java.lang.CharSequence event_time, java.lang.Double price) {
-    this.ticker = ticker;
-    this.event_time = event_time;
-    this.price = price;
+  public TradeEvent(java.lang.CharSequence TICKER, java.lang.CharSequence EVENT_TIME, java.lang.Double PRICE) {
+    this.TICKER = TICKER;
+    this.EVENT_TIME = EVENT_TIME;
+    this.PRICE = PRICE;
   }
 
   public org.apache.avro.specific.SpecificData getSpecificData() { return MODEL$; }
@@ -101,9 +101,9 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
   // Used by DatumWriter.  Applications should not call.
   public java.lang.Object get(int field$) {
     switch (field$) {
-    case 0: return ticker;
-    case 1: return event_time;
-    case 2: return price;
+    case 0: return TICKER;
+    case 1: return EVENT_TIME;
+    case 2: return PRICE;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
@@ -112,62 +112,62 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
   @SuppressWarnings(value="unchecked")
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
-    case 0: ticker = (java.lang.CharSequence)value$; break;
-    case 1: event_time = (java.lang.CharSequence)value$; break;
-    case 2: price = (java.lang.Double)value$; break;
+    case 0: TICKER = (java.lang.CharSequence)value$; break;
+    case 1: EVENT_TIME = (java.lang.CharSequence)value$; break;
+    case 2: PRICE = (java.lang.Double)value$; break;
     default: throw new IndexOutOfBoundsException("Invalid index: " + field$);
     }
   }
 
   /**
-   * Gets the value of the 'ticker' field.
-   * @return The value of the 'ticker' field.
+   * Gets the value of the 'TICKER' field.
+   * @return The value of the 'TICKER' field.
    */
-  public java.lang.CharSequence getTicker() {
-    return ticker;
+  public java.lang.CharSequence getTICKER() {
+    return TICKER;
   }
 
 
   /**
-   * Sets the value of the 'ticker' field.
+   * Sets the value of the 'TICKER' field.
    * @param value the value to set.
    */
-  public void setTicker(java.lang.CharSequence value) {
-    this.ticker = value;
+  public void setTICKER(java.lang.CharSequence value) {
+    this.TICKER = value;
   }
 
   /**
-   * Gets the value of the 'event_time' field.
-   * @return The value of the 'event_time' field.
+   * Gets the value of the 'EVENT_TIME' field.
+   * @return The value of the 'EVENT_TIME' field.
    */
-  public java.lang.CharSequence getEventTime() {
-    return event_time;
+  public java.lang.CharSequence getEVENTTIME() {
+    return EVENT_TIME;
   }
 
 
   /**
-   * Sets the value of the 'event_time' field.
+   * Sets the value of the 'EVENT_TIME' field.
    * @param value the value to set.
    */
-  public void setEventTime(java.lang.CharSequence value) {
-    this.event_time = value;
+  public void setEVENTTIME(java.lang.CharSequence value) {
+    this.EVENT_TIME = value;
   }
 
   /**
-   * Gets the value of the 'price' field.
-   * @return The value of the 'price' field.
+   * Gets the value of the 'PRICE' field.
+   * @return The value of the 'PRICE' field.
    */
-  public double getPrice() {
-    return price;
+  public double getPRICE() {
+    return PRICE;
   }
 
 
   /**
-   * Sets the value of the 'price' field.
+   * Sets the value of the 'PRICE' field.
    * @param value the value to set.
    */
-  public void setPrice(double value) {
-    this.price = value;
+  public void setPRICE(double value) {
+    this.PRICE = value;
   }
 
   /**
@@ -211,9 +211,9 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
   public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<TradeEvent>
     implements org.apache.avro.data.RecordBuilder<TradeEvent> {
 
-    private java.lang.CharSequence ticker;
-    private java.lang.CharSequence event_time;
-    private double price;
+    private java.lang.CharSequence TICKER;
+    private java.lang.CharSequence EVENT_TIME;
+    private double PRICE;
 
     /** Creates a new Builder */
     private Builder() {
@@ -226,16 +226,16 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
      */
     private Builder(samples.trading.avro.TradeEvent.Builder other) {
       super(other);
-      if (isValidValue(fields()[0], other.ticker)) {
-        this.ticker = data().deepCopy(fields()[0].schema(), other.ticker);
+      if (isValidValue(fields()[0], other.TICKER)) {
+        this.TICKER = data().deepCopy(fields()[0].schema(), other.TICKER);
         fieldSetFlags()[0] = other.fieldSetFlags()[0];
       }
-      if (isValidValue(fields()[1], other.event_time)) {
-        this.event_time = data().deepCopy(fields()[1].schema(), other.event_time);
+      if (isValidValue(fields()[1], other.EVENT_TIME)) {
+        this.EVENT_TIME = data().deepCopy(fields()[1].schema(), other.EVENT_TIME);
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
-      if (isValidValue(fields()[2], other.price)) {
-        this.price = data().deepCopy(fields()[2].schema(), other.price);
+      if (isValidValue(fields()[2], other.PRICE)) {
+        this.PRICE = data().deepCopy(fields()[2].schema(), other.PRICE);
         fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
     }
@@ -246,135 +246,135 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
      */
     private Builder(samples.trading.avro.TradeEvent other) {
       super(SCHEMA$, MODEL$);
-      if (isValidValue(fields()[0], other.ticker)) {
-        this.ticker = data().deepCopy(fields()[0].schema(), other.ticker);
+      if (isValidValue(fields()[0], other.TICKER)) {
+        this.TICKER = data().deepCopy(fields()[0].schema(), other.TICKER);
         fieldSetFlags()[0] = true;
       }
-      if (isValidValue(fields()[1], other.event_time)) {
-        this.event_time = data().deepCopy(fields()[1].schema(), other.event_time);
+      if (isValidValue(fields()[1], other.EVENT_TIME)) {
+        this.EVENT_TIME = data().deepCopy(fields()[1].schema(), other.EVENT_TIME);
         fieldSetFlags()[1] = true;
       }
-      if (isValidValue(fields()[2], other.price)) {
-        this.price = data().deepCopy(fields()[2].schema(), other.price);
+      if (isValidValue(fields()[2], other.PRICE)) {
+        this.PRICE = data().deepCopy(fields()[2].schema(), other.PRICE);
         fieldSetFlags()[2] = true;
       }
     }
 
     /**
-      * Gets the value of the 'ticker' field.
+      * Gets the value of the 'TICKER' field.
       * @return The value.
       */
-    public java.lang.CharSequence getTicker() {
-      return ticker;
+    public java.lang.CharSequence getTICKER() {
+      return TICKER;
     }
 
 
     /**
-      * Sets the value of the 'ticker' field.
-      * @param value The value of 'ticker'.
+      * Sets the value of the 'TICKER' field.
+      * @param value The value of 'TICKER'.
       * @return This builder.
       */
-    public samples.trading.avro.TradeEvent.Builder setTicker(java.lang.CharSequence value) {
+    public samples.trading.avro.TradeEvent.Builder setTICKER(java.lang.CharSequence value) {
       validate(fields()[0], value);
-      this.ticker = value;
+      this.TICKER = value;
       fieldSetFlags()[0] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'ticker' field has been set.
-      * @return True if the 'ticker' field has been set, false otherwise.
+      * Checks whether the 'TICKER' field has been set.
+      * @return True if the 'TICKER' field has been set, false otherwise.
       */
-    public boolean hasTicker() {
+    public boolean hasTICKER() {
       return fieldSetFlags()[0];
     }
 
 
     /**
-      * Clears the value of the 'ticker' field.
+      * Clears the value of the 'TICKER' field.
       * @return This builder.
       */
-    public samples.trading.avro.TradeEvent.Builder clearTicker() {
-      ticker = null;
+    public samples.trading.avro.TradeEvent.Builder clearTICKER() {
+      TICKER = null;
       fieldSetFlags()[0] = false;
       return this;
     }
 
     /**
-      * Gets the value of the 'event_time' field.
+      * Gets the value of the 'EVENT_TIME' field.
       * @return The value.
       */
-    public java.lang.CharSequence getEventTime() {
-      return event_time;
+    public java.lang.CharSequence getEVENTTIME() {
+      return EVENT_TIME;
     }
 
 
     /**
-      * Sets the value of the 'event_time' field.
-      * @param value The value of 'event_time'.
+      * Sets the value of the 'EVENT_TIME' field.
+      * @param value The value of 'EVENT_TIME'.
       * @return This builder.
       */
-    public samples.trading.avro.TradeEvent.Builder setEventTime(java.lang.CharSequence value) {
+    public samples.trading.avro.TradeEvent.Builder setEVENTTIME(java.lang.CharSequence value) {
       validate(fields()[1], value);
-      this.event_time = value;
+      this.EVENT_TIME = value;
       fieldSetFlags()[1] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'event_time' field has been set.
-      * @return True if the 'event_time' field has been set, false otherwise.
+      * Checks whether the 'EVENT_TIME' field has been set.
+      * @return True if the 'EVENT_TIME' field has been set, false otherwise.
       */
-    public boolean hasEventTime() {
+    public boolean hasEVENTTIME() {
       return fieldSetFlags()[1];
     }
 
 
     /**
-      * Clears the value of the 'event_time' field.
+      * Clears the value of the 'EVENT_TIME' field.
       * @return This builder.
       */
-    public samples.trading.avro.TradeEvent.Builder clearEventTime() {
-      event_time = null;
+    public samples.trading.avro.TradeEvent.Builder clearEVENTTIME() {
+      EVENT_TIME = null;
       fieldSetFlags()[1] = false;
       return this;
     }
 
     /**
-      * Gets the value of the 'price' field.
+      * Gets the value of the 'PRICE' field.
       * @return The value.
       */
-    public double getPrice() {
-      return price;
+    public double getPRICE() {
+      return PRICE;
     }
 
 
     /**
-      * Sets the value of the 'price' field.
-      * @param value The value of 'price'.
+      * Sets the value of the 'PRICE' field.
+      * @param value The value of 'PRICE'.
       * @return This builder.
       */
-    public samples.trading.avro.TradeEvent.Builder setPrice(double value) {
+    public samples.trading.avro.TradeEvent.Builder setPRICE(double value) {
       validate(fields()[2], value);
-      this.price = value;
+      this.PRICE = value;
       fieldSetFlags()[2] = true;
       return this;
     }
 
     /**
-      * Checks whether the 'price' field has been set.
-      * @return True if the 'price' field has been set, false otherwise.
+      * Checks whether the 'PRICE' field has been set.
+      * @return True if the 'PRICE' field has been set, false otherwise.
       */
-    public boolean hasPrice() {
+    public boolean hasPRICE() {
       return fieldSetFlags()[2];
     }
 
 
     /**
-      * Clears the value of the 'price' field.
+      * Clears the value of the 'PRICE' field.
       * @return This builder.
       */
-    public samples.trading.avro.TradeEvent.Builder clearPrice() {
+    public samples.trading.avro.TradeEvent.Builder clearPRICE() {
       fieldSetFlags()[2] = false;
       return this;
     }
@@ -384,9 +384,9 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
     public TradeEvent build() {
       try {
         TradeEvent record = new TradeEvent();
-        record.ticker = fieldSetFlags()[0] ? this.ticker : (java.lang.CharSequence) defaultValue(fields()[0]);
-        record.event_time = fieldSetFlags()[1] ? this.event_time : (java.lang.CharSequence) defaultValue(fields()[1]);
-        record.price = fieldSetFlags()[2] ? this.price : (java.lang.Double) defaultValue(fields()[2]);
+        record.TICKER = fieldSetFlags()[0] ? this.TICKER : (java.lang.CharSequence) defaultValue(fields()[0]);
+        record.EVENT_TIME = fieldSetFlags()[1] ? this.EVENT_TIME : (java.lang.CharSequence) defaultValue(fields()[1]);
+        record.PRICE = fieldSetFlags()[2] ? this.PRICE : (java.lang.Double) defaultValue(fields()[2]);
         return record;
       } catch (org.apache.avro.AvroMissingFieldException e) {
         throw e;
@@ -419,11 +419,11 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
   @Override public void customEncode(org.apache.avro.io.Encoder out)
     throws java.io.IOException
   {
-    out.writeString(this.ticker);
+    out.writeString(this.TICKER);
 
-    out.writeString(this.event_time);
+    out.writeString(this.EVENT_TIME);
 
-    out.writeDouble(this.price);
+    out.writeDouble(this.PRICE);
 
   }
 
@@ -432,25 +432,25 @@ public class TradeEvent extends org.apache.avro.specific.SpecificRecordBase impl
   {
     org.apache.avro.Schema.Field[] fieldOrder = in.readFieldOrderIfDiff();
     if (fieldOrder == null) {
-      this.ticker = in.readString(this.ticker instanceof Utf8 ? (Utf8)this.ticker : null);
+      this.TICKER = in.readString(this.TICKER instanceof Utf8 ? (Utf8)this.TICKER : null);
 
-      this.event_time = in.readString(this.event_time instanceof Utf8 ? (Utf8)this.event_time : null);
+      this.EVENT_TIME = in.readString(this.EVENT_TIME instanceof Utf8 ? (Utf8)this.EVENT_TIME : null);
 
-      this.price = in.readDouble();
+      this.PRICE = in.readDouble();
 
     } else {
       for (int i = 0; i < 3; i++) {
         switch (fieldOrder[i].pos()) {
         case 0:
-          this.ticker = in.readString(this.ticker instanceof Utf8 ? (Utf8)this.ticker : null);
+          this.TICKER = in.readString(this.TICKER instanceof Utf8 ? (Utf8)this.TICKER : null);
           break;
 
         case 1:
-          this.event_time = in.readString(this.event_time instanceof Utf8 ? (Utf8)this.event_time : null);
+          this.EVENT_TIME = in.readString(this.EVENT_TIME instanceof Utf8 ? (Utf8)this.EVENT_TIME : null);
           break;
 
         case 2:
-          this.price = in.readDouble();
+          this.PRICE = in.readDouble();
           break;
 
         default:
