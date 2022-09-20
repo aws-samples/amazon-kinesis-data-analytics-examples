@@ -12,15 +12,15 @@ This module:
     5. These tumbling window results are inserted into the Sink table (S3)
 """
 
-from pyflink.table import EnvironmentSettings, StreamTableEnvironment
+from pyflink.table import EnvironmentSettings, StreamTableEnvironment, DataTypes
 from pyflink.table.window import Tumble
+from pyflink.table.expressions import col, lit
+from pyflink.table.udf import udf
 import os
 import json
 
 # 1. Creates a Table Environment
-env_settings = (
-    EnvironmentSettings.new_instance().in_streaming_mode().use_blink_planner().build()
-)
+env_settings = EnvironmentSettings.in_streaming_mode()
 table_env = StreamTableEnvironment.create(environment_settings=env_settings)
 
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
@@ -38,7 +38,7 @@ if is_local:
         "pipeline.jars",
         "file:///"
         + CURRENT_DIR
-        + "/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar;file:///"
+        + "/lib/flink-sql-connector-kinesis-1.15.2.jar;file:///"
         + CURRENT_DIR
         + "/plugins/flink-s3-fs-hadoop/flink-s3-fs-hadoop-1.11.2.jar",
     )
@@ -69,13 +69,12 @@ def property_map(props, property_group_id):
 
 def create_source_table(table_name, stream_name, region, stream_initpos):
     return """ CREATE TABLE {0} (
-                TICKER VARCHAR(6),
-                PRICE DOUBLE,
-                EVENT_TIME TIMESTAMP(3),
-                WATERMARK FOR EVENT_TIME AS EVENT_TIME - INTERVAL '5' SECOND
-
+                ticker VARCHAR(6),
+                price DOUBLE,
+                event_time TIMESTAMP(3),
+                WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
               )
-              PARTITIONED BY (TICKER)
+              PARTITIONED BY (ticker)
               WITH (
                 'connector' = 'kinesis',
                 'stream' = '{1}',
@@ -83,28 +82,23 @@ def create_source_table(table_name, stream_name, region, stream_initpos):
                 'scan.stream.initpos' = '{3}',
                 'format' = 'json',
                 'json.timestamp-format.standard' = 'ISO-8601'
-              ) """.format(
-        table_name, stream_name, region, stream_initpos
-    )
+              ) """.format(table_name, stream_name, region, stream_initpos)
 
 
 def create_sink_table(table_name, bucket_name):
     return """ CREATE TABLE {0} (
-                TICKER VARCHAR(6),
-                PRICE DOUBLE,
-                EVENT_TIME TIMESTAMP(3),
-                WATERMARK FOR EVENT_TIME AS EVENT_TIME - INTERVAL '5' SECOND
-
+                ticker VARCHAR(6),
+                price DOUBLE,
+                event_time VARCHAR(64)
               )
-              PARTITIONED BY (TICKER)
+              PARTITIONED BY (ticker)
               WITH (
                   'connector'='filesystem',
                   'path'='s3a://{1}/',
                   'format'='csv',
                   'sink.partition-commit.policy.kind'='success-file',
                   'sink.partition-commit.delay' = '1 min'
-              ) """.format(
-        table_name, bucket_name)
+              ) """.format(table_name, bucket_name)
 
 
 def perform_tumbling_window_aggregation(input_table_name):
@@ -113,14 +107,20 @@ def perform_tumbling_window_aggregation(input_table_name):
 
     tumbling_window_table = (
         input_table.window(
-            Tumble.over("1.minute").on("EVENT_TIME").alias("one_minute_window")
+            Tumble.over("1.minute").on("event_time").alias("one_minute_window")
         )
-        .group_by("TICKER, one_minute_window")
-        .select("TICKER, PRICE.avg as PRICE, one_minute_window.end as EVENT_TIME")
+        .group_by("ticker, one_minute_window")
+        .select("ticker, price.avg as price, to_string(one_minute_window.end) as event_time")
     )
 
     return tumbling_window_table
 
+@udf(input_types=[DataTypes.TIMESTAMP(3)], result_type=DataTypes.STRING())
+def to_string(i):
+    return str(i)
+
+
+table_env.create_temporary_system_function("to_string", to_string)
 
 def main():
     # Application Property Keys
@@ -129,7 +129,7 @@ def main():
 
     input_stream_key = "input.stream.name"
     input_region_key = "aws.region"
-    input_starting_position_key = "flink.stream.initpos"
+    input_starting_position_key = "scan.stream.initpos"
 
     output_sink_key = "output.bucket.name"
 
@@ -150,16 +150,11 @@ def main():
     output_bucket_name = output_property_map[output_sink_key]
 
     # 2. Creates a source table from a Kinesis Data Stream
-    table_env.execute_sql(
-        create_source_table(
-            input_table_name, input_stream, input_region, stream_initpos
-        )
-    )
+    create_source = create_source_table(input_table_name, input_stream, input_region, stream_initpos)
+    table_env.execute_sql(create_source)
 
     # 3. Creates a sink table writing to an S3 Bucket
-    create_sink = create_sink_table(
-        output_table_name, output_bucket_name
-    )
+    create_sink = create_sink_table(output_table_name, output_bucket_name)
     table_env.execute_sql(create_sink)
 
     # 4. Queries from the Source Table and creates a tumbling window over 1 minute to calculate the average PRICE

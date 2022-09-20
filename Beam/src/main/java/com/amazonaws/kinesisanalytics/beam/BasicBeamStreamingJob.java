@@ -55,9 +55,8 @@ public class BasicBeamStreamingJob {
         BasicBeamStreamingJobOptions options = PipelineOptionsFactory.fromArgs(ArrayUtils.addAll(args, kinesisArgs)).as(BasicBeamStreamingJobOptions.class);
         options.setRunner(FlinkRunner.class);
         Regions region = Optional
-                .ofNullable(Regions.getCurrentRegion())
-                .map(r -> Regions.fromName(r.getName()))
-                .orElse(Regions.fromName(options.getAwsRegion()));
+                .ofNullable(Regions.fromName(options.getAwsRegion()))
+                .orElse(Regions.fromName(Regions.getCurrentRegion().getName()));
 
         PipelineOptionsValidator.validate(BasicBeamStreamingJobOptions.class, options);
         Pipeline p = Pipeline.create(options);
@@ -78,7 +77,7 @@ public class BasicBeamStreamingJob {
                 .write()
                 .withStreamName(options.getOutputStreamName())
                 .withAWSClientsProvider(new DefaultCredentialsProviderClientsProvider(region))
-                // for this to properly balance across shards, the keys would need to be supplied dynamically
+                // For this to properly balance across shards, the keys would need to be supplied dynamically
                 .withPartitioner(new SimpleHashPartitioner())
         );
 
