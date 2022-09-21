@@ -2,8 +2,8 @@
   "type": "record",
   "name": "TradeEvent",
   "fields": [
-    {"name": "TICKER", "type": "string"},
-    {"name": "EVENT_TIME",  "type": "string"},
-    {"name": "PRICE",  "type": "double"}
+    {"name": "ticker", "type": "string"},
+    {"name": "event_time",  "type": "string"},
+    {"name": "price",  "type": "double"}
   ]
 }

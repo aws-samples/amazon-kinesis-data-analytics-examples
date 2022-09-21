@@ -5,11 +5,11 @@
     import org.apache.flink.api.common.serialization.SimpleStringSchema;
     import org.apache.flink.api.java.tuple.Tuple2;
     import org.apache.flink.configuration.Configuration;
+    import org.apache.flink.connector.kinesis.sink.KinesisStreamsSink;
     import org.apache.flink.metrics.Counter;
     import org.apache.flink.streaming.api.datastream.DataStream;
     import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
     import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
-    import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisProducer;
     import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
     import org.apache.flink.util.Collector;
      
@@ -31,15 +31,16 @@
             return env.addSource(new FlinkKinesisConsumer<>(inputStreamName, new SimpleStringSchema(), inputProperties));
         }
      
-        private static FlinkKinesisProducer<String> createSinkFromStaticConfig() {
-            Properties outputProperties = new Properties();
-            outputProperties.setProperty(ConsumerConfigConstants.AWS_REGION, region);
-            outputProperties.setProperty("AggregationEnabled", "false");
-     
-            FlinkKinesisProducer<String> sink = new FlinkKinesisProducer<>(new SimpleStringSchema(), outputProperties);
-            sink.setDefaultStream(outputStreamName);
-            sink.setDefaultPartition("0");
-            return sink;
+        private static KinesisStreamsSink<String> createSinkFromStaticConfig() {
+            Properties producerConfig = new Properties();
+            producerConfig.setProperty(ConsumerConfigConstants.AWS_REGION, region);
+
+            return KinesisStreamsSink.<String>builder()
+                    .setKinesisClientProperties(producerConfig)
+                    .setSerializationSchema(new SimpleStringSchema())
+                    .setStreamName(outputStreamName)
+                    .setPartitionKeyGenerator(element -> String.valueOf(element.hashCode()))
+                    .build();
         }
      
         public static void main(String[] args) throws Exception {
@@ -54,7 +55,7 @@
             DataStream<Tuple2<String, Integer>> wordCountStream = input.flatMap(new Tokenizer()).keyBy(0).sum(1);
      
             // Serialize the tuple to string format, and publish the output to kinesis sink
-            wordCountStream.map(tuple -> tuple.toString()).addSink(createSinkFromStaticConfig());
+            wordCountStream.map(Tuple2::toString).sinkTo(createSinkFromStaticConfig());
      
             // Execute the environment
             env.execute("Flink Word Count Application");
