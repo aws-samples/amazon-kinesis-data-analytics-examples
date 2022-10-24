@@ -1,13 +1,13 @@
 package com.amazonaws.services.kinesisanalytics;
 
 import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.connector.base.DeliveryGuarantee;
+import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
-import org.apache.flink.streaming.connectors.kafka.internals.KeyedSerializationSchemaWrapper;
-import org.apache.flink.streaming.util.serialization.KeyedSerializationSchema;
+import org.apache.flink.connector.kafka.sink.KafkaSink;
+import org.apache.flink.connector.kafka.source.KafkaSource;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,44 +16,56 @@ import java.util.Properties;
 public class KDAFlinkStreamingJob {
 
 	public static void main(String[] args) throws Exception {
-		// set up the streaming execution environment
+		// Set up the streaming execution environment
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-		DataStream<String> input = createKafkaSourceFromApplicationProperties(env);
+		// Set up the truststore in the JobManager
+		CustomFlinkKafkaUtil.initializeKafkaTruststore();
+
+		// Add source
+		DataStream<String> stream = env.fromSource(createKafkaSourceFromApplicationProperties(), WatermarkStrategy.noWatermarks(), "Kafka Source");
 
 		// Add sink
-		input.addSink(createKafkaSinkFromApplicationProperties());
+		stream.sinkTo(createKafkaSinkFromApplicationProperties());
 
 		env.execute("Flink Streaming Java With Custom Keystore");
 	}
 
-	private static DataStream<String> createKafkaSourceFromApplicationProperties(StreamExecutionEnvironment env) throws IOException {
+	private static KafkaSource<String> createKafkaSourceFromApplicationProperties() throws IOException {
 		Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
 		Properties sourceProps = applicationProperties.get("KafkaSource");
 
-		// configure location where runtime will look for custom keystore
+		// Configure location where runtime will look for custom keystore
 		sourceProps.setProperty("ssl.truststore.location", "/tmp/kafka.client.truststore.jks");
 
-		FlinkKafkaConsumer<String> consumer = new CustomFlinkKafkaConsumer<>(
-				(String) applicationProperties.get("KafkaSource").get("topic"),
-				new SimpleStringSchema(),
-				sourceProps);
+		String brokers = String.valueOf(sourceProps.get("bootstrap.servers"));
 
-		return env.addSource(consumer);
+		return KafkaSource.<String>builder()
+				.setBootstrapServers(brokers)
+				.setTopics((String) sourceProps.get("topic"))
+				.setValueOnlyDeserializer(new CustomSimpleStringDeserializationSchema())
+				.setProperties(sourceProps)
+				.build();
 	}
 
-	private static FlinkKafkaProducer<String> createKafkaSinkFromApplicationProperties() throws IOException {
+	private static KafkaSink<String> createKafkaSinkFromApplicationProperties() throws IOException {
 		Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
+		Properties sinkProps = applicationProperties.get("KafkaSink");
 
-		KeyedSerializationSchema keyedSerializationSchema =
-				new KeyedSerializationSchemaWrapper(new SimpleStringSchema());
+		// Configure location where runtime will look for custom keystore
+		sinkProps.setProperty("ssl.truststore.location", "/tmp/kafka.client.truststore.jks");
 
-		// Configure FlinkProducer for exactly-once semantics
-		return new CustomFlinkKafkaProducer<>(
-				(String) applicationProperties.get("KafkaSink").get("topic"),
-				keyedSerializationSchema,
-				applicationProperties.get("KafkaSink"),
-				FlinkKafkaProducer.Semantic.EXACTLY_ONCE);
+		String brokers = String.valueOf(sinkProps.get("bootstrap.servers"));
+
+		return KafkaSink.<String>builder()
+				.setBootstrapServers(brokers)
+				.setRecordSerializer(KafkaRecordSerializationSchema.builder()
+						.setTopic((String) sinkProps.get("topic"))
+						.setValueSerializationSchema(new CustomSimpleStringSerializationSchema())
+						.build()
+				)
+				.setDeliverGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+				.setKafkaProducerConfig(sinkProps)
+				.build();
 	}
-
 }

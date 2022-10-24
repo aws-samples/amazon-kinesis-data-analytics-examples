@@ -33,25 +33,18 @@ under the License.
         <kda.version>2.0.0</kda.version>
         <kda.runtime.version>1.2.0</kda.runtime.version>
         <java.version>11</java.version>
-        <flink.version>1.13.2</flink.version>
+        <flink.version>1.15.2</flink.version>
         <scala.binary.version>2.12</scala.binary.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <dependencies>
-        <!-- KDA dependencies -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-kinesisanalytics-runtime</artifactId>
-            <version>${kda.runtime.version}</version>
-        </dependency>
-
         <!-- Apache Flink dependencies -->
         <!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+            <artifactId>flink-streaming-java</artifactId>
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -69,21 +62,18 @@ under the License.
 
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka_2.11</artifactId>
+            <artifactId>flink-connector-kafka</artifactId>
             <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-kinesisanalytics-runtime</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
     </dependencies>
 
     <build>
-
-        <!-- Pull in keystore as a resource -->
-        <resources>
-            <resource>
-                <directory>${basedir}/truststore</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
 
         <plugins>
 
