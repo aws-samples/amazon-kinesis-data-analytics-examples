@@ -40,6 +40,13 @@ under the License.
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-kinesisanalytics-runtime</artifactId>
+            <version>${kda.runtime.version}</version>
+        </dependency>
+
         <!-- Apache Flink dependencies -->
         <!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
         <dependency>
@@ -64,11 +71,6 @@ under the License.
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
             <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-kinesisanalytics-runtime</artifactId>
-            <version>1.0.1</version>
         </dependency>
 
     </dependencies>

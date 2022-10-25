@@ -64,7 +64,8 @@ public class KDAFlinkStreamingJob {
 						.setValueSerializationSchema(new CustomSimpleStringSerializationSchema())
 						.build()
 				)
-				.setDeliverGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+				.setDeliverGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
+				.setTransactionalIdPrefix("my-app-prefix")
 				.setKafkaProducerConfig(sinkProps)
 				.build();
 	}
