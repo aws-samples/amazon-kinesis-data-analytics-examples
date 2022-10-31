@@ -37,7 +37,7 @@ Amazon EventBridge supports standard cron expressions as described [here](https:
 
 In order to facilitate this, we could setup up our Amazon EventBridge scheduler to run our AWS Lambda scaler at *5:05AM PST* and *6:05PM PST* every day.
 
-Please keep in mind that this is just one possible scenario. You can use this sample as a starting point and implement more sophisticated scenarios based on your needs. Please see this [article](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-run-lambda-schedule.html) on Amazon EventBridge cron expressions for more details.
+Please keep in mind that this is just one possible scenario. You can use this sample as a starting point and implement more sophisticated scenarios based on your needs.
 
 ## Scaling logic
 
