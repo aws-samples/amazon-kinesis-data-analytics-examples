@@ -163,6 +163,14 @@ public class StreamingJob {
 		env.execute("Flink Streaming Java API Skeleton");
 	}
 
+
+	/**
+	 * @param region specifies the AWS region
+	 * @param userJarKey is the prefix of the JAR in Amazon S3
+	 * @param userJarFileURI is the location URI, where the JAR is is downloaded
+	 * @param userJarBucket is the bucket name, form where the JAR file should be downloaded
+	 * @throws IOException
+	 */
 	private static void downloadUserJars(String region, String userJarKey,String userJarFileURI, String userJarBucket) throws IOException {
 		AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
 				.withRegion(region)
@@ -194,19 +202,6 @@ public class StreamingJob {
 		fos.close();
 	}
 
-	public static final class CustomTokenizer extends RichFlatMapFunction<String, String> {
-
-		@Override
-		public void open(Configuration parameters) throws Exception {
-			super.open(parameters);
-		}
-
-		@Override
-		public void flatMap(String s, Collector<String> collector) throws Exception {
-
-		}
-	}
-
 	// you don't need this process function if the JAR you're downloading only needs to be referenced in the main method
 	// ... and not within the operators.
 	public static final class ProcessTokenizer  extends ProcessFunction<String, Tuple2<String, Integer>> {
@@ -217,7 +212,7 @@ public class StreamingJob {
 		}
 		/** The state that is maintained by this process function */
 		private URLClassLoader userCodeClassLoader;
-
+		private Class clazz;
 		// This method will be called once each time the job starts or restarts.
 		//... you can use the URLClassLoader directly in main method if you don't need to reference the
 		//... downloaded JAR in the stream processing operators
@@ -227,13 +222,13 @@ public class StreamingJob {
 			File jar = getRuntimeContext().getDistributedCache().getFile(userJarFileName);
 			ClassLoader original = getRuntimeContext().getUserCodeClassLoader();
 			userCodeClassLoader = new URLClassLoader(new URL[]{ jar.toURL() }, original);
+
+			// Get the reference to the class
+			clazz = userCodeClassLoader.loadClass("com.myapp.core.utils.EventData");
 		}
 
 		@Override
 		public void processElement(String s, ProcessFunction<String, Tuple2<String, Integer>>.Context context, Collector<Tuple2<String, Integer>> collector) throws Exception {
-
-			// Get the reference to the class
-			Class clazz = userCodeClassLoader.loadClass("com.myapp.core.utils.EventData");
 
 			String[] tokens = s.toLowerCase().split("\\W+");
 			for (String token : tokens) {
