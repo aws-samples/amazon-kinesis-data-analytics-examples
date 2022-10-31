@@ -49,7 +49,7 @@ As alluded to above, the scaling logic is a bit more involved than simply callin
 4. Before updating the application's KPU count, we also check to see if the current KPU count is already at the expected value. If so, we simply exit.
 5. If we've gotten this far, it means that we need to call `UpdateApplication` with the desired KPU count as well as the current application version.
 
-NOTE: In this sample, we assume that the parallelism/KPU is 1. For more background on parallelism and parallelism/KPU, please [Application Scaling in Kinesis Data Analytics](https://docs.aws.amazon.com/kinesisanalytics/latest/java/how-scaling.html).
+NOTE: In this sample, we assume that the parallelism/KPU is 1. For more background on parallelism and parallelism/KPU, please see [Application Scaling in Kinesis Data Analytics](https://docs.aws.amazon.com/kinesisanalytics/latest/java/how-scaling.html).
 
 ## Error handling
 
@@ -74,7 +74,7 @@ Please keep in mind that there are costs associated with the key components used
 
 2. Kinesis Data Analytics application is not scaled unless it is running.
 
-    This is by design. The included Python code first checks to see if the Kinesis Data Analytics application is running and only 
+    This is by design. The included Python code first checks to see if the Kinesis Data Analytics application is running and only updates the KPU count if the application has a status of RUNNING.
 
 ## References
 
