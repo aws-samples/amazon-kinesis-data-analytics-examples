@@ -32,6 +32,6 @@ drwxr-xr-x  11 user  group   352B Aug 27 08:29 ..
 For those interested, here's a deeper look at the implementation details:
 
 1. Package the certificate files as a resource in containing jar. NOTE: Please include your own certs in the src/main/resources folder.
-2. Extend the SimpleStringSerializationSchema and SimpleSingDeserializationSchema classes so that we can perform initialization of the truststore on the open method.
+2. Extend the SimpleStringSerializationSchema and SimpleStringDeserializationSchema classes so that we can perform initialization of the truststore on the open method.
 3. Drop our certs in /tmp during connector initialization so it'll be available when the connector runs.
 4. Please pay close attention to the included [POM file](pom.xml) for details on which dependent libraries are necessary and how to configure them.
