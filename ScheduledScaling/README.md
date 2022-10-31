@@ -11,7 +11,7 @@ Of course, there's a bit more to it than the above 2 steps. For instance, we hav
 
 Please follow this detailed, step-by-step tutorial on using Amazon EventBridge to schedule an AWS Lambda function based on CRON syntax:
 
-[Tutorial: Schedule AWS Lambda functions using EventBridge](https://docs.aws.amazon.com/EventBridge/latest/userguide/eb-run-lambda-schedule.html)
+[Tutorial: Schedule AWS Lambda functions using EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-run-lambda-schedule.html)
 
 For our purposes, you simply have to alter a couple of key details:
 
@@ -33,11 +33,11 @@ For our purposes, you simply have to alter a couple of key details:
 
 ## Configuring the schedule
 
-Amazon EventBridge supports standard cron expressions as described [here](https://docs.aws.amazon.com/EventBridge/latest/userguide/eb-create-rule-schedule.html). In this sample, we assume a scenario where we need to scale up our application to 20 KPUs during the daytime (US Pacific time) and scale down to 10 KPUs during nighttime (US Pacific time).
+Amazon EventBridge supports standard cron expressions as described [here](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html). In this sample, we assume a scenario where we need to scale up our application to 20 KPUs during the daytime (US Pacific time) and scale down to 10 KPUs during nighttime (US Pacific time).
 
 In order to facilitate this, we could setup up our Amazon EventBridge scheduler to run our AWS Lambda scaler at *5:05AM PST* and *6:05PM PST* every day.
 
-Please keep in mind that this is just one possible scenario. You can use this sample as a starting point and implement more sophisticated scenarios based on your needs. Please see this [article](https://docs.aws.amazon.com/EventBridge/latest/userguide/eb-run-lambda-schedule.html) on Amazon EventBridge cron expressions for more details.
+Please keep in mind that this is just one possible scenario. You can use this sample as a starting point and implement more sophisticated scenarios based on your needs. Please see this [article](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-run-lambda-schedule.html) on Amazon EventBridge cron expressions for more details.
 
 ## Scaling logic
 
@@ -63,7 +63,7 @@ You might consider parametrizing key application variables in your AWS Lambda fu
 
 Please keep in mind that there are costs associated with the key components used in this sample:
 
-- [Amazon EventBridge pricing](https://aws.amazon.com/EventBridge/pricing/).
+- [Amazon EventBridge pricing](https://aws.amazon.com/eventbridge/pricing/).
 - [Amazon Lambda pricing](https://aws.amazon.com/lambda/pricing/).
 
 ## Troubleshooting
@@ -81,5 +81,5 @@ Please keep in mind that there are costs associated with the key components used
 - [Amazon Kinesis Data Analytics developer guide](https://docs.aws.amazon.com/kinesisanalytics/latest/java/what-is.html).
 - [Application Scaling in Kinesis Data Analytics](https://docs.aws.amazon.com/kinesisanalytics/latest/java/how-scaling.html).
 - [KinesisAnalyticsV2 boto3 reference](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kinesisanalyticsv2.html).
-- [Amazon EventBridge developer guide](https://docs.aws.amazon.com/EventBridge/latest/userguide/eb-what-is.html).
+- [Amazon EventBridge developer guide](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html).
 - [Boto3 error handling](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/error-handling.html).
