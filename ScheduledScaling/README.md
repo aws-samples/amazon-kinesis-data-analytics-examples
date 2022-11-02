@@ -7,6 +7,8 @@ This sample illustrates how to scale your KDA Flink application on a schedule us
 
 Of course, there's a bit more to it than the above 2 steps. For instance, we have to do proper error handling and ensure that we're not updating an application that is already at the expected parallelism. These details and more are explained in the sections following the section below.
 
+NOTE: We strongly recommend that you disable autoscaling within your Kinesis Data Analytics if using the approach described here.
+
 ## Deploying the schedule based scaler
 
 Please follow this detailed, step-by-step tutorial on using Amazon EventBridge to schedule an AWS Lambda function based on CRON syntax:
