@@ -1,13 +1,13 @@
 # Sample: Scheduled Scaling of KDA app w/ Amazon EventBridge and AWS Lambda
 
+IMPORTANT: <strong>We strongly recommend that you disable autoscaling within your Kinesis Data Analytics application if using the approach described here.</strong>
+
 This sample illustrates how to scale your KDA Flink application on a schedule using Amazon EventBridge and AWS Lambda. Here's the high level approach:
 
 - Use Amazon EventBridge to call an AWS Lambda function on a schedule.
 - In the AWS Lambda function, call `UpdateApplication` on your Kinesis Data Analytics application.
 
 Of course, there's a bit more to it than the above 2 steps. For instance, we have to do proper error handling and ensure that we're not updating an application that is already at the expected parallelism. These details and more are explained in the sections following the section below.
-
-NOTE: We strongly recommend that you disable autoscaling within your Kinesis Data Analytics if using the approach described here.
 
 ## Deploying the schedule based scaler
 
