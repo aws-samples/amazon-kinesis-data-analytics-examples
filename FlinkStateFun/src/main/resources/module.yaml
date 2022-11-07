@@ -1,0 +1,40 @@
+version: "3.0"
+
+module:
+  meta:
+    type: remote
+  spec:
+    endpoints:
+      - endpoint:
+          meta:
+            kind: http
+          spec:
+            functions: com.amazonaws.samples.statefun.fns/*
+            urlPathTemplate:  https://sw3dz2rl84.execute-api.us-east-1.amazonaws.com/prod/{function.name}
+    ingresses:
+      - ingress:
+          meta:
+            type: io.statefun.kinesis/ingress
+            id: com.amazonaws.samples.statefun/names
+          spec:
+            awsRegion:
+              type: specific
+              id: us-east-1
+              startupPosition:
+                type: latest
+            streams:
+              - stream: statefun-ingress
+                valueType: com.amazonaws.samples.statefun/GreetRequest
+                targets:
+                  - com.amazonaws.samples.statefun.fns/person
+    egresses:
+      - egress:
+          meta:
+            type: io.statefun.kinesis/egress
+            id: com.amazonaws.samples.statefun/greetings
+          spec:
+            awsRegion:
+              type: specific
+              id: us-east-1
+            streams:
+              - stream: statefun-egress
