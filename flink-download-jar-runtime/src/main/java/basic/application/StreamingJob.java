@@ -21,14 +21,8 @@
 
 package basic.application;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
@@ -42,18 +36,22 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSin
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
 import org.apache.flink.streaming.connectors.kinesis.config.AWSConfigConstants;
 import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -91,7 +89,7 @@ public class StreamingJob {
 	private static StreamingFileSink<String> createS3SinkFromStaticConfig(String s3SinkPath) {
 
 		final StreamingFileSink<String> sink = StreamingFileSink
-				.forRowFormat(new Path(s3SinkPath), new SimpleStringEncoder<String>("UTF-8"))
+				.forRowFormat(new org.apache.flink.core.fs.Path(s3SinkPath), new SimpleStringEncoder<String>("UTF-8"))
 				.withRollingPolicy(
 						DefaultRollingPolicy.builder()
 								.withRolloverInterval(TimeUnit.MINUTES.toMillis(1))
@@ -172,34 +170,24 @@ public class StreamingJob {
 	 * @throws IOException
 	 */
 	private static void downloadUserJars(String region, String userJarKey,String userJarFileURI, String userJarBucket) throws IOException {
-		AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-				.withRegion(region)
-				.withCredentials(new DefaultAWSCredentialsProviderChain())
+		Region aws_region = Region.of(region);
+
+		S3Client s3 = S3Client.builder()
+				.region(aws_region)
 				.build();
+
 		// Get an object and print its contents.
 		LOG.info("Downloading " + userJarKey);
 
-		S3Object fileObject = s3Client.getObject(new GetObjectRequest(userJarBucket, userJarKey));
-		InputStream in = new BufferedInputStream(fileObject.getObjectContent());
+		Path myFile = Paths.get(userJarFileURI);
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		GetObjectRequest request = GetObjectRequest.builder()
+				.bucket(userJarBucket)
+				.key(userJarKey)
+				.build();
 
-		byte[] buf = new byte[1024];
-
-		int n = 0;
-
-		while (-1 != (n = in.read(buf))) {
-
-			out.write(buf, 0, n);
-
-		}
-
-		out.close();
-		in.close();
-		byte[] response = out.toByteArray();
-		FileOutputStream fos = new FileOutputStream(userJarFileURI);
-		fos.write(response);
-		fos.close();
+		s3.getObject(request, myFile);
+		s3.close();
 	}
 
 	// you don't need this process function if the JAR you're downloading only needs to be referenced in the main method
