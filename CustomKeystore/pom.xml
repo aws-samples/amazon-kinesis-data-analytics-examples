@@ -34,12 +34,15 @@ under the License.
         <kda.runtime.version>1.2.0</kda.runtime.version>
         <java.version>11</java.version>
         <flink.version>1.15.2</flink.version>
+
+        <scala.binary.version>2.12</scala.binary.version>
+
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <dependencies>
-        <!-- KDA dependencies -->
+
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-kinesisanalytics-runtime</artifactId>
@@ -65,14 +68,6 @@ under the License.
     </dependencies>
 
     <build>
-
-        <!-- Pull in keystore as a resource -->
-        <resources>
-            <resource>
-                <directory>${basedir}/truststore</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
 
         <plugins>
 
