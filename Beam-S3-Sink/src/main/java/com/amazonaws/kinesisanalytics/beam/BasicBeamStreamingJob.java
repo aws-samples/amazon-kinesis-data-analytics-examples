@@ -34,8 +34,7 @@ public class BasicBeamStreamingJob {
     public static final String BEAM_APPLICATION_PROPERTIES = "BeamApplicationProperties";
 
     private static class DeserializeAvro extends DoFn<KinesisRecord, GenericRecord> {
-        private static final Logger LOG = LoggerFactory.getLogger(DeserializeAvro.class);
-        private static ObjectMapper jsonParser = new ObjectMapper();
+        private static final ObjectMapper jsonParser = new ObjectMapper();
 
         @ProcessElement
         public void processElement(ProcessContext c) throws Exception {
@@ -43,9 +42,9 @@ public class BasicBeamStreamingJob {
             byte[] payload = c.element().getDataAsBytes();
             JsonNode jsonNode = jsonParser.readValue(payload, JsonNode.class);
             TradeEvent output = TradeEvent.newBuilder()
-                    .setTICKER(jsonNode.get("TICKER").toString())
-                    .setEVENTTIME(jsonNode.get("EVENT_TIME").toString())
-                    .setPRICE(jsonNode.get("PRICE").doubleValue())
+                    .setTicker(jsonNode.get("ticker").toString())
+                    .setEventTime(jsonNode.get("event_time").toString())
+                    .setPrice(jsonNode.get("price").doubleValue())
                     .build();
             c.output(output);
         }
@@ -70,9 +69,8 @@ public class BasicBeamStreamingJob {
         options.setRunner(FlinkRunner.class);
 
         Regions region = Optional
-                .ofNullable(Regions.getCurrentRegion())
-                .map(r -> Regions.fromName(r.getName()))
-                .orElse(Regions.fromName(options.getAwsRegion()));
+                .ofNullable(Regions.fromName(options.getAwsRegion()))
+                .orElse(Regions.fromName(Regions.getCurrentRegion().getName()));
 
         PipelineOptionsValidator.validate(BasicBeamStreamingJobOptions.class, options);
         Pipeline p = Pipeline.create(options);

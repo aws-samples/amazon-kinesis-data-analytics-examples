@@ -34,7 +34,9 @@ under the License.
         <kda.runtime.version>1.2.0</kda.runtime.version>
         <java.version>11</java.version>
         <flink.version>1.15.2</flink.version>
+
         <scala.binary.version>2.12</scala.binary.version>
+
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
@@ -57,16 +59,6 @@ under the License.
         </dependency>
 
         <!-- Add connector dependencies here. They must be in the default scope (compile). -->
-
-        <!-- Example:
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka-0.10_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        -->
-
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
@@ -204,7 +196,7 @@ under the License.
                 </dependency>
                 <dependency>
                     <groupId>org.apache.flink</groupId>
-                    <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+                    <artifactId>flink-streaming-java</artifactId>
                     <version>${flink.version}</version>
                     <scope>compile</scope>
                 </dependency>
