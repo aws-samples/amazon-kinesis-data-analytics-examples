@@ -71,7 +71,7 @@ def perform_scaling(app_detail, kda_client, kda_appname, current_app_version):
     parallelism_config = flink_app_config["ParallelismConfigurationDescription"]
     parallelism = parallelism_config["Parallelism"]
     current_parallelism = parallelism_config["CurrentParallelism"]
-    if is_in_high_scale_period:
+    if is_in_high_scale_period():
         if current_parallelism != high_scale_kpu_count:
             scale_app(kda_client, kda_appname, current_app_version, high_scale_kpu_count)
         else:
