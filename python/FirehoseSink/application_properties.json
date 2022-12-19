@@ -1,0 +1,24 @@
+[
+  {
+  "PropertyGroupId": "kinesis.analytics.flink.run.options",
+  "PropertyMap": {
+    "python": "streaming-firehose-sink.py",
+    "jarfile": "target/aws-kinesis-analytics-python-apps-1.jar"
+   }
+  },
+  {
+    "PropertyGroupId": "consumer.config.0",
+    "PropertyMap": {
+      "input.stream.name": "ExampleInputStream",
+      "scan.stream.initpos": "LATEST",
+      "aws.region": "us-east-1"
+    }
+  },
+  {
+    "PropertyGroupId": "producer.config.0",
+    "PropertyMap": {
+      "output.stream.name": "ExampleOutputStream",
+      "aws.region": "us-east-1"
+    }
+  }
+]
