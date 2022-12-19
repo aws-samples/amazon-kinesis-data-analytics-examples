@@ -14,6 +14,10 @@ from pyflink.table import EnvironmentSettings, StreamTableEnvironment
 import os
 import json
 
+# 1. Creates a Table Environment
+env_settings = EnvironmentSettings.in_streaming_mode()
+table_env = StreamTableEnvironment.create(environment_settings=env_settings)
+
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
 
 is_local = (
@@ -93,10 +97,6 @@ def main():
 
     output_stream = output_property_map[output_stream_key]
     output_region = output_property_map[output_region_key]
-
-    # 1. Creates a Table Environment
-    env_settings = EnvironmentSettings.in_streaming_mode()
-    table_env = StreamTableEnvironment.create(environment_settings=env_settings)
 
     # 2. Creates a source table from a Kinesis Data Stream
     table_env.execute_sql(create_table(input_table_name, input_stream, input_region, stream_initpos))
