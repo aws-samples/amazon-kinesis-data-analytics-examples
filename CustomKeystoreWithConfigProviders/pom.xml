@@ -36,7 +36,7 @@ under the License.
 		<kda.runtime.version>1.2.0</kda.runtime.version>
 		<maven.compiler.source>1.11</maven.compiler.source>
 		<maven.compiler.target>1.11</maven.compiler.target>
-		<log4j.version>2.12.1</log4j.version>
+		<log4j.version>2.17.1</log4j.version>
 		<jackson.databind.version>2.13.4.2</jackson.databind.version>
 		<jackson.version>2.13.4</jackson.version>
 	</properties>
