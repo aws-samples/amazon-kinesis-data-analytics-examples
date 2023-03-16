@@ -1,0 +1,12 @@
+[
+  {
+    "PropertyGroupId": "FlinkApplicationProperties",
+    "PropertyMap": {
+      "input.stream": "testStream1",
+      "output.stream": "testStream2",
+      "stream.region": "eu-west-1",
+      "schema.registry.name": "avro-sample",
+      "schema.registry.region": "eu-west-1"
+    }
+  }
+]
