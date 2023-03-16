@@ -11,35 +11,24 @@ Of course, there's a bit more to it than the above 2 steps. For instance, we hav
 
 ## Deploying the schedule based scaler
 
-Please follow this detailed, step-by-step tutorial on using Amazon EventBridge to schedule an AWS Lambda function based on CRON syntax:
+Follow the instructions to deploy the scheduled based scaler in your AWS Account
 
-[Tutorial: Schedule AWS Lambda functions using EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-run-lambda-schedule.html)
+1. Clone this repository 
+2. Follow the Prerequisites and the Getting Started guide as described [here](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_prerequisites)
+3. Go into the scheduled-scaling-cdk directory
+4. Run ```CDK Bootstrap```
+5. This deployment of CDK takes CFN Parameters to define:
+   1. *kdaAppName*: The KDA Application that you want to scheduled scaling
+   2. *lowKPU*: The number of KPU during off peak
+   3. *highKPU*: The number of KPU during peak
+   4. *ScaleUpHour*: Time of the day to scale up the application
+   5. *ScaleDownHour*: Time of the day to scale down the application
+6. Run ```CDK Deploy``` with the defined parameters for example:
 
-For our purposes, you simply have to alter a couple of key details:
+```cdk deploy --parameters kdaAppName=my-flink-app --parameters highKPU=10 --parameters lowKPU=1 --parameters scaleUpHour=13 --parameters scaleDownHour=2```
 
-1. Replace the lambda function included in that tutorial with the Python 3 lambda function included in this sample: [kda-scaler-lambda.py](kda-scaler-lambda.py).
-2. Ensure that you give your AWS Lambda function permission to call `DescribeApplication` and `UpdateApplication` on your Kinesis Data Analytics application. In addition to any other permissions you might need for your AWS Lambda function, please add the permissions shown below (replacing the placeholders with yours):
-```
-{
-    "Sid": "MyKDAPermissions",
-    "Effect": "Allow",
-    "Action": [
-        "kinesisanalytics:UpdateApplication",
-        "kinesisanalytics:DescribeApplication"
-    ],
-    "Resource": [
-        "arn:aws:kinesisanalytics:[my-region]:[my-account-number]:application/[my-kda-app-name]"
-    ]
-},
-```
+This will scale the KDA Application my-flink-app at 13:00 everyday to 10 KPU and lower the application to 1 KPU at 2:00.
 
-## Configuring the schedule
-
-Amazon EventBridge supports standard cron expressions as described [here](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-create-rule-schedule.html). In this sample, we assume a scenario where we need to scale up our application to 20 KPUs during the daytime (US Pacific time) and scale down to 10 KPUs during nighttime (US Pacific time).
-
-In order to facilitate this, we could setup up our Amazon EventBridge scheduler to run our AWS Lambda scaler at *5:05AM PST* and *6:05PM PST* every day.
-
-Please keep in mind that this is just one possible scenario. You can use this sample as a starting point and implement more sophisticated scenarios based on your needs.
 
 ## Scaling logic
 
@@ -72,11 +61,11 @@ Please keep in mind that there are costs associated with the key components used
 
 1. Access denied exception of the form: `An error occurred (AccessDeniedException) when calling the DescribeApplication operation`.
 
-    Please ensure that you've given the role associated with your AWS Lambda function permissions to call `DescribeApplication` and `UpdateApplication` on your Kinesis Data Analytics application.
+   Please ensure that you've given the role associated with your AWS Lambda function permissions to call `DescribeApplication` and `UpdateApplication` on your Kinesis Data Analytics application.
 
 2. Kinesis Data Analytics application is not scaled unless it is running.
 
-    This is by design. The included Python code first checks to see if the Kinesis Data Analytics application is running and only updates the KPU count if the application has a status of RUNNING.
+   This is by design. The included Python code first checks to see if the Kinesis Data Analytics application is running and only updates the KPU count if the application has a status of RUNNING.
 
 ## References
 

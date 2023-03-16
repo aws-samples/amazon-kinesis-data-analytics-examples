@@ -1,20 +1,20 @@
 from datetime import datetime
 import boto3
+import os
 
 # Replace these values with yours
-my_region='us-east-2'
-my_kda_appname = 'app-kda-kafka-to-s3-zep'
+my_region= os.environ['REGION']
+my_kda_appname = os.environ['KDA_APP_NAME']
 
 # Replace these with values pertinent
 # to your scenario
-high_scale_start_hour = 13 # 5 am in PST
-high_scale_end_hour = 2 # 10 am in PST
-low_scale_kpu_count = 10
-high_scale_kpu_count = 20
-
+high_scale_start_hour = os.environ['SCALE_UP_HOUR'] # 5 am in PST
+high_scale_end_hour = os.environ['SCALE_DOWN_HOUR'] # 10 am in PST
+low_scale_kpu_count =os.environ['LOW_KPU']
+high_scale_kpu_count = os.environ['HIGH_KPU']
 
 # The main lambda handler
-def lambda_handler(event, context):
+def handler(event, context):
     try:
         check_and_perform_scaling()
         return True
@@ -26,7 +26,7 @@ def lambda_handler(event, context):
 def check_and_perform_scaling():
     # IMPORTANT: replace with your region
     kda = boto3.client('kinesisanalyticsv2', region_name=my_region)
-    
+
     status = ""
     current_app_version = -1
     response = kda.describe_application(ApplicationName=my_kda_appname)
@@ -38,14 +38,14 @@ def check_and_perform_scaling():
         else:
             print("Unable to get application status")
             return
-        
+
         if "ApplicationVersionId" in app_detail:
             current_app_version = app_detail["ApplicationVersionId"]
             print("Current app version: " + str(current_app_version))
         else:
             print("Unable to get current app version")
             return
-    
+
     if not status:
         print("Unable to get current app status. Not scaling.")
         return
@@ -53,7 +53,7 @@ def check_and_perform_scaling():
     if current_app_version <= 0:
         print("Unable to get current application version. Not scaling.")
         return
-    
+
     if status == "RUNNING":
         perform_scaling(app_detail, kda, my_kda_appname, current_app_version)
     else:
@@ -106,4 +106,4 @@ def scale_app(kda_client, kda_appname, current_app_version, kpu_count):
 
 
 if __name__ == "__main__":
-   lambda_handler(None, None)
+    lambda_handler(None, None)
