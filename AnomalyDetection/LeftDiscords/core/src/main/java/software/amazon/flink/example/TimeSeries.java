@@ -24,7 +24,7 @@ import java.util.List;
 
 public class TimeSeries implements Serializable {
 
-    private int size;
+    private int size = 0;
     private final int maxSize;
     private final int sequenceLength;
     private final int initializationPeriods;
@@ -33,8 +33,9 @@ public class TimeSeries implements Serializable {
 
     private int currentIndex;
 
+    private int timeSeriesIndex = 0;
+
     public TimeSeries(int contextWindowSize, int sequenceLength, int initializationPeriods) {
-        this.size = 0;
         this.sequenceLength = sequenceLength;
         this.maxSize = contextWindowSize*sequenceLength;
         this.initializationPeriods = initializationPeriods;
@@ -58,12 +59,16 @@ public class TimeSeries implements Serializable {
      *
      * @param element the element to be added
      */
-    public void add(Double element) {
+    public int add(Double element) {
         contextWindow.set(currentIndex, element);
 
         currentIndex = getIndex(currentIndex, 1);
 
         size = Math.min(size + 1, maxSize);
+
+        timeSeriesIndex += 1;
+
+        return this.timeSeriesIndex;
     }
 
     private int size() {

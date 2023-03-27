@@ -18,12 +18,7 @@
 
 package software.amazon.flink.example;
 
-import org.apache.flink.api.common.ExecutionConfig;
-import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.api.common.serialization.TypeInformationSerializationSchema;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.typeutils.runtime.PojoSerializer;
 import org.apache.flink.connector.kinesis.sink.KinesisStreamsSink;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -46,7 +41,7 @@ public class MPStreamingJob {
         return env.addSource(new FlinkKinesisConsumer<>(inputStreamName, new SimpleStringSchema(), inputProperties));
     }
 
-    private static KinesisStreamsSink<OutputWithLabel> getSink(ExecutionConfig executionConfig) {
+    private static KinesisStreamsSink<OutputWithLabel> getSink() {
         Properties outputProperties = new Properties();
         outputProperties.setProperty(AWSConfigConstants.AWS_REGION, region);
 
@@ -66,7 +61,7 @@ public class MPStreamingJob {
         SingleOutputStreamOperator<OutputWithLabel> DAMPDataStream = inputDataStream
                 .process(MPProcessFunction.withTimeSeriesPeriod(3));
 
-        DAMPDataStream.sinkTo(getSink(DAMPDataStream.getExecutionConfig()));
+        DAMPDataStream.sinkTo(getSink());
 
         env.execute("Matrix Profile streaming");
     }

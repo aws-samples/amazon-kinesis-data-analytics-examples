@@ -18,16 +18,25 @@
 
 package software.amazon.flink.example;
 
+import org.apache.flink.api.common.state.ListState;
+import org.apache.flink.api.common.state.ListStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.runtime.state.FunctionInitializationContext;
+import org.apache.flink.runtime.state.FunctionSnapshotContext;
+import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 
-public class MPProcessFunction extends ProcessFunction<String, OutputWithLabel> {
+public class MPProcessFunction extends ProcessFunction<String, OutputWithLabel> implements CheckpointedFunction {
 
-    private final TimeSeries timeSeriesData;
-    private int currentIndex = 0;
+    private transient ListState<TimeSeries> checkpointedTimeSeries;
+    private transient ListState<Threshold> checkpointedThreshold;
+
+    private TimeSeries timeSeriesData;
+    private Threshold threshold;
     private final int sequenceLength;
     private final int initializationPeriods;
-    private final Threshold threshold;
 
     private MPProcessFunction(int sequenceLength) {
         super();
@@ -47,7 +56,7 @@ public class MPProcessFunction extends ProcessFunction<String, OutputWithLabel> 
 
         Double record = Double.parseDouble(dataPoint);
 
-        timeSeriesData.add(record);
+        int currentIndex = timeSeriesData.add(record);
 
         Double minDistance = 0.0;
         String anomalyTag = "INITIALISING";
@@ -68,7 +77,41 @@ public class MPProcessFunction extends ProcessFunction<String, OutputWithLabel> 
         OutputWithLabel output = new OutputWithLabel(currentIndex, record, minDistance, anomalyTag);
 
         collector.collect(output);
+    }
 
-        currentIndex += 1;
+    @Override
+    public void snapshotState(FunctionSnapshotContext context) throws Exception {
+        checkpointedTimeSeries.clear();
+        checkpointedThreshold.clear();
+
+        checkpointedTimeSeries.add(this.timeSeriesData);
+        checkpointedThreshold.add(this.threshold);
+    }
+
+    @Override
+    public void initializeState(FunctionInitializationContext context) throws Exception {
+        ListStateDescriptor<TimeSeries> timeSeriesListStateDescriptor =
+                new ListStateDescriptor<>(
+                        "time-series-data",
+                        TypeInformation.of(new TypeHint<>() {}));
+
+        ListStateDescriptor<Threshold> thresholdListStateDescriptor =
+                new ListStateDescriptor<>(
+                        "threshold",
+                        TypeInformation.of(new TypeHint<>() {}));
+
+        checkpointedTimeSeries = context.getOperatorStateStore().getListState(timeSeriesListStateDescriptor);
+
+        checkpointedThreshold = context.getOperatorStateStore().getListState(thresholdListStateDescriptor);
+
+        if (context.isRestored()) {
+            for (TimeSeries timeSeriesCheckpointedData : checkpointedTimeSeries.get()) {
+                this.timeSeriesData = timeSeriesCheckpointedData;
+            }
+
+            for (Threshold threshold : checkpointedThreshold.get()) {
+                this.threshold = threshold;
+            }
+        }
     }
 }
