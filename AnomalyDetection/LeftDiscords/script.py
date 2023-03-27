@@ -51,5 +51,5 @@ def generate_from_dataset(stream_name, kinesis_client, filename):
         time.sleep(0.001)
 
 if __name__ == '__main__':
-    # generate_synthetic_data(STREAM_NAME, boto3.client('kinesis', region_name='us-east-1'))
-    generate_from_dataset(STREAM_NAME, boto3.client('kinesis', region_name='us-east-1'), './datasets/castironToSteel_36760.mat.csv')
+    generate_synthetic_data(STREAM_NAME, boto3.client('kinesis', region_name='us-east-1'))
+    # generate_from_dataset(STREAM_NAME, boto3.client('kinesis', region_name='us-east-1'), './datasets/dataset.mat.csv')
