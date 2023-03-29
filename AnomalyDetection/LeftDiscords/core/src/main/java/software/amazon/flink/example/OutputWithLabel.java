@@ -20,8 +20,8 @@ package software.amazon.flink.example;
 
 public class OutputWithLabel {
     public int index;
-    public Double input;
-    public Double mp;
+    public double input;
+    public double mp;
     public String anomalyTag;
 
     public OutputWithLabel() {}

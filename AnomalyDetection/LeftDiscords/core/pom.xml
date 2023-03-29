@@ -21,7 +21,7 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>software.amazon.flink.example</groupId>
-    <artifactId>matrixProfile</artifactId>
+    <artifactId>matrix-profile</artifactId>
     <version>1.0.0</version>
 
     <properties>
