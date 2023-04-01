@@ -10,8 +10,8 @@ public interface BasicBeamStreamingJobOptions extends FlinkPipelineOptions, AwsO
 
     void setInputStreamName(String value);
 
-    @Description("Name of the Kinesis Data Stream to write to")
-    String getOutputStreamName();
+    @Description("S3 location to write output to")
+    String getSinkLocation();
 
-    void setOutputStreamName(String value);
+    void setSinkLocation(String value);
 }

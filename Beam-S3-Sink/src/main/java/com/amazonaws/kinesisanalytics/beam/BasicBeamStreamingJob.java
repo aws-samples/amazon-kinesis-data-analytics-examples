@@ -26,7 +26,6 @@ import samples.trading.avro.TradeEvent;
 import software.amazon.kinesis.common.InitialPositionInStream;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 public class BasicBeamStreamingJob {
     public static final String BEAM_APPLICATION_PROPERTIES = "BeamApplicationProperties";
@@ -95,7 +94,7 @@ public class BasicBeamStreamingJob {
                                 .sink(TradeEvent.SCHEMA$)
                                 .withCompressionCodec(CompressionCodecName.SNAPPY)
                         )
-                        .to("s3://<YOUR S3 PREFIX>")
+                        .to(options.getSinkLocation())
                         .withSuffix(".parquet")
         );
 
