@@ -30,7 +30,7 @@ Download the code and update .java files with Kinesis Data Stream name, S3 bucke
 
 Change to corresponding application directory and build it by executing following:
 
-    mvn package -Dflink.version=1.15.3
+    mvn package -Dflink.version=1.15.4
 
 After running the above command, you should see the built jar file under the target/ folder.
  
@@ -42,8 +42,8 @@ Place jar files into the chosen S3 bucket and configure Kinesis Data Analytics a
 Start streaming data into Kinesis Data Stream and run first KDA application. After some minutes you should see parquet files and
 _delta_log folder were created /tickers folder in the S3 bucket.
 
-Let first application run and create another KDA application and configure its application code to point to .jar file that was 
-built from /DeltaSource folder. After some minutes you should see parquet files and
+Let first application run. Create another KDA application and configure its application code to point to .jar file that was 
+built from /DeltaSource folder. Run second KDA application, after some minutes you should see parquet files and
 _delta_log folder were created under /tickers_agg folder in the S3 bucket.
 
 

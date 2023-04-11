@@ -1,3 +1,5 @@
+package com.amazonaws;
+
 import java.util.Arrays;
 import java.text.SimpleDateFormat;
 import java.sql.Timestamp;

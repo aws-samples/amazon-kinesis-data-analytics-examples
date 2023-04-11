@@ -45,8 +45,6 @@ public class DeltaSourceStreamingJob
         DataStream<RowData> stream,
         Path deltaSinkTablePath,
         RowType rowType) {
-        String[] partitionCols = { "surname" };
-
 
         Configuration configuration = new Configuration();
         
@@ -79,7 +77,7 @@ public class DeltaSourceStreamingJob
                         .withTimestampAssigner((event, timestamp) -> event.f0);
         DataStream<RowData> aggStream = input.map(value -> {
             return new Tuple3<Long, String, Integer>(
-                    Long.valueOf(value.getTimestamp(0, 0).toTimestamp().getMinutes()),
+                    Long.valueOf(value.getTimestamp(0, 0).toTimestamp().getTime()),
                     value.getString(1).toString(),
                     value.getInt(2)
             );
