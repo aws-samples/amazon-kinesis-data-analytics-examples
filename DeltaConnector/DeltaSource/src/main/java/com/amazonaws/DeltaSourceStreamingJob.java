@@ -1,6 +1,9 @@
 package com.amazonaws;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.flink.api.java.tuple.Tuple3;
 import io.delta.flink.source.DeltaSource;
 import io.delta.flink.sink.DeltaSink;
@@ -22,11 +25,12 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 
 public class DeltaSourceStreamingJob
 {
-    private static final String sourceDeltaTablePath = "s3a://<bucket_name>/tickers";
-    private static final String targetDeltaTablePath = "s3a://<bucket_name>/tickers_agg";
+    private static final String DELTA_SOURCE_TABLE_PATH = "DeltaSourceTablePath";
+    private static final String DELTA_SINK_TABLE_PATH = "DeltaSinkTablePath";
 
     private static DataStream<RowData> createContinuousDeltaSourceAllColumns(
             StreamExecutionEnvironment env,
@@ -65,8 +69,13 @@ public class DeltaSourceStreamingJob
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
-        // Read data from source delta table
-        Path deltaSourcePath = new Path(sourceDeltaTablePath);
+        //Reading runtime properties
+        Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
+        Properties flinkProperties = applicationProperties.get("FlinkApplicationProperties");
+        Path deltaSourcePath = new Path(flinkProperties.get(DELTA_SOURCE_TABLE_PATH).toString());
+        Path deltaSinkPath = new Path(flinkProperties.get(DELTA_SINK_TABLE_PATH).toString());
+
+        // Stream data from source delta table
         DataStream<RowData> input = createContinuousDeltaSourceAllColumns(env, deltaSourcePath);
 
 
@@ -99,7 +108,6 @@ public class DeltaSourceStreamingJob
                 new RowType.RowField("ticker", new VarCharType(50)),
                 new RowType.RowField("max_price", new IntType())
         ));
-        Path deltaSinkPath = new Path(targetDeltaTablePath);
         createDeltaSink(aggStream, deltaSinkPath, rowType);
 
 

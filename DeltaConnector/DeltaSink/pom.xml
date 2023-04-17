@@ -18,9 +18,15 @@
         <hadoop-version>3.1.0</hadoop-version>
         <java.version>1.8</java.version>
         <flink.version>1.15.4</flink.version>
+        <kda.runtime.version>1.2.0</kda.runtime.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-kinesisanalytics-runtime</artifactId>
+            <version>${kda.runtime.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java</artifactId>

@@ -14,6 +14,8 @@ import org.apache.flink.table.types.logical.TimestampType;
 import org.apache.flink.table.data.StringData;
 import org.apache.flink.table.data.TimestampData;
 import org.apache.hadoop.conf.Configuration;
+
+import java.util.Map;
 import java.util.Properties;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.core.fs.Path;
@@ -23,20 +25,21 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
 import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
+import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 
 public class DeltaSinkStreamingJob
 {
-    private static final String region = "us-east-1";
-    private static final String inputStreamName = "ExampleInputStream";
-    private static final String deltaSinkPath = "s3a://<bucket_name>/tickers";
+    private static final String STREAM_REGION = "StreamRegion";
+    private static final String SOURCE_STREAM_NAME = "SourceStreamName";
+    private static final String DELTA_SINK_PATH = "DeltaSinkPath";
 
-    private static DataStream<String> createSourceFromStaticConfig(StreamExecutionEnvironment env, String inputStreamName) {
+    private static DataStream<String> createSourceFromStaticConfig(StreamExecutionEnvironment env, String sourceStreamName, String region) {
 
         Properties inputProperties = new Properties();
         inputProperties.setProperty(ConsumerConfigConstants.AWS_REGION, region);
         inputProperties.setProperty(ConsumerConfigConstants.STREAM_INITIAL_POSITION, "LATEST");
 
-        return env.addSource(new FlinkKinesisConsumer<>(inputStreamName,
+        return env.addSource(new FlinkKinesisConsumer<>(sourceStreamName,
                 new SimpleStringSchema(),
                 inputProperties));
     }
@@ -63,10 +66,18 @@ public class DeltaSinkStreamingJob
     {
         
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        //Reading runtime properties
+        Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
+        Properties flinkProperties = applicationProperties.get("FlinkApplicationProperties");
+        String sourceStreamName = flinkProperties.get(SOURCE_STREAM_NAME).toString();
+        String streamRegion = flinkProperties.get(STREAM_REGION).toString();
+        String deltaSinkPath = flinkProperties.get(DELTA_SINK_PATH).toString();
+
         
 
         //Create Kinesis Stream Source and parse incoming stream
-        DataStream<String> input = createSourceFromStaticConfig(env, inputStreamName);
+        DataStream<String> input = createSourceFromStaticConfig(env, sourceStreamName, streamRegion);
         ObjectMapper jsonParser = new ObjectMapper();
         DataStream<RowData> rowStream = input.map(value -> { // Parse the JSON
             JsonNode jsonNode = jsonParser.readValue(value, JsonNode.class);

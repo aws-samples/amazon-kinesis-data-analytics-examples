@@ -16,19 +16,33 @@ Application 2 Architecture Diagram (Delta Source)
 
 
 ## Setup
-
-Create a Kinesis data stream and start streaming random stock ticker data. Follow the instructions (https://docs.aws.amazon.com/code-library/latest/ug/kinesis-analytics-v2_example_kinesis-analytics-v2_DataGenerator_StockTicker_section.html)
+<ol>
+<li>Create a Kinesis data stream and start streaming random stock ticker data. Follow the instructions (https://docs.aws.amazon.com/code-library/latest/ug/kinesis-analytics-v2_example_kinesis-analytics-v2_DataGenerator_StockTicker_section.html)</li>
  
-
-Create an S3 bucket in the same region where Kinesis Data Analytics applications are running.
+<li>Create an S3 bucket in the same region where Kinesis Data Analytics applications are running.
 The bucket will be used to sink/source delta tables.
 
+<li>Create 2 Kinesis Data Analytics Application.</li> 
+For the first application add following Runtime Properties. Set group ID as FlinkApplicationProperties
+<ol>
+<li><b>StreamRegion</b> <i>Value of Kinesis Data Stream region</i></li>
+
+<li><b>SourceStreamName</b> <i>Name of the Kinesis Data Stream</i></li>
+
+<li><b>DeltaSinkPath</b> <i>S3 bucket path. Follow this format s3a://bucket_name/table_name</i></li>
+</ol>
+For the second application add following Runtime Properties. Set group ID for as FlinkApplicationProperties
+<ol>
+<li><b>DeltaSourceTablePath</b> <i>S3 bucket path for source Delta table. Follow this format s3a://bucket_name/table_name</i></li>
+<li><b>DeltaSinkTablePath</b> <i>S3 bucket path for sinking aggregated data. Follow this format s3a://bucket_name/table_name_2</i></li>
+</ol>
+</ol>
 
 ## Build
 
-Download the code and update .java files with Kinesis Data Stream name, S3 bucket name and region.
+Clone the repository.
 
-Change to corresponding application directory and build it by executing following:
+Change directory to corresponding application directories DeltaConnector/DeltaSource or DeltaConnector/DeltaSink and build applications by executing following:
 
     mvn package -Dflink.version=1.15.4
 
@@ -40,11 +54,11 @@ After running the above command, you should see the built jar file under the tar
 Place jar files into the chosen S3 bucket and configure Kinesis Data Analytics application code location to point to .jar file.
 
 Start streaming data into Kinesis Data Stream and run first KDA application. After some minutes you should see parquet files and
-_delta_log folder were created /tickers folder in the S3 bucket.
+_delta_log folder were created in the S3 location that was configured above (runtime properties).
 
 Let first application run. Create another KDA application and configure its application code to point to .jar file that was 
 built from /DeltaSource folder. Run second KDA application, after some minutes you should see parquet files and
-_delta_log folder were created under /tickers_agg folder in the S3 bucket.
+_delta_log folder were created in the S3 location that was configured above (runtime properties).
 
 
 
