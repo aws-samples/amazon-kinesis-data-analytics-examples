@@ -1,0 +1,365 @@
+---
+Resources:
+  markettradinganalyticsC9CD0013:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+      - Key: aws-cdk:auto-delete-objects
+        Value: 'true'
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: KdaStudioStack/markettradinganalytics/Resource
+  markettradinganalyticsPolicy519918B7:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: markettradinganalyticsC9CD0013
+      PolicyDocument:
+        Statement:
+        - Action:
+          - s3:DeleteObject*
+          - s3:GetBucket*
+          - s3:List*
+          Effect: Allow
+          Principal:
+            AWS:
+              Fn::GetAtt:
+              - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+              - Arn
+          Resource:
+          - Fn::GetAtt:
+            - markettradinganalyticsC9CD0013
+            - Arn
+          - Fn::Join:
+            - ''
+            - - Fn::GetAtt:
+                - markettradinganalyticsC9CD0013
+                - Arn
+              - "/*"
+        Version: '2012-10-17'
+    Metadata:
+      aws:cdk:path: KdaStudioStack/markettradinganalytics/Policy/Resource
+  markettradinganalyticsAutoDeleteObjectsCustomResourceAE8A4E8C:
+    Type: Custom::S3AutoDeleteObjects
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+        - CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F
+        - Arn
+      BucketName:
+        Ref: markettradinganalyticsC9CD0013
+    DependsOn:
+    - markettradinganalyticsPolicy519918B7
+    UpdateReplacePolicy: Delete
+    DeletionPolicy: Delete
+    Metadata:
+      aws:cdk:path: KdaStudioStack/markettradinganalytics/AutoDeleteObjectsCustomResource/Default
+  CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+      - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    Metadata:
+      aws:cdk:path: KdaStudioStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role
+  CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import logging
+          import json
+
+          from botocore.exceptions import ClientError
+
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+            logging.info("REQUEST RECEIVED:\n" + json.dumps(event))
+            response_data = {}
+            try:
+                bucket = event['ResourceProperties']['BucketName']
+
+                if event['RequestType'] == 'Delete':
+                    s3 = boto3.resource('s3')
+                    bucket = s3.Bucket(bucket)
+                    for obj in bucket.objects.filter():
+                        s3.Object(bucket.name, obj.key).delete()
+
+                print("Operation successful!")
+                cfnresponse.send(event,
+                                context,
+                                cfnresponse.SUCCESS,
+                                response_data)
+            except Exception as e:
+                print("Operation failed...")
+                print(str(e))
+                response_data['Data'] = str(e)
+                cfnresponse.send(event,
+                                context,
+                                cfnresponse.FAILED,
+                                response_data)
+      Timeout: 900
+      MemorySize: 128
+      Role:
+        Fn::GetAtt:
+        - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+        - Arn
+      Runtime: "python3.9"
+      Handler: index.lambda_handler
+      Description:
+        Fn::Join:
+        - ''
+        - - 'Lambda function for auto-deleting objects in '
+          - Ref: markettradinganalyticsC9CD0013
+          - " S3 bucket."
+    DependsOn:
+    - CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092
+    Metadata:
+      aws:cdk:path: KdaStudioStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler
+      aws:asset:path: asset.3f51abb709b8e65167a45aeed02bab11540603d909005d7148230ba5ce6c74d7
+      aws:asset:property: Code
+  TRADESOURCESTREAM:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: TRADE_SOURCE_STREAM
+      StreamModeDetails:
+        StreamMode: ON_DEMAND
+    Metadata:
+      aws:cdk:path: KdaStudioStack/TRADE_SOURCE_STREAM
+  MyCfnDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId:
+        Ref: AWS::AccountId
+      DatabaseInput:
+        Description: description
+        Name: kds-kda-test
+    Metadata:
+      aws:cdk:path: KdaStudioStack/MyCfnDatabase
+  kdaPolicyFCDBF5B1:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+        - Action:
+          - glue:CreateTable
+          - glue:DeleteTable
+          - glue:GetConnection
+          - glue:GetDatabase
+          - glue:GetDatabases
+          - glue:GetPartitions
+          - glue:GetTable
+          - glue:GetTables
+          - glue:GetUserDefinedFunction
+          - glue:UpdateTable
+          Effect: Allow
+          Resource:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:glue:'
+              - Ref: AWS::Region
+              - ":"
+              - Ref: AWS::AccountId
+              - ":*"
+        - Action: glue:GetDatabase
+          Effect: Allow
+          Resource: "*"
+        - Action:
+          - kinesis:GetRecords
+          - kinesis:GetShardIterator
+          - kinesis:ListShards
+          Effect: Allow
+          Resource:
+            Fn::GetAtt:
+            - TRADESOURCESTREAM
+            - Arn
+        Version: '2012-10-17'
+      Description: ''
+      Path: "/"
+    Metadata:
+      aws:cdk:path: KdaStudioStack/kdaPolicy/Resource
+  kdaRoleCD2CC497:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: kinesisanalytics.amazonaws.com
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+      - Ref: kdaPolicyFCDBF5B1
+    Metadata:
+      aws:cdk:path: KdaStudioStack/kdaRole/Resource
+  kdaRoleDefaultPolicy97D55A24:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+        - Action:
+          - s3:Abort*
+          - s3:DeleteObject*
+          - s3:GetBucket*
+          - s3:GetObject*
+          - s3:List*
+          - s3:PutObject
+          - s3:PutObjectLegalHold
+          - s3:PutObjectRetention
+          - s3:PutObjectTagging
+          - s3:PutObjectVersionTagging
+          Effect: Allow
+          Resource:
+          - Fn::GetAtt:
+            - markettradinganalyticsC9CD0013
+            - Arn
+          - Fn::Join:
+            - ''
+            - - Fn::GetAtt:
+                - markettradinganalyticsC9CD0013
+                - Arn
+              - "/*"
+        Version: '2012-10-17'
+      PolicyName: kdaRoleDefaultPolicy97D55A24
+      Roles:
+      - Ref: kdaRoleCD2CC497
+    Metadata:
+      aws:cdk:path: KdaStudioStack/kdaRole/DefaultPolicy/Resource
+  MarketDataFeedNotebook:
+    Type: AWS::KinesisAnalyticsV2::Application
+    Properties:
+      RuntimeEnvironment: ZEPPELIN-FLINK-2_0
+      ServiceExecutionRole:
+        Fn::GetAtt:
+        - kdaRoleCD2CC497
+        - Arn
+      ApplicationConfiguration:
+        FlinkApplicationConfiguration:
+          MonitoringConfiguration:
+            ConfigurationType: DEFAULT
+          ParallelismConfiguration:
+            ConfigurationType: CUSTOM
+            Parallelism: 4
+            ParallelismPerKPU: 1
+        ZeppelinApplicationConfiguration:
+          CatalogConfiguration:
+            GlueDataCatalogConfiguration:
+              DatabaseARN:
+                Fn::Join:
+                - ''
+                - - 'arn:aws:glue:'
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - ":database/kds-kda-test"
+          CustomArtifactsConfiguration:
+          - ArtifactType: DEPENDENCY_JAR
+            MavenReference:
+              ArtifactId: flink-sql-connector-kinesis_2.12
+              GroupId: org.apache.flink
+              Version: 1.13.2
+      ApplicationDescription: Studio notebook for market data feed
+      ApplicationMode: INTERACTIVE
+      ApplicationName: MarketDataFeedNotebook
+    Metadata:
+      aws:cdk:path: KdaStudioStack/MarketDataFeedNotebook
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/11P0W7CMAz8Ft7TMIr4AOheJ1XlAyaTep3XNEGxw1RV/DspQSvs6c539p1c6t1Ov63glwvT9oWlk56OAqZXSfqceKunQzQ9iqq+3INlqL0lMy5ynq+qJ4dMrJNxlIAwqM5GnMd3EDgBoyIY9PQBDjpsl5hXofEWZ/WOy9K/lnRiRyHDl3Ju2J/PyQYh766qiix+aJB9DCZn/fEXqw7+Qi0GtWdGSd935Dr1fFh511JOrUf59m691ZuNLlc/TFSE6IQG1E3GG3FwCW1TAQAA
+    Metadata:
+      aws:cdk:path: KdaStudioStack/CDKMetadata/Default
+    Condition: CDKMetadataAvailable
+Conditions:
+  CDKMetadataAvailable:
+    Fn::Or:
+    - Fn::Or:
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - af-south-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - ap-east-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - ap-northeast-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - ap-northeast-2
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - ap-south-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - ap-southeast-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - ap-southeast-2
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - ca-central-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - cn-north-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - cn-northwest-1
+    - Fn::Or:
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - eu-central-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - eu-north-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - eu-south-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - eu-west-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - eu-west-2
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - eu-west-3
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - me-south-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - sa-east-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - us-east-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - us-east-2
+    - Fn::Or:
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - us-west-1
+      - Fn::Equals:
+        - Ref: AWS::Region
+        - us-west-2
