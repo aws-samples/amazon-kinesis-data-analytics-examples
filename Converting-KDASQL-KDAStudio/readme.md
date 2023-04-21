@@ -10,12 +10,12 @@ Your objective is to change your data flow to use Amazon Kinesis Data Analytics 
 
 Here is the Amazon Kinesis Data Analytics SQL architectural flow:
 
-![Current Architecture](Current-Architecture-Latest.JPG)
+![Current Architecture](Current-Architecture-Latest.jpg)
 
 
 Our objective is to update the  architecture. Here you will replace Amazon Kinesis Data Firehose with Amazon Kinesis Data Streams. Amazon Kinesis Data Analytics for SQL Applications will be replaced by Amazon Kinesis Data Analytics Studio. Apache Flink code is run interactively within an Apache Zeppelin Notebook. Amazon Kinesis Data Analytics Studio sends the aggregated trade data to an Amazon S3 bucket for storage. 
 
-![To be Architecture](Future-Architecture-Latest.JPG)
+![To be Architecture](Future-Architecture-Latest.jpg)
 
 # Getting Started
 
