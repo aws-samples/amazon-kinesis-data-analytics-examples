@@ -30,6 +30,18 @@ For the first application add following Runtime Properties. Set group ID as Flin
 <li><b>SourceStreamName</b> <i>Name of the Kinesis Data Stream</i></li>
 
 <li><b>DeltaSinkPath</b> <i>S3 bucket path. Follow this format s3a://bucket_name/table_name</i></li>
+
+
+> #### Note: Delta Lake multi-cluster writes to Amazon S3 
+> First flink application uses Delta Lake multi-cluster writes to Amazon S3. 
+> </br> To achieve this functionality Delta Lake maintains a DynamoDB table. 
+> Therefore, your Kinesis Data Analytics application should have permissions on the DynamoDB table along with other permissions (S3, Kinesis Streams).
+> If not specified, DynamoDB table with name "delta_log" will be created, however, it's
+> strongly recommend that you create your DynamoDB table yourself. 
+> For more details see https://delta.io/blog/2022-05-18-multi-cluster-writes-to-delta-lake-storage-in-s3/.
+> </br> Following DynamoDB IAM permissions are necessary for the application to work:
+>>dynamodb:CreateTable </br> dynamodb:DescribeTable </br> dynamodb:GetItem
+</br>dynamodb:PutItem </br> dynamodb:Query
 </ol>
 For the second application add following Runtime Properties. Set group ID for as FlinkApplicationProperties
 <ol>
