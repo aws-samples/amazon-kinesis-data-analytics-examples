@@ -29,6 +29,7 @@ Set group ID as FlinkApplicationProperties
 <li><b>StreamRegion</b> <i>Value of Kinesis Data Stream region</i></li>
 <li><b>SourceStreamName</b> <i>Name of the Kinesis Data Stream</i></li>
 <li><b>DeltaSinkPath</b> <i>S3 bucket path. Follow this format s3a://bucket_name/table_name</i></li>
+</br>
 </ol>
 
 > #### Note: Delta Lake multi-cluster writes to Amazon S3
