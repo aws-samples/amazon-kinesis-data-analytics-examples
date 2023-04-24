@@ -22,20 +22,30 @@ Application 2 Architecture Diagram (Delta Source)
 <li>Create an S3 bucket in the same region where Kinesis Data Analytics applications are running.
 The bucket will be used to sink/source delta tables.
 
-<li>Create 2 Kinesis Data Analytics Application.</li> 
-For the first application add following Runtime Properties. Set group ID as FlinkApplicationProperties
+<li>Create 2 Kinesis Data Analytics Application.
+</br>For the first application add following Runtime Properties.
+Set group ID as FlinkApplicationProperties
 <ol>
 <li><b>StreamRegion</b> <i>Value of Kinesis Data Stream region</i></li>
-
 <li><b>SourceStreamName</b> <i>Name of the Kinesis Data Stream</i></li>
-
 <li><b>DeltaSinkPath</b> <i>S3 bucket path. Follow this format s3a://bucket_name/table_name</i></li>
+</br>
 </ol>
+
+> #### Note: Delta Lake multi-cluster writes to Amazon S3
+> First flink application uses Delta Lake multi-cluster writes to Amazon S3. 
+> </br> To achieve this functionality Delta Lake maintains a DynamoDB table. Therefore, your Kinesis Data Analytics application should have permissions on the DynamoDB table along with other permissions (S3, Kinesis Streams).
+> </br> This example relies on default behaviour in which DynamoDB table with "delta_log" name is created automatically.
+> For more details about the mulit-cluster writes functionality see <https://delta.io/blog/2022-05-18-multi-cluster-writes-to-delta-lake-storage-in-s3/>.
+> </br> Following DynamoDB IAM permissions will be necessary for the application to work:
+>>dynamodb:CreateTable </br> dynamodb:DescribeTable </br> dynamodb:GetItem</br>dynamodb:PutItem </br> dynamodb:Query
+
 For the second application add following Runtime Properties. Set group ID for as FlinkApplicationProperties
 <ol>
 <li><b>DeltaSourceTablePath</b> <i>S3 bucket path for source Delta table. Follow this format s3a://bucket_name/table_name</i></li>
 <li><b>DeltaSinkTablePath</b> <i>S3 bucket path for sinking aggregated data. Follow this format s3a://bucket_name/table_name_2</i></li>
 </ol>
+</li>
 </ol>
 
 ## Build
@@ -63,5 +73,5 @@ _delta_log folder were created in the S3 location that was configured above (run
 
 
 ## Resources
-
-https://github.com/delta-io/connectors/blob/master/flink/README.md
+<https://delta.io/blog/2022-05-18-multi-cluster-writes-to-delta-lake-storage-in-s3/>
+<https://github.com/delta-io/connectors/blob/master/flink/README.md>

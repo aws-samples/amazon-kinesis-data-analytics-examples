@@ -46,11 +46,12 @@ public class DeltaSinkStreamingJob
     private static DataStream<RowData> createDeltaSink(
         DataStream<RowData> stream,
         Path deltaPath,
-        RowType rowType) {
-        String[] partitionCols = { "surname" };
-
+        RowType rowType,
+        String region) {
 
         Configuration configuration = new Configuration();
+        configuration.set("spark.delta.logStore.s3a.impl", "io.delta.storage.S3DynamoDBLogStore");
+        configuration.set("spark.io.delta.storage.S3DynamoDBLogStore.ddb.region", region);
         DeltaSink<RowData> deltaSink = DeltaSink
             .forRowData(
             deltaPath,
@@ -101,7 +102,7 @@ public class DeltaSinkStreamingJob
                 new RowType.RowField("price", new IntType())
         ));
         Path deltaPath = new Path(deltaSinkPath);
-        createDeltaSink(rowStream, deltaPath, rowType);
+        createDeltaSink(rowStream, deltaPath, rowType, streamRegion);
         env.execute("Flink Example Delta Sink");
     }
 }

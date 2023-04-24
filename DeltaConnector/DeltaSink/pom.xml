@@ -22,6 +22,12 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/io.delta/delta-storage-s3-dynamodb -->
+        <dependency>
+            <groupId>io.delta</groupId>
+            <artifactId>delta-storage-s3-dynamodb</artifactId>
+            <version>2.3.0</version>
+        </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-kinesisanalytics-runtime</artifactId>
