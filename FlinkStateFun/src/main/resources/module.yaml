@@ -1,3 +1,17 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 version: "3.0"
 
 module:
@@ -10,31 +24,30 @@ module:
             kind: http
           spec:
             functions: com.amazonaws.samples.statefun.fns/*
-            urlPathTemplate:  https://sw3dz2rl84.execute-api.us-east-1.amazonaws.com/prod/{function.name}
+            urlPathTemplate:  https://{APIGATEWAY-PREFIX}.execute-api.us-east-1.amazonaws.com/prod/{function.name}
     ingresses:
       - ingress:
           meta:
-            type: io.statefun.kinesis/ingress
+            type: io.statefun.kafka/ingress
             id: com.amazonaws.samples.statefun/names
           spec:
-            awsRegion:
-              type: specific
-              id: us-east-1
-              startupPosition:
-                type: latest
-            streams:
-              - stream: statefun-ingress
+            address: { BOOTSTRAP ADDRESS }
+            consumerGroupId: flink-statefun-consumer-group
+
+            startupPosition:
+              type: earliest
+            topics:
+              - topic: greeter-ingress
                 valueType: com.amazonaws.samples.statefun/GreetRequest
                 targets:
                   - com.amazonaws.samples.statefun.fns/person
     egresses:
       - egress:
           meta:
-            type: io.statefun.kinesis/egress
+            type: io.statefun.kafka/egress
             id: com.amazonaws.samples.statefun/greetings
           spec:
-            awsRegion:
-              type: specific
-              id: us-east-1
-            streams:
-              - stream: statefun-egress
+            address: { BOOTSTRAP ADDRESS }
+            deliverySemantic:
+              type: exactly-once
+              transactionTimeoutMillis: 100000
