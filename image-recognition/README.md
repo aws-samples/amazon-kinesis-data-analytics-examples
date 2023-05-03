@@ -1,18 +1,18 @@
 # Image Recognition using Kinesis Data Analytics on Apahce Flink
 
-In this code sample, we leverage the [Deep Java Library](https://djl.ai/), an open source, high-level, engine agnostic Java framework for deep learning, in order to classify images using Apache Flink on Kinesis Data Analytics. 
+In this code sample, we leverage the [Deep Java Library](https://djl.ai/), an open source, high-level, engine agnostic Java framework for deep learning, in order to classify images using Apache Flink on Kinesis Data Analytics.
 
 ## Description
 
 ![Architecture](img/Picture1.png)
 
-This codebase leverages the Apache Flink [Filesystem Connector File Source](https://nightlies.apache.org/flink/flink-docs-master/docs/connectors/datastream/filesystem/#file-source) to read files from Amazon S3. 
+This codebase leverages the Apache Flink [Filesystem Connector File Source](https://nightlies.apache.org/flink/flink-docs-master/docs/connectors/datastream/filesystem/#file-source) to read files from Amazon S3.
 
 You can set the bucket this application reads by changing the variable called `bucket` in `EMI.java`, or setting the application property on Kinesis Data Analytics for Apache Flink once deployed.
 
 ```java
-final FileSource<StreamedImage> source = 
-        FileSource.forRecordStreamFormat(new ImageReaderFormat(), 
+final FileSource<StreamedImage> source =
+        FileSource.forRecordStreamFormat(new ImageReaderFormat(),
         new Path(s3SourcePath))
         .monitorContinuously(Duration.ofSeconds(10))
         .build();
@@ -23,7 +23,7 @@ The File Source is configured to read in files in the ImageReaderFormat, and wil
 Once we have read in our images, we then convert our FileSource into a stream that can be processed.
 
 ```java
-DataStream<StreamedImage> stream = 
+DataStream<StreamedImage> stream =
         env.fromSource(source, WatermarkStrategy.noWatermarks()
         "file-source");
 ```
@@ -34,7 +34,7 @@ for Apache Flink by using the application property image.buffer
 size, but is defaulted to 100 images at a time.
 
 ```java
-DataStream<List<StreamedImage>> listOfImagesStream = 
+DataStream<List<StreamedImage>> listOfImagesStream =
         stream.keyBy(x-> x.getId())
         .process(new CollectImagesInList(listOfImagesBufferSize));
 ```
@@ -54,7 +54,7 @@ In Classifier.java, we read the image and apply crop, transpose, reshape, and fi
 - Java 11
 - Maven
 - Apache Flink
-- 
+-
 ## Getting Started
 After cloning the application locally, you can create your application jar by navigating to the directory that contains your pom.xml and running the following command:
 
@@ -94,9 +94,10 @@ This CloudFormation Stack will launch:
 
 Pass our sample S3 bucket as an input into the CloudFormation Template, and provide your own S3 bucket as an output path, including an ending forward-slash.
 
-- inputBucketPath: <<Sample-Image-Bucket>>
-- outputBucketPath: s3://<<personal-bucket>>/ 
-**provide your own S3 Bucket as parameter**
+- `inputBucketPath`: `s3://<<sample-image-bucket>>`
+- `outputBucketPath`: `s3://<<personal-bucket>>/`
+
+**provide your own S3 Buckets as parameter**
 
 Once this stack completes launching, navigate to the Kinesis Data Analytics for Apache Flink console and find the application called blog-DJL-flink-ImageRecognition-application. Click on Run, then navigate to the Amazon S3 bucket you specified in the `outputBucketPath` variable. If you have readable in the source bucket listed, you should see classifications of those images within the checkpoint interval of the running application. See manual steps below for further steps to validate.
 
@@ -105,7 +106,7 @@ Once this stack completes launching, navigate to the Kinesis Data Analytics for 
 - Java 11
 - Maven
 - Apache Flink
--
+
 ## Getting Started
 After cloning the application locally, you can create your application jar by navigating to the directory that contains your pom.xml and running the following command:
 
