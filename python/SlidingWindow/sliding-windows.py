@@ -12,15 +12,15 @@ This module:
     5. These sliding window results are inserted into the Sink table.
 """
 
-from pyflink.table import EnvironmentSettings, StreamTableEnvironment
+from pyflink.table import EnvironmentSettings, StreamTableEnvironment, DataTypes
 from pyflink.table.window import Slide
+from pyflink.table.expressions import col, lit
+from pyflink.table.udf import udf
 import os
 import json
 
 # 1. Creates a Table Environment
-env_settings = (
-    EnvironmentSettings.new_instance().in_streaming_mode().use_blink_planner().build()
-)
+env_settings = EnvironmentSettings.in_streaming_mode()
 table_env = StreamTableEnvironment.create(environment_settings=env_settings)
 
 APPLICATION_PROPERTIES_FILE_PATH = "/etc/flink/application_properties.json"  # on kda
@@ -36,7 +36,7 @@ if is_local:
     CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
     table_env.get_config().get_configuration().set_string(
         "pipeline.jars",
-        "file:///" + CURRENT_DIR + "/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar",
+        "file:///" + CURRENT_DIR + "/lib/flink-sql-connector-kinesis-1.15.2.jar",
     )
 
 
@@ -56,27 +56,37 @@ def property_map(props, property_group_id):
             return prop["PropertyMap"]
 
 
-def create_table(table_name, stream_name, region, stream_initpos):
+def create_input_table(table_name, stream_name, region, stream_initpos):
     return """ CREATE TABLE {0} (
-                TICKER VARCHAR(6),
-                PRICE DOUBLE,
-                EVENT_TIME TIMESTAMP(3),
-                WATERMARK FOR EVENT_TIME AS EVENT_TIME - INTERVAL '5' SECOND
+                ticker VARCHAR(6),
+                price DOUBLE,
+                event_time TIMESTAMP(3),
+                WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
               )
-              PARTITIONED BY (TICKER)
+              PARTITIONED BY (ticker)
               WITH (
                 'connector' = 'kinesis',
                 'stream' = '{1}',
                 'aws.region' = '{2}',
                 'scan.stream.initpos' = '{3}',
-                'sink.partitioner-field-delimiter' = ';',
-                'sink.producer.collection-max-count' = '100',
-                'sink.producer.aggregation-enabled' = 'false',
                 'format' = 'json',
                 'json.timestamp-format.standard' = 'ISO-8601'
-              ) """.format(
-        table_name, stream_name, region, stream_initpos
-    )
+              ) """.format(table_name, stream_name, region, stream_initpos)
+
+def create_output_table(table_name, stream_name, region):
+    return """ CREATE TABLE {0} (
+                ticker VARCHAR(6),
+                price DOUBLE,
+                event_time VARCHAR(64)
+              )
+              PARTITIONED BY (ticker)
+              WITH (
+                'connector' = 'kinesis',
+                'stream' = '{1}',
+                'aws.region' = '{2}',
+                'format' = 'json',
+                'json.timestamp-format.standard' = 'ISO-8601'
+              ) """.format(table_name, stream_name, region)
 
 
 def perform_sliding_window_aggregation(input_table_name):
@@ -84,18 +94,26 @@ def perform_sliding_window_aggregation(input_table_name):
     input_table = table_env.from_path(input_table_name)
 
     sliding_window_table = (
-        input_table.window(
-            Slide.over("10.seconds")
-            .every("5.seconds")
-            .on("EVENT_TIME")
-            .alias("ten_second_window")
-        )
-        .group_by("TICKER, ten_second_window")
-        .select("TICKER, PRICE.min as PRICE, ten_second_window.end as EVENT_TIME")
+        input_table
+            .window(
+                Slide.over("10.seconds")
+                .every("5.seconds")
+                .on("event_time")
+                .alias("ten_second_window")
+            )
+            .group_by("ticker, ten_second_window")
+            .select("ticker, price.min as price, to_string(ten_second_window.end) as event_time")
     )
 
     return sliding_window_table
 
+
+@udf(input_types=[DataTypes.TIMESTAMP(3)], result_type=DataTypes.STRING())
+def to_string(i):
+    return str(i)
+
+
+table_env.create_temporary_system_function("to_string", to_string)
 
 def main():
     # Application Property Keys
@@ -104,7 +122,7 @@ def main():
 
     input_stream_key = "input.stream.name"
     input_region_key = "aws.region"
-    input_starting_position_key = "flink.stream.initpos"
+    input_starting_position_key = "scan.stream.initpos"
 
     output_stream_key = "output.stream.name"
     output_region_key = "aws.region"
@@ -127,14 +145,10 @@ def main():
     output_region = output_property_map[output_region_key]
 
     # 2. Creates a source table from a Kinesis Data Stream
-    table_env.execute_sql(
-        create_table(input_table_name, input_stream, input_region, stream_initpos)
-    )
+    table_env.execute_sql(create_input_table(input_table_name, input_stream, input_region, stream_initpos))
 
     # 3. Creates a sink table writing to a Kinesis Data Stream
-    table_env.execute_sql(
-        create_table(output_table_name, output_stream, output_region, stream_initpos)
-    )
+    table_env.execute_sql(create_output_table(output_table_name, output_stream, output_region))
 
     # 4. Queries from the Source Table and creates a sliding window over 10 seconds to calculate the minimum value
     # over the window.

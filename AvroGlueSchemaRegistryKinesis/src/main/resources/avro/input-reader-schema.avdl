@@ -1,0 +1,16 @@
+@namespace("com.amazonaws.services.kinesisanalytics.gsr.avro")
+protocol Trading {
+	enum BuySell {
+		BUY, SELL
+	}
+
+	record Trade {
+		string tradeId;
+		string accountNr;
+		timestamp_ms executionTime;
+		BuySell buySell;
+		string symbol;
+		decimal(8,2) price;
+		int shares;
+	}
+}

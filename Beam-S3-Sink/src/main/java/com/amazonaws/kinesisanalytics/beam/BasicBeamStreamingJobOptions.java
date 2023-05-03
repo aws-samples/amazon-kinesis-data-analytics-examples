@@ -1,7 +1,7 @@
 package com.amazonaws.kinesisanalytics.beam;
 
 import org.apache.beam.runners.flink.FlinkPipelineOptions;
-import org.apache.beam.sdk.io.aws.options.AwsOptions;
+import org.apache.beam.sdk.io.aws2.options.AwsOptions;
 import org.apache.beam.sdk.options.Description;
 
 public interface BasicBeamStreamingJobOptions extends FlinkPipelineOptions, AwsOptions {
@@ -10,8 +10,8 @@ public interface BasicBeamStreamingJobOptions extends FlinkPipelineOptions, AwsO
 
     void setInputStreamName(String value);
 
-    @Description("Name of the Kinesis Data Stream to write to")
-    String getOutputStreamName();
+    @Description("S3 location to write output to")
+    String getSinkLocation();
 
-    void setOutputStreamName(String value);
+    void setSinkLocation(String value);
 }
