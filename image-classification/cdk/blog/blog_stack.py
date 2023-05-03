@@ -38,7 +38,7 @@ class BlogStack(Stack):
         file_key = "artifacts/BDB-3098/embedded-model-inference-1.0-SNAPSHOT.jar"
 
         flink_app = flink.Application(self, "flink_blog_app",
-            application_name="blog-DJL-flink-ImageRecognition-application",
+            application_name="blog-DJL-flink-ImageClassification-application",
             code=flink.ApplicationCode.from_bucket(app_bucket, file_key),
             property_groups={
                 "appProperties": {

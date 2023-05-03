@@ -1,4 +1,4 @@
-# Image Recognition using Kinesis Data Analytics on Apahce Flink
+# Image Classification using Kinesis Data Analytics on Apahce Flink
 
 In this code sample, we leverage the [Deep Java Library](https://djl.ai/), an open source, high-level, engine agnostic Java framework for deep learning, in order to classify images using Apache Flink on Kinesis Data Analytics.
 
@@ -85,7 +85,7 @@ When we click on one of the data-partitioned folders, we will see partition file
 
 In order to run this codebase on Kinesis Data Analytics for Apache Flink, we have a helpful CloudFormation template that will spin up the necessary resources:
 
-[![Launch Stack](img/launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/BDB-3098/BlogStack.template.json&stackName=ImageRecognitionKDA&param_inputBucketPath=s3://aws-blogs-artifacts-public/artifacts/BDB-3098/images/)
+[![Launch Stack](img/launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/BDB-3098/BlogStack.template.json&stackName=ImageClassificationKDA&param_inputBucketPath=s3://aws-blogs-artifacts-public/artifacts/BDB-3098/images/)
 
 This CloudFormation Stack will launch:
 - A Kinesis Data Analytics Application with 1 Kinesis Processing Unit preconfigured with some application properties
@@ -99,7 +99,7 @@ Pass our sample S3 bucket as an input into the CloudFormation Template, and prov
 
 **provide your own S3 Buckets as parameter**
 
-Once this stack completes launching, navigate to the Kinesis Data Analytics for Apache Flink console and find the application called blog-DJL-flink-ImageRecognition-application. Click on Run, then navigate to the Amazon S3 bucket you specified in the `outputBucketPath` variable. If you have readable in the source bucket listed, you should see classifications of those images within the checkpoint interval of the running application. See manual steps below for further steps to validate.
+Once this stack completes launching, navigate to the Kinesis Data Analytics for Apache Flink console and find the application called blog-DJL-flink-ImageClassification-application. Click on Run, then navigate to the Amazon S3 bucket you specified in the `outputBucketPath` variable. If you have readable in the source bucket listed, you should see classifications of those images within the checkpoint interval of the running application. See manual steps below for further steps to validate.
 
 ### Dependencies
 
