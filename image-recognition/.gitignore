@@ -1,0 +1,6 @@
+target/
+plugins/
+*.log
+.idea/
+local-checkpoints/
+.DS_Store
