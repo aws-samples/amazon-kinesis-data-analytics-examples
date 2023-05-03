@@ -1,7 +1,7 @@
 package com.amazonaws.kinesisanalytics.beam;
 
 import org.apache.beam.runners.flink.FlinkPipelineOptions;
-import org.apache.beam.sdk.io.aws.options.AwsOptions;
+import org.apache.beam.sdk.io.aws2.options.AwsOptions;
 import org.apache.beam.sdk.options.Description;
 
 public interface BasicBeamStreamingJobOptions extends FlinkPipelineOptions, AwsOptions {

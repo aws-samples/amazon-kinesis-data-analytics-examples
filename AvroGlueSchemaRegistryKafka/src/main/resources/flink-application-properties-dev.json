@@ -1,0 +1,13 @@
+[
+  {
+    "PropertyGroupId": "FlinkApplicationProperties",
+    "PropertyMap": {
+      "bootstrap.servers": "localhost:29092",
+      "source.topic": "temperature-samples",
+      "source.consumer.group.id": "flink-avro-gsr",
+      "sink.topic": "room-temperatures",
+      "schema.registry.name": "avro-sample",
+      "schema.registry.region": "eu-west-1"
+    }
+  }
+]

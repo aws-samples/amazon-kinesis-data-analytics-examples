@@ -13,10 +13,9 @@
         private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
      
         public static Map<String, Object> convertJsonStringToMap(String inputString) throws IOException {
-            TypeReference<HashMap<String, Object>> typeReference = new TypeReference<HashMap<String, Object>>() {
+            TypeReference<HashMap<String, Object>> typeReference = new TypeReference<>() {
             };
-            Map<String, Object> jsonMapping = OBJECT_MAPPER.readValue(inputString, typeReference);
-            return jsonMapping;
+            return OBJECT_MAPPER.readValue(inputString, typeReference);
         }
      
         public static boolean isGreaterThanMinSpeed(String inputString) throws IOException {

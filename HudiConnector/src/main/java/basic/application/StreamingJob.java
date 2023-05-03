@@ -89,7 +89,7 @@ public class StreamingJob {
 
 		public static void createAndDeployJob(StreamExecutionEnvironment env, String kafkaTopic, String s3Path, Properties kafkaProperties)  {
 			StreamTableEnvironment streamTableEnvironment = StreamTableEnvironment.create(
-					env, EnvironmentSettings.newInstance().useBlinkPlanner().build());
+					env, EnvironmentSettings.newInstance().build());
 
 			Configuration configuration = streamTableEnvironment.getConfig().getConfiguration();
 			configuration.setString("execution.checkpointing.interval", "1 min");

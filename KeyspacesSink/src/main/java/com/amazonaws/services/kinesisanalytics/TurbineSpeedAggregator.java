@@ -1,5 +1,6 @@
 package com.amazonaws.services.kinesisanalytics;
 
+ import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
  import com.datastax.driver.core.Cluster;
  import com.datastax.driver.core.ConsistencyLevel;
  import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
@@ -18,13 +19,12 @@ package com.amazonaws.services.kinesisanalytics;
  import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
  import software.aws.mcs.auth.SigV4AuthProvider;
 
+ import java.util.Map;
  import java.util.Properties;
 
 public class TurbineSpeedAggregator {
-    private static final String region = "us-east-1";
-    private static final String inputStreamName = "ExampleInputStream";
 
-    private static DataStream<String> createSourceFromStaticConfig(StreamExecutionEnvironment env) {
+    private static DataStream<String> createSourceFromStaticConfig(StreamExecutionEnvironment env, String region, String inputStreamName) {
         Properties inputProperties = new Properties();
         inputProperties.setProperty(ConsumerConfigConstants.AWS_REGION, region);
         inputProperties.setProperty(ConsumerConfigConstants.STREAM_INITIAL_POSITION, "LATEST");
@@ -35,8 +35,11 @@ public class TurbineSpeedAggregator {
     public static void main(String[] args) throws Exception {
 
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        Map<String, Properties> applicationProperties = KinesisAnalyticsRuntime.getApplicationProperties();
+        String region = (String) applicationProperties.get("WindTurbineEnvironment").get("region");
+        String inputStreamName = (String) applicationProperties.get("WindTurbineEnvironment").get("inputStreamName");
 
-        DataStream<String> input = createSourceFromStaticConfig(env);
+        DataStream<String> input = createSourceFromStaticConfig(env, region, inputStreamName);
 
         DataStream<TurbineAggregatedRecord> result = input
                 .map(new WindTurbineInputMap())
@@ -57,7 +60,7 @@ public class TurbineSpeedAggregator {
                             @Override
                             public Cluster buildCluster(Cluster.Builder builder) {
                                 return builder
-                                        .addContactPoint("cassandra.us-east-1.amazonaws.com")
+                                        .addContactPoint("cassandra."+ region +".amazonaws.com")
                                         .withPort(9142)
                                         .withSSL()
                                         .withAuthProvider(new SigV4AuthProvider(region))

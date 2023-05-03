@@ -44,7 +44,7 @@ public class LambdaSinkJob {
 
         input.map(value -> { // Parse the JSON
                     JsonNode jsonNode = jsonParser.readValue(value, JsonNode.class);
-                    return new Tuple2<>(jsonNode.get("TICKER").toString(), 1);
+                    return new Tuple2<>(jsonNode.get("ticker").toString(), 1);
                 }).returns(Types.TUPLE(Types.STRING, Types.INT))
                 .keyBy(0) // Logically partition the stream for each word
                 // .timeWindow(Time.minutes(1)) // Tumbling window definition // Flink 1.11

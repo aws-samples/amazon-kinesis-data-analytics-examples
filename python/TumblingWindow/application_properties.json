@@ -3,22 +3,21 @@
           "PropertyGroupId": "kinesis.analytics.flink.run.options",
           "PropertyMap": {
             "python": "TumblingWindows/tumbling-windows.py",
-            "jarfile": "TumblingWindows/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar"
+            "jarfile": "TumblingWindows/lib/flink-sql-connector-kinesis-1.15.2.jar"
           }
         },
         {
           "PropertyGroupId": "consumer.config.0",
           "PropertyMap": {
-            "input.stream.name": "input-stream",
-            "flink.stream.initpos": "LATEST",
+            "input.stream.name": "ExampleInputStream",
+            "scan.stream.initpos": "LATEST",
             "aws.region": "us-east-1"
           }
         },
   {
     "PropertyGroupId": "producer.config.0",
     "PropertyMap": {
-      "output.stream.name": "output-stream",
-      "shard.count": "1",
+      "output.stream.name": "ExampleOutputStream",
       "aws.region": "us-east-1"
     }
   }]

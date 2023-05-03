@@ -1,0 +1,445 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "%flink.conf\nexecution.checkpointing.interval 5000\n\n",
+      "user": "anonymous",
+      "dateUpdated": "2023-04-12T14:44:45+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/text",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": []
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1678722016973_492032721",
+      "id": "paragraph_1677600031483_1879657214",
+      "dateCreated": "2023-03-13T15:40:16+0000",
+      "dateStarted": "2023-04-12T14:44:46+0000",
+      "dateFinished": "2023-04-12T14:44:46+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:250"
+    },
+    {
+      "text": "%flink.ssql\nDROP TABLE IF EXISTS  TRADE_SOURCE_STREAM;\nCREATE TABLE  TRADE_SOURCE_STREAM (\n--`arrival_time` TIMESTAMP(3) METADATA FROM 'timestamp' VIRTUAL,\nTRADE_TIME TIMESTAMP(3),\nWATERMARK FOR TRADE_TIME as TRADE_TIME - INTERVAL '5' SECOND,\nTICKER STRING, \nPRICE DOUBLE\n)\nWITH ('connector' = 'kinesis','stream' = 'TRADE_SOURCE_STREAM','aws.region' = 'us-east-1','scan.stream.initpos' = 'LATEST','format' = 'csv');\n",
+      "user": "anonymous",
+      "dateUpdated": "2023-04-12T14:44:48+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "editorHide": false,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Table has been dropped.\nTable has been created.\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1678722016982_1534157997",
+      "id": "paragraph_1671809140763_1377598191",
+      "dateCreated": "2023-03-13T15:40:16+0000",
+      "dateStarted": "2023-04-12T14:44:49+0000",
+      "dateFinished": "2023-04-12T14:45:33+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:251"
+    },
+    {
+      "text": "%flink.ssql(type=update)\n-- testing the source stream\nselect * from TRADE_SOURCE_STREAM;\n",
+      "user": "anonymous",
+      "dateUpdated": "2023-04-12T14:45:38+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "TRADE_TIME": "string",
+                      "TICKER": "string",
+                      "PRICE": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "TRADE_TIME\tTICKER\tPRICE\n2023-04-12 10:46:05.189\tMSFT\t683.0\n2023-04-12 10:46:05.189\tGOOGL\t907.0\n2023-04-12 10:46:05.189\tAMZN\t1820.0\n2023-04-12 10:46:05.189\tMETA\t844.0\n2023-04-12 10:46:05.189\tGOOGL\t596.0\n2023-04-12 10:46:05.189\tGOOGL\t913.0\n2023-04-12 10:46:05.189\tMETA\t593.0\n2023-04-12 10:46:05.189\tMSFT\t1856.0\n2023-04-12 10:46:05.189\tGOOGL\t1279.0\n2023-04-12 10:46:05.189\tAMZN\t695.0\n2023-04-12 10:46:05.189\tAAPL\t1931.0\n2023-04-12 10:46:05.189\tMSFT\t1556.0\n2023-04-12 10:46:05.189\tAAPL\t724.0\n2023-04-12 10:46:05.189\tGOOGL\t1159.0\n2023-04-12 10:46:05.189\tMSFT\t905.0\n2023-04-12 10:46:05.189\tMSFT\t191.0\n2023-04-12 10:46:05.189\tMSFT\t534.0\n2023-04-12 10:46:05.189\tAAPL\t958.0\n2023-04-12 10:46:05.189\tAMZN\t1502.0\n2023-04-12 10:46:05.19\tMSFT\t1515.0\n2023-04-12 10:46:05.19\tGOOGL\t1729.0\n2023-04-12 10:46:05.19\tGOOGL\t738.0\n2023-04-12 10:46:05.19\tGOOGL\t1918.0\n2023-04-12 10:46:05.19\tAAPL\t1321.0\n2023-04-12 10:46:05.19\tAMZN\t59.0\n2023-04-12 10:46:05.19\tAMZN\t336.0\n2023-04-12 10:46:05.19\tMETA\t435.0\n2023-04-12 10:46:05.19\tMETA\t1645.0\n2023-04-12 10:46:05.19\tMETA\t1918.0\n2023-04-12 10:46:05.19\tMETA\t1854.0\n2023-04-12 10:46:05.19\tAMZN\t365.0\n2023-04-12 10:46:05.191\tMSFT\t1611.0\n2023-04-12 10:46:05.191\tMETA\t93.0\n2023-04-12 10:46:05.191\tMSFT\t1502.0\n2023-04-12 10:46:05.191\tAAPL\t1860.0\n2023-04-12 10:46:05.191\tGOOGL\t223.0\n2023-04-12 10:46:05.191\tMSFT\t133.0\n2023-04-12 10:46:05.191\tMSFT\t1392.0\n2023-04-12 10:46:05.191\tMSFT\t987.0\n2023-04-12 10:46:05.191\tMSFT\t1415.0\n2023-04-12 10:46:05.191\tAMZN\t1229.0\n2023-04-12 10:46:05.191\tMETA\t1721.0\n2023-04-12 10:46:05.191\tAAPL\t868.0\n2023-04-12 10:46:05.191\tAAPL\t301.0\n2023-04-12 10:46:05.191\tMETA\t997.0\n2023-04-12 10:46:05.191\tAAPL\t1278.0\n2023-04-12 10:46:05.191\tGOOGL\t1701.0\n2023-04-12 10:46:05.191\tAMZN\t1234.0\n2023-04-12 10:46:05.191\tMETA\t1001.0\n2023-04-12 10:46:05.191\tGOOGL\t1984.0\n2023-04-12 10:46:05.191\tAMZN\t1021.0\n2023-04-12 10:46:05.191\tAAPL\t1621.0\n2023-04-12 10:46:05.191\tAMZN\t351.0\n2023-04-12 10:46:05.191\tAAPL\t997.0\n2023-04-12 10:46:05.192\tMETA\t1495.0\n2023-04-12 10:46:05.192\tMETA\t640.0\n2023-04-12 10:46:05.192\tMETA\t964.0\n2023-04-12 10:46:05.192\tGOOGL\t1945.0\n2023-04-12 10:46:05.192\tAAPL\t223.0\n2023-04-12 10:46:05.192\tMSFT\t1281.0\n2023-04-12 10:46:05.192\tAMZN\t1629.0\n2023-04-12 10:46:05.192\tAMZN\t1319.0\n2023-04-12 10:46:05.192\tMSFT\t1496.0\n2023-04-12 10:46:05.192\tMETA\t41.0\n2023-04-12 10:46:05.192\tMSFT\t1643.0\n2023-04-12 10:46:05.192\tMSFT\t1019.0\n2023-04-12 10:46:05.192\tAAPL\t1631.0\n2023-04-12 10:46:05.192\tMETA\t1462.0\n2023-04-12 10:46:05.192\tGOOGL\t544.0\n2023-04-12 10:46:05.192\tMSFT\t648.0\n2023-04-12 10:46:05.192\tAAPL\t1233.0\n2023-04-12 10:46:05.192\tAMZN\t1973.0\n2023-04-12 10:46:05.192\tAMZN\t1826.0\n2023-04-12 10:46:05.192\tGOOGL\t1762.0\n2023-04-12 10:46:05.192\tMSFT\t842.0\n2023-04-12 10:46:05.192\tMSFT\t293.0\n2023-04-12 10:46:05.192\tMSFT\t730.0\n2023-04-12 10:46:05.192\tGOOGL\t1983.0\n2023-04-12 10:46:05.193\tAMZN\t1825.0\n2023-04-12 10:46:05.193\tAMZN\t112.0\n2023-04-12 10:46:05.193\tMSFT\t974.0\n2023-04-12 10:46:05.193\tAAPL\t1642.0\n2023-04-12 10:46:05.193\tMSFT\t1605.0\n2023-04-12 10:46:05.193\tGOOGL\t1534.0\n2023-04-12 10:46:05.193\tMETA\t1057.0\n2023-04-12 10:46:05.193\tMETA\t1442.0\n2023-04-12 10:46:05.193\tAAPL\t749.0\n2023-04-12 10:46:05.193\tMSFT\t1314.0\n2023-04-12 10:46:05.193\tAAPL\t40.0\n2023-04-12 10:46:05.193\tMSFT\t1629.0\n2023-04-12 10:46:05.193\tMSFT\t1775.0\n2023-04-12 10:46:05.193\tMSFT\t1987.0\n2023-04-12 10:46:05.193\tAAPL\t1653.0\n2023-04-12 10:46:05.193\tMETA\t1987.0\n2023-04-12 10:46:05.193\tGOOGL\t238.0\n2023-04-12 10:46:05.193\tMSFT\t395.0\n2023-04-12 10:46:05.193\tGOOGL\t1985.0\n2023-04-12 10:46:05.193\tGOOGL\t1627.0\n2023-04-12 10:46:05.193\tMSFT\t1574.0\n2023-04-12 10:46:05.193\tGOOGL\t1548.0\n2023-04-12 10:46:06.209\tMETA\t800.0\n2023-04-12 10:46:06.209\tMETA\t1483.0\n2023-04-12 10:46:06.209\tMSFT\t208.0\n2023-04-12 10:46:06.209\tMSFT\t1413.0\n2023-04-12 10:46:06.209\tMSFT\t730.0\n2023-04-12 10:46:06.209\tMSFT\t572.0\n2023-04-12 10:46:06.209\tMETA\t1600.0\n2023-04-12 10:46:06.209\tMETA\t461.0\n2023-04-12 10:46:06.209\tAAPL\t1703.0\n2023-04-12 10:46:06.209\tMSFT\t10.0\n2023-04-12 10:46:06.209\tAMZN\t1535.0\n2023-04-12 10:46:06.209\tMSFT\t752.0\n2023-04-12 10:46:06.209\tGOOGL\t1679.0\n2023-04-12 10:46:06.209\tAAPL\t1599.0\n2023-04-12 10:46:06.209\tAAPL\t1310.0\n2023-04-12 10:46:06.209\tMETA\t458.0\n2023-04-12 10:46:06.209\tMSFT\t1510.0\n2023-04-12 10:46:06.209\tMETA\t845.0\n2023-04-12 10:46:06.21\tGOOGL\t364.0\n2023-04-12 10:46:06.21\tAAPL\t1391.0\n2023-04-12 10:46:06.21\tGOOGL\t453.0\n2023-04-12 10:46:06.21\tMETA\t700.0\n2023-04-12 10:46:06.21\tGOOGL\t1762.0\n2023-04-12 10:46:06.21\tAAPL\t247.0\n2023-04-12 10:46:06.21\tAAPL\t1724.0\n2023-04-12 10:46:06.21\tMETA\t730.0\n2023-04-12 10:46:06.21\tMSFT\t1051.0\n2023-04-12 10:46:06.21\tMSFT\t1158.0\n2023-04-12 10:46:06.21\tGOOGL\t185.0\n2023-04-12 10:46:06.21\tAAPL\t644.0\n2023-04-12 10:46:06.21\tMSFT\t65.0\n2023-04-12 10:46:06.21\tAMZN\t1508.0\n2023-04-12 10:46:06.21\tGOOGL\t701.0\n2023-04-12 10:46:06.21\tMETA\t989.0\n2023-04-12 10:46:06.21\tAAPL\t1870.0\n2023-04-12 10:46:06.21\tAAPL\t341.0\n2023-04-12 10:46:06.21\tGOOGL\t428.0\n2023-04-12 10:46:06.21\tGOOGL\t442.0\n2023-04-12 10:46:06.21\tAAPL\t932.0\n2023-04-12 10:46:06.21\tMETA\t281.0\n2023-04-12 10:46:06.21\tMETA\t649.0\n2023-04-12 10:46:06.21\tAAPL\t1426.0\n2023-04-12 10:46:06.21\tGOOGL\t967.0\n2023-04-12 10:46:06.21\tAMZN\t319.0\n2023-04-12 10:46:06.21\tAMZN\t1273.0\n2023-04-12 10:46:06.21\tMSFT\t1860.0\n2023-04-12 10:46:06.21\tGOOGL\t1578.0\n2023-04-12 10:46:06.21\tAMZN\t1045.0\n2023-04-12 10:46:06.21\tAMZN\t1694.0\n2023-04-12 10:46:06.21\tGOOGL\t1723.0\n2023-04-12 10:46:06.21\tAMZN\t1012.0\n2023-04-12 10:46:06.21\tAMZN\t1507.0\n2023-04-12 10:46:06.21\tAMZN\t74.0\n2023-04-12 10:46:06.21\tMETA\t1579.0\n2023-04-12 10:46:06.21\tMETA\t716.0\n2023-04-12 10:46:06.21\tGOOGL\t41.0\n2023-04-12 10:46:06.211\tMSFT\t1849.0\n2023-04-12 10:46:06.211\tMETA\t1217.0\n2023-04-12 10:46:06.211\tMETA\t1748.0\n2023-04-12 10:46:06.211\tMSFT\t350.0\n2023-04-12 10:46:06.211\tGOOGL\t282.0\n2023-04-12 10:46:06.211\tMSFT\t1386.0\n2023-04-12 10:46:06.211\tMSFT\t607.0\n2023-04-12 10:46:06.211\tGOOGL\t462.0\n2023-04-12 10:46:06.211\tAMZN\t608.0\n2023-04-12 10:46:06.211\tMETA\t726.0\n2023-04-12 10:46:06.211\tGOOGL\t1712.0\n2023-04-12 10:46:06.211\tAMZN\t792.0\n2023-04-12 10:46:06.211\tAMZN\t1784.0\n2023-04-12 10:46:06.211\tMSFT\t1354.0\n2023-04-12 10:46:06.211\tAAPL\t344.0\n2023-04-12 10:46:06.211\tMETA\t1071.0\n2023-04-12 10:46:06.211\tMSFT\t1674.0\n2023-04-12 10:46:06.211\tAMZN\t397.0\n2023-04-12 10:46:06.212\tGOOGL\t939.0\n2023-04-12 10:46:06.212\tGOOGL\t875.0\n2023-04-12 10:46:06.212\tAMZN\t1019.0\n2023-04-12 10:46:06.212\tGOOGL\t1641.0\n2023-04-12 10:46:06.212\tMETA\t184.0\n2023-04-12 10:46:06.212\tAMZN\t348.0\n2023-04-12 10:46:06.212\tMSFT\t703.0\n2023-04-12 10:46:06.212\tAMZN\t293.0\n2023-04-12 10:46:06.212\tMSFT\t682.0\n2023-04-12 10:46:06.212\tMETA\t1243.0\n2023-04-12 10:46:06.212\tAMZN\t1165.0\n2023-04-12 10:46:06.212\tAAPL\t1245.0\n2023-04-12 10:46:06.212\tAAPL\t1922.0\n2023-04-12 10:46:06.212\tGOOGL\t1988.0\n2023-04-12 10:46:06.212\tAMZN\t865.0\n2023-04-12 10:46:06.212\tMSFT\t1707.0\n2023-04-12 10:46:06.212\tMSFT\t1742.0\n2023-04-12 10:46:06.212\tAMZN\t1478.0\n2023-04-12 10:46:06.212\tAMZN\t1617.0\n2023-04-12 10:46:06.212\tGOOGL\t787.0\n2023-04-12 10:46:06.212\tMETA\t86.0\n2023-04-12 10:46:06.212\tMSFT\t556.0\n2023-04-12 10:46:06.212\tMSFT\t1691.0\n2023-04-12 10:46:06.212\tAAPL\t966.0\n2023-04-12 10:46:06.213\tMETA\t1293.0\n2023-04-12 10:46:06.213\tMETA\t648.0\n2023-04-12 10:46:08.235\tAMZN\t1024.0\n2023-04-12 10:46:08.235\tMSFT\t907.0\n2023-04-12 10:46:08.235\tMETA\t1212.0\n2023-04-12 10:46:08.235\tMETA\t1858.0\n2023-04-12 10:46:08.235\tMSFT\t1504.0\n2023-04-12 10:46:08.235\tMETA\t367.0\n2023-04-12 10:46:08.235\tAAPL\t1059.0\n2023-04-12 10:46:08.235\tMSFT\t1359.0\n2023-04-12 10:46:08.235\tMSFT\t808.0\n2023-04-12 10:46:08.235\tAMZN\t1386.0\n2023-04-12 10:46:08.235\tMSFT\t204.0\n2023-04-12 10:46:08.235\tAAPL\t1156.0\n2023-04-12 10:46:08.235\tAMZN\t781.0\n2023-04-12 10:46:08.235\tAAPL\t1305.0\n2023-04-12 10:46:08.235\tAMZN\t1788.0\n2023-04-12 10:46:08.235\tAAPL\t1949.0\n2023-04-12 10:46:08.235\tGOOGL\t591.0\n2023-04-12 10:46:08.235\tAMZN\t287.0\n2023-04-12 10:46:08.235\tMETA\t179.0\n2023-04-12 10:46:08.235\tMETA\t667.0\n2023-04-12 10:46:08.235\tMETA\t1874.0\n2023-04-12 10:46:08.235\tMETA\t1582.0\n2023-04-12 10:46:08.235\tAAPL\t1594.0\n2023-04-12 10:46:08.235\tAAPL\t1673.0\n2023-04-12 10:46:08.235\tAAPL\t1683.0\n2023-04-12 10:46:08.235\tGOOGL\t764.0\n2023-04-12 10:46:08.235\tAMZN\t1311.0\n2023-04-12 10:46:08.235\tAMZN\t1888.0\n2023-04-12 10:46:08.235\tGOOGL\t1095.0\n2023-04-12 10:46:08.235\tMSFT\t570.0\n2023-04-12 10:46:08.236\tMETA\t1223.0\n2023-04-12 10:46:08.236\tMSFT\t268.0\n2023-04-12 10:46:08.236\tAAPL\t1407.0\n2023-04-12 10:46:08.236\tMSFT\t525.0\n2023-04-12 10:46:08.236\tAMZN\t525.0\n2023-04-12 10:46:08.236\tAMZN\t1421.0\n2023-04-12 10:46:08.236\tAAPL\t1240.0\n2023-04-12 10:46:08.236\tMSFT\t1509.0\n2023-04-12 10:46:08.236\tGOOGL\t1990.0\n2023-04-12 10:46:08.236\tAMZN\t848.0\n2023-04-12 10:46:08.236\tAMZN\t414.0\n2023-04-12 10:46:08.236\tGOOGL\t1865.0\n2023-04-12 10:46:08.236\tMETA\t1653.0\n2023-04-12 10:46:08.236\tAAPL\t1528.0\n2023-04-12 10:46:08.236\tAMZN\t910.0\n2023-04-12 10:46:08.236\tGOOGL\t1878.0\n2023-04-12 10:46:08.236\tGOOGL\t1779.0\n2023-04-12 10:46:08.236\tGOOGL\t1448.0\n2023-04-12 10:46:08.236\tAMZN\t341.0\n2023-04-12 10:46:08.236\tAAPL\t1161.0\n2023-04-12 10:46:08.236\tMSFT\t547.0\n2023-04-12 10:46:08.236\tGOOGL\t674.0\n2023-04-12 10:46:08.236\tGOOGL\t1469.0\n2023-04-12 10:46:08.236\tAAPL\t389.0\n2023-04-12 10:46:08.236\tMETA\t671.0\n2023-04-12 10:46:08.236\tAMZN\t906.0\n2023-04-12 10:46:08.236\tMSFT\t731.0\n2023-04-12 10:46:08.236\tGOOGL\t540.0\n2023-04-12 10:46:08.236\tMSFT\t1389.0\n2023-04-12 10:46:08.236\tAAPL\t830.0\n2023-04-12 10:46:08.236\tMSFT\t1709.0\n2023-04-12 10:46:08.236\tAAPL\t164.0\n2023-04-12 10:46:08.236\tAMZN\t894.0\n2023-04-12 10:46:08.236\tMETA\t311.0\n2023-04-12 10:46:08.236\tAMZN\t447.0\n2023-04-12 10:46:08.236\tMSFT\t244.0\n2023-04-12 10:46:08.236\tMSFT\t820.0\n2023-04-12 10:46:08.236\tMETA\t868.0\n2023-04-12 10:46:08.236\tMSFT\t234.0\n2023-04-12 10:46:08.236\tMSFT\t1645.0\n2023-04-12 10:46:08.236\tAMZN\t29.0\n2023-04-12 10:46:08.236\tMSFT\t1970.0\n2023-04-12 10:46:08.236\tMSFT\t1234.0\n2023-04-12 10:46:08.236\tAMZN\t137.0\n2023-04-12 10:46:08.236\tGOOGL\t474.0\n2023-04-12 10:46:08.236\tMETA\t205.0\n2023-04-12 10:46:08.236\tMSFT\t74.0\n2023-04-12 10:46:08.236\tAAPL\t953.0\n2023-04-12 10:46:08.236\tAMZN\t429.0\n2023-04-12 10:46:08.236\tGOOGL\t20.0\n2023-04-12 10:46:08.237\tMSFT\t1931.0\n2023-04-12 10:46:08.237\tAMZN\t495.0\n2023-04-12 10:46:08.237\tAMZN\t95.0\n2023-04-12 10:46:08.237\tGOOGL\t1946.0\n2023-04-12 10:46:08.237\tGOOGL\t1945.0\n2023-04-12 10:46:08.237\tGOOGL\t336.0\n2023-04-12 10:46:08.237\tMETA\t518.0\n2023-04-12 10:46:08.237\tMETA\t758.0\n2023-04-12 10:46:08.237\tAMZN\t222.0\n2023-04-12 10:46:08.237\tMETA\t1916.0\n2023-04-12 10:46:08.237\tMSFT\t675.0\n2023-04-12 10:46:08.237\tMSFT\t1808.0\n2023-04-12 10:46:08.237\tAMZN\t156.0\n2023-04-12 10:46:08.237\tMETA\t93.0\n2023-04-12 10:46:08.237\tAMZN\t570.0\n2023-04-12 10:46:08.237\tAMZN\t670.0\n2023-04-12 10:46:08.237\tAAPL\t1282.0\n2023-04-12 10:46:08.237\tMETA\t427.0\n2023-04-12 10:46:08.237\tAMZN\t545.0\n2023-04-12 10:46:08.238\tMETA\t542.0\n2023-04-12 10:46:09.257\tAAPL\t212.0\n2023-04-12 10:46:09.257\tGOOGL\t966.0\n2023-04-12 10:46:09.257\tAMZN\t727.0\n2023-04-12 10:46:09.257\tAMZN\t1263.0\n2023-04-12 10:46:09.257\tAMZN\t1383.0\n2023-04-12 10:46:09.257\tMSFT\t1076.0\n2023-04-12 10:46:09.257\tAMZN\t1779.0\n2023-04-12 10:46:09.257\tMETA\t831.0\n2023-04-12 10:46:09.257\tMSFT\t331.0\n2023-04-12 10:46:09.257\tGOOGL\t1449.0\n2023-04-12 10:46:09.257\tMETA\t512.0\n2023-04-12 10:46:09.258\tAMZN\t532.0\n2023-04-12 10:46:09.258\tMETA\t1461.0\n2023-04-12 10:46:09.258\tAMZN\t1783.0\n2023-04-12 10:46:09.258\tMSFT\t1313.0\n2023-04-12 10:46:09.258\tMSFT\t1930.0\n2023-04-12 10:46:09.258\tMSFT\t916.0\n2023-04-12 10:46:09.258\tMSFT\t783.0\n2023-04-12 10:46:09.258\tMETA\t1764.0\n2023-04-12 10:46:09.258\tMETA\t607.0\n2023-04-12 10:46:09.258\tAAPL\t1115.0\n2023-04-12 10:46:09.258\tAAPL\t1835.0\n2023-04-12 10:46:09.258\tAAPL\t1086.0\n2023-04-12 10:46:09.258\tMSFT\t752.0\n2023-04-12 10:46:09.258\tAMZN\t1725.0\n2023-04-12 10:46:09.258\tGOOGL\t1461.0\n2023-04-12 10:46:09.258\tAMZN\t740.0\n2023-04-12 10:46:09.258\tMETA\t328.0\n2023-04-12 10:46:09.258\tMSFT\t1949.0\n2023-04-12 10:46:09.258\tAMZN\t1604.0\n2023-04-12 10:46:09.258\tMSFT\t1498.0\n2023-04-12 10:46:09.258\tGOOGL\t723.0\n2023-04-12 10:46:09.258\tAAPL\t582.0\n2023-04-12 10:46:09.258\tAMZN\t556.0\n2023-04-12 10:46:09.258\tMSFT\t1328.0\n2023-04-12 10:46:09.258\tMETA\t23.0\n2023-04-12 10:46:09.258\tAAPL\t1559.0\n2023-04-12 10:46:09.258\tAAPL\t1972.0\n2023-04-12 10:46:09.258\tMETA\t928.0\n2023-04-12 10:46:09.258\tGOOGL\t1923.0\n2023-04-12 10:46:09.258\tGOOGL\t1577.0\n2023-04-12 10:46:09.258\tAAPL\t195.0\n2023-04-12 10:46:09.258\tAAPL\t986.0\n2023-04-12 10:46:09.258\tMETA\t1478.0\n2023-04-12 10:46:09.258\tGOOGL\t1511.0\n2023-04-12 10:46:09.258\tAMZN\t474.0\n2023-04-12 10:46:09.258\tAMZN\t259.0\n2023-04-12 10:46:09.258\tAAPL\t239.0\n2023-04-12 10:46:09.258\tAAPL\t1513.0\n2023-04-12 10:46:09.258\tGOOGL\t923.0\n2023-04-12 10:46:09.258\tMETA\t239.0\n2023-04-12 10:46:09.258\tMSFT\t1634.0\n2023-04-12 10:46:09.258\tAMZN\t1521.0\n2023-04-12 10:46:09.258\tMSFT\t1345.0\n2023-04-12 10:46:09.258\tGOOGL\t135.0\n2023-04-12 10:46:09.258\tAMZN\t138.0\n2023-04-12 10:46:09.258\tGOOGL\t1037.0\n2023-04-12 10:46:09.258\tAAPL\t528.0\n2023-04-12 10:46:09.258\tMETA\t1005.0\n2023-04-12 10:46:09.258\tMSFT\t1647.0\n2023-04-12 10:46:09.258\tMSFT\t1010.0\n2023-04-12 10:46:09.258\tMSFT\t1633.0\n2023-04-12 10:46:09.258\tMETA\t908.0\n2023-04-12 10:46:09.258\tAMZN\t1017.0\n2023-04-12 10:46:09.258\tAMZN\t1263.0\n2023-04-12 10:46:09.258\tAMZN\t1777.0\n2023-04-12 10:46:09.258\tMSFT\t1137.0\n2023-04-12 10:46:09.258\tMETA\t1194.0\n2023-04-12 10:46:09.258\tMSFT\t693.0\n2023-04-12 10:46:09.258\tAMZN\t609.0\n2023-04-12 10:46:09.258\tMETA\t1071.0\n2023-04-12 10:46:09.258\tGOOGL\t1004.0\n2023-04-12 10:46:09.258\tGOOGL\t660.0\n2023-04-12 10:46:09.258\tGOOGL\t1448.0\n2023-04-12 10:46:09.258\tMSFT\t795.0\n2023-04-12 10:46:09.258\tAMZN\t4.0\n2023-04-12 10:46:09.258\tGOOGL\t1920.0\n2023-04-12 10:46:09.258\tMSFT\t1959.0\n2023-04-12 10:46:09.258\tAMZN\t1318.0\n2023-04-12 10:46:09.258\tGOOGL\t645.0\n2023-04-12 10:46:09.258\tGOOGL\t1737.0\n2023-04-12 10:46:09.258\tAAPL\t297.0\n2023-04-12 10:46:09.258\tAAPL\t1325.0\n2023-04-12 10:46:09.258\tAMZN\t159.0\n2023-04-12 10:46:09.258\tAAPL\t1337.0\n2023-04-12 10:46:09.258\tMETA\t1961.0\n2023-04-12 10:46:09.258\tMETA\t1603.0\n2023-04-12 10:46:09.258\tAMZN\t1355.0\n2023-04-12 10:46:09.258\tGOOGL\t1700.0\n2023-04-12 10:46:09.258\tMETA\t362.0\n2023-04-12 10:46:09.258\tAAPL\t1524.0\n2023-04-12 10:46:09.258\tAMZN\t973.0\n2023-04-12 10:46:09.258\tAMZN\t1995.0\n2023-04-12 10:46:09.258\tAMZN\t1977.0\n2023-04-12 10:46:09.258\tGOOGL\t1638.0\n2023-04-12 10:46:09.258\tAMZN\t220.0\n2023-04-12 10:46:09.258\tMSFT\t345.0\n2023-04-12 10:46:09.258\tAMZN\t696.0\n2023-04-12 10:46:09.258\tMETA\t1005.0\n2023-04-12 10:46:09.258\tMETA\t214.0\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: select * from TRADE_SOURCE_STREAM\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: Fail to run stream sql job\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:172)\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:105)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInnerSelect(FlinkStreamSqlInterpreter.java:89)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callSelect(FlinkSqlInterrpeter.java:503)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:266)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: e2142a9185398a12640b1d522f2e86e5)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2073)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2073)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2073)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/e2142a9185398a12640b1d522f2e86e5",
+              "$$hashKey": "object:2670"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1678722016986_760396334",
+      "id": "paragraph_1672242887577_1094382526",
+      "dateCreated": "2023-03-13T15:40:16+0000",
+      "dateStarted": "2023-04-12T14:45:39+0000",
+      "dateFinished": "2023-04-12T14:46:13+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:252"
+    },
+    {
+      "text": "%flink.ssql(type=update)\n\nselect TUMBLE_ROWTIME(TRADE_TIME, INTERVAL '1' MINUTE) as TRADE_WINDOW, TICKER, COUNT(*) as VOLUME, AVG(PRICE) as AVG_PRICE, MIN(PRICE) as MIN_PRICE, MAX(PRICE) as MAX_PRICE FROM TRADE_SOURCE_STREAM\nGROUP BY TUMBLE(TRADE_TIME, INTERVAL '1' MINUTE), TICKER;\n",
+      "user": "anonymous",
+      "dateUpdated": "2023-04-12T14:46:17+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "TRADE_WINDOW": "string",
+                      "TICKER": "string",
+                      "VOLUME": "string",
+                      "MIN_PRICE": "string",
+                      "MAX_PRICE": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            },
+            "helium": {}
+          }
+        },
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/47bef656d3d6e302f51477afd8d97419",
+              "$$hashKey": "object:4825"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1678722016995_314142720",
+      "id": "paragraph_1671727385217_1158382065",
+      "dateCreated": "2023-03-13T15:40:16+0000",
+      "status": "ABORT",
+      "$$hashKey": "object:253",
+      "dateFinished": "2023-04-12T14:47:21+0000",
+      "dateStarted": "2023-04-12T14:46:17+0000",
+      "results": {
+        "code": "ERROR",
+        "msg": [
+          {
+            "type": "TABLE",
+            "data": "TRADE_WINDOW\tTICKER\tVOLUME\tAVG_PRICE\tMIN_PRICE\tMAX_PRICE\n2023-04-12 10:46:59.999\tMETA\t271\t998.4649446494465\t4.0\t1997.0\n2023-04-12 10:46:59.999\tAAPL\t259\t949.4787644787644\t7.0\t1960.0\n2023-04-12 10:46:59.999\tAMZN\t249\t1019.9839357429719\t12.0\t1979.0\n2023-04-12 10:46:59.999\tMSFT\t253\t989.1699604743083\t5.0\t1994.0\n2023-04-12 10:46:59.999\tGOOGL\t268\t1007.7910447761194\t2.0\t2000.0\n"
+          },
+          {
+            "type": "TEXT",
+            "data": "Fail to run sql command: select TUMBLE_ROWTIME(TRADE_TIME, INTERVAL '1' MINUTE) as TRADE_WINDOW, TICKER, COUNT(*) as VOLUME, AVG(PRICE) as AVG_PRICE, MIN(PRICE) as MIN_PRICE, MAX(PRICE) as MAX_PRICE FROM TRADE_SOURCE_STREAM\nGROUP BY TUMBLE(TRADE_TIME, INTERVAL '1' MINUTE), TICKER\n"
+          },
+          {
+            "type": "ANGULAR",
+            "data": "<div class='container ng-scope' style='padding-left:0px;padding-right:0px;'>\n    <div class='panel panel-danger'>\n        <div class='panel-heading' ng-click='isOpen=!isOpen' ng-init='isOpen=false' style=\"cursor:pointer\">\n            <div class='plainTextContainer' style='font-weight:bolder'><i class=\"fa fa-caret-right fa-fw\" style=\"padding-right:7px;transition:all 0.3s;{{isOpen?'transform:rotate(90deg);transform-origin:25% 45%':''}}\"></i>Job was cancelled.</div>\n        </div>\n        <div class='panel-collapse' uib-collapse='!isOpen'>\n            <div class='text' style='max-height:300px;overflow:auto;padding:10px'>java.io.IOException: Fail to run stream sql job\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:172)\n\tat org.apache.zeppelin.flink.sql.AbstractStreamSqlJob.run(AbstractStreamSqlJob.java:105)\n\tat org.apache.zeppelin.flink.FlinkStreamSqlInterpreter.callInnerSelect(FlinkStreamSqlInterpreter.java:89)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callSelect(FlinkSqlInterrpeter.java:503)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.callCommand(FlinkSqlInterrpeter.java:266)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.runSqlList(FlinkSqlInterrpeter.java:160)\n\tat org.apache.zeppelin.flink.FlinkSqlInterrpeter.internalInterpret(FlinkSqlInterrpeter.java:112)\n\tat org.apache.zeppelin.interpreter.AbstractInterpreter.interpret(AbstractInterpreter.java:47)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:110)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:852)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:744)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:172)\n\tat org.apache.zeppelin.scheduler.AbstractScheduler.runJob(AbstractScheduler.java:132)\n\tat org.apache.zeppelin.scheduler.ParallelScheduler.lambda$runJobInScheduler$0(ParallelScheduler.java:46)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)\n\tat java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)\n\tat java.base/java.lang.Thread.run(Thread.java:829)\nCaused by: org.apache.flink.client.program.ProgramInvocationException: Job failed (JobID: 47bef656d3d6e302f51477afd8d97419)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:125)\n\tat java.base/java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:642)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2073)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2073)\n\tat org.apache.flink.client.program.rest.RestClusterClient.lambda$pollResourceAsync$24(RestClusterClient.java:670)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.complete(CompletableFuture.java:2073)\n\tat org.apache.flink.runtime.concurrent.FutureUtils.lambda$retryOperationWithDelay$9(FutureUtils.java:394)\n\tat java.base/java.util.concurrent.CompletableFuture.uniWhenComplete(CompletableFuture.java:859)\n\tat java.base/java.util.concurrent.CompletableFuture$UniWhenComplete.tryFire(CompletableFuture.java:837)\n\tat java.base/java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:506)\n\tat java.base/java.util.concurrent.CompletableFuture.postFire(CompletableFuture.java:610)\n\tat java.base/java.util.concurrent.CompletableFuture$UniCompose.tryFire(CompletableFuture.java:1085)\n\tat java.base/java.util.concurrent.CompletableFuture$Completion.run(CompletableFuture.java:478)\n\t... 3 more\nCaused by: org.apache.flink.runtime.client.JobCancellationException: Job was cancelled.\n\tat org.apache.flink.runtime.jobmaster.JobResult.toJobExecutionResult(JobResult.java:146)\n\tat org.apache.flink.client.deployment.ClusterClientJobClientAdapter.lambda$getJobExecutionResult$6(ClusterClientJobClientAdapter.java:123)\n\t... 23 more\n</div>\n        </div>\n    </div>\n</div>\n"
+          }
+        ]
+      }
+    },
+    {
+      "text": "%flink.ssql(type=update)\n\nDROP TABLE IF EXISTS  TRADE_DESTINATION_S3;\nCREATE TABLE TRADE_DESTINATION_S3 (\nTRADE_WINDOW_START TIMESTAMP(3),\nWATERMARK FOR TRADE_WINDOW_START as TRADE_WINDOW_START - INTERVAL '5' SECOND,\nTICKER STRING, \nVOLUME BIGINT,\nAVG_PRICE DOUBLE,\nMIN_PRICE DOUBLE,\nMAX_PRICE DOUBLE)\nWITH ('connector' = 'filesystem','path' = 's3://kdastudiostack-markettradinganalyticsc9cd0013-1w30ovdr9km87/','format' = 'csv');",
+      "user": "anonymous",
+      "dateUpdated": "2023-04-12T14:47:25+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "results": {
+        "code": "SUCCESS",
+        "msg": [
+          {
+            "type": "TEXT",
+            "data": "Table has been dropped.\nTable has been created.\n"
+          }
+        ]
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1678722017000_21837470",
+      "id": "paragraph_1672421854287_756270393",
+      "dateCreated": "2023-03-13T15:40:17+0000",
+      "dateStarted": "2023-04-12T14:47:25+0000",
+      "dateFinished": "2023-04-12T14:47:28+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:254"
+    },
+    {
+      "text": "%flink.ssql(type=update)\n\ninsert into TRADE_DESTINATION_S3\nselect TUMBLE_ROWTIME(TRADE_TIME, INTERVAL '1' MINUTE), TICKER, COUNT(*) as VOLUME, AVG(PRICE) as AVG_PRICE, MIN(PRICE) as MIN_PRICE, MAX(PRICE) as MAX_PRICE FROM TRADE_SOURCE_STREAM\nGROUP BY TUMBLE(TRADE_TIME, INTERVAL '1' MINUTE), TICKER;",
+      "user": "anonymous",
+      "dateUpdated": "2023-04-12T14:47:32+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "editorHide": false,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "EVENT_TIME": "string",
+                      "TICKER": "string",
+                      "PRICE": "string",
+                      "STATUS": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            },
+            "helium": {}
+          }
+        },
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {
+        "jobUrl": {
+          "propertyName": "jobUrl",
+          "label": "FLINK JOB",
+          "tooltip": "View in Flink web UI",
+          "group": "flink",
+          "values": [
+            {
+              "jobUrl": "/flinkdashboard/#/job/5c9c67c8471ba41abfb11eee97c7bda7",
+              "$$hashKey": "object:4883"
+            }
+          ],
+          "interpreterSettingId": "flink"
+        }
+      },
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1678722017000_1275796896",
+      "id": "paragraph_1672422739795_1847516714",
+      "dateCreated": "2023-03-13T15:40:17+0000",
+      "dateStarted": "2023-04-12T14:47:32+0000",
+      "dateFinished": "2023-03-13T15:43:09+0000",
+      "status": "RUNNING",
+      "$$hashKey": "object:255"
+    },
+    {
+      "text": "%flink.ssql\n",
+      "user": "anonymous",
+      "dateUpdated": "2023-03-13T15:42:00+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/sql"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1678722120748_1891400700",
+      "id": "paragraph_1678722120748_1891400700",
+      "dateCreated": "2023-03-13T15:42:00+0000",
+      "status": "READY",
+      "$$hashKey": "object:256"
+    }
+  ],
+  "name": "MarketDataFeedNotebook",
+  "id": "2HVH8MRCY",
+  "defaultInterpreterGroup": "flink",
+  "version": "0.9.0",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/MarketDataFeedNotebook"
+}

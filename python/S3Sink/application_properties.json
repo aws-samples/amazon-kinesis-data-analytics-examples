@@ -2,22 +2,22 @@
   {
           "PropertyGroupId": "kinesis.analytics.flink.run.options",
           "PropertyMap": {
-            "python": "StreamingFileSink/streaming-file-sink.py",
-            "jarfile": "StreamingFileSink/lib/amazon-kinesis-sql-connector-flink-2.0.3.jar"
+            "python": "S3Sink/streaming-file-sink.py",
+            "jarfile": "S3Sink/lib/flink-sql-connector-kinesis-1.15.2.jar"
 
           }
         },
         {
           "PropertyGroupId": "consumer.config.0",
           "PropertyMap": {
-            "input.stream.name": "input-stream",
-            "flink.stream.initpos": "LATEST",
+            "input.stream.name": "ExampleInputStream",
+            "scan.stream.initpos": "LATEST",
             "aws.region": "us-east-1"
           }
         },
   {
     "PropertyGroupId": "sink.config.0",
     "PropertyMap": {
-      "output.bucket.name": "thebucketofjeremy"
+      "output.bucket.name": "bucket-name"
     }
   }]
