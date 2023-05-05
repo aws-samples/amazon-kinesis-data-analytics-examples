@@ -124,7 +124,7 @@ public class EMI {
 
 
             // set up your s3 bucket(s) in s3.source.path and s3.sink.path or update these variables here
-            String bucket = "djl-images";
+            String bucket = "sample-images";
             String prefix = "";
             String fullPathSource = "s3://" + bucket + "/" + prefix;
             String fullPathSink = "s3://" + bucket + "/" + prefix + "/output";

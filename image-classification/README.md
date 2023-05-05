@@ -83,9 +83,22 @@ When we click on one of the data-partitioned folders, we will see partition file
 
 ### CloudFormation Script
 
-In order to run this codebase on Kinesis Data Analytics for Apache Flink, we have a helpful CloudFormation template that will spin up the necessary resources:
+In order to run this codebase on Kinesis Data Analytics for Apache Flink, we have a helpful CloudFormation template that will spin up the necessary resources.
 
-[![Launch Stack](img/launch-stack.png)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/BDB-3098/BlogStack.template.json&stackName=ImageClassificationKDA&param_inputBucketPath=s3://aws-blogs-artifacts-public/artifacts/BDB-3098/images/)
+Simply open [AWS CloudShell](https://aws.amazon.com/cloudshell/) or your local machine's Terminal and paste the following command:
+
+! Note - Be sure to replace the first two line's BUCKET variables with your own source bucket and sink bucket, which will contain the source images and the classifications respectively.
+
+```bash
+export SOURCE_BUCKET=s3://SAMPLE-BUCKET/PATH;
+export SINK_BUCKET=s3://SAMPLE_BUCKET/PATH;
+git clone https://github.com/EliSchwartz/imagenet-sample-images;
+cd imagenet-sample-images;
+aws s3 cp . $SOURCE_BUCKET --recursive --exclude "*/";
+aws cloudformation create-stack --stack-name KDAImageClassification --template-url https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/BDB-3098/BlogStack.template.json --parameters ParameterKey=inputBucketPath,ParameterValue=$SOURCE_BUCKET ParameterKey=outputBucketPath,ParameterValue=$SINK_BUCKET --capabilities CAPABILITY_IAM;
+```
+
+The script will clone a Github Repo of images to classify and upload them to your source Amazon S3 bucket. Then it will launch the CloudFormation stack given your input parameters.
 
 This CloudFormation Stack will launch:
 - A Kinesis Data Analytics Application with 1 Kinesis Processing Unit preconfigured with some application properties
