@@ -36,6 +36,36 @@ best probability of classification from each image. This result is
 then sent back to the Flink operator where it is promptly written
 out to the Amazon S3 bucket path of your configuration.
 
+```java
+.process(new ProcessWindowFunction<StreamedImage, String, String, TimeWindow>() {
+                    @Override
+                    public void process(String s,
+                                        ProcessWindowFunction<StreamedImage, String, String, TimeWindow>.Context context,
+                                        Iterable<StreamedImage> iterableImages,
+                                        Collector<String> out) throws Exception {
+
+
+                            List<Image> listOfImages = new ArrayList<Image>();
+                            iterableImages.forEach(x -> {
+                                listOfImages.add(x.getImage());
+                            });
+                        try
+                        {
+                            // batch classify images
+                            List<Classifications> list = classifier.predict(listOfImages);
+                            for (Classifications classifications : list) {
+                                Classifications.Classification cl = classifications.best();
+                                String ret = cl.getClassName() + ": " + cl.getProbability();
+                                out.collect(ret);
+                            }
+                        } catch (ModelException | IOException | TranslateException e) {
+                            logger.error("Failed predict", e);
+                        }
+                        }
+                    });
+
+```
+
 #### Classfier.java
 In Classifier.java, we read the image and apply crop, transpose, reshape, and finally convert to an N-dimensional array that can be processed by the deep learning model. Then we feed the array to the model and apply a forward pass. During the forward pass, the model computes the neural network layer by layer. At last, the output object contains the probabilities for each image object that the model being trained on. We map the probabilities with the object name and return to the map function.
 
