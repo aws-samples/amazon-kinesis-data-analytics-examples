@@ -24,6 +24,10 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +47,8 @@ public class EMI {
     private static String s3SourcePath;
     private static String s3SinkPath;
 
-    // number of images to buffer before sending to classify
-    private static int listOfImagesBufferSize;
+    // time (in seconds) to buffer before sending to classify
+    private static int listOfImagesBufferDuration;
 
 
     public static void main(String[] args) throws Exception {
@@ -63,29 +67,41 @@ public class EMI {
         DataStream<StreamedImage> stream =
                 env.fromSource(source, WatermarkStrategy.noWatermarks(), "file-source");
 
-        DataStream<List<StreamedImage>> listOfImagesStream = stream.keyBy(x -> x.getId())
-                .process(new CollectImagesInList(listOfImagesBufferSize));
 
-        DataStream<String> out = listOfImagesStream.flatMap(new FlatMapFunction<List<StreamedImage>, String>() {
-            @Override
-            public void flatMap(List<StreamedImage> streamedImages, Collector<String> collector) throws Exception {
+        // create a keyed window in order to get an even distribution of data across the subtasks
+        DataStream<String> classifications = stream.keyBy(x -> x.getId())
 
-                List<Image> images = streamedImages.stream().map(im -> im.getImage()).collect(Collectors.toList());
+                // the image classifier performs better with batches of images
+                // so we will use tumbling window to create these batches
+                .window(TumblingProcessingTimeWindows.of(Time.seconds(listOfImagesBufferDuration)))
 
-                try {
-                    List<Classifications> list = classifier.predict(images);
-                    for (Classifications classifications : list) {
-                        Classifications.Classification cl = classifications.best();
-                        String ret = cl.getClassName() + ": " + cl.getProbability();
-                        collector.collect(ret);
-                    }
-                } catch (ModelException | IOException | TranslateException e) {
-                    logger.error("Failed predict", e);
-                }
-            }
+                // and process those batches in a process window function
+                .process(new ProcessWindowFunction<StreamedImage, String, String, TimeWindow>() {
+                    @Override
+                    public void process(String s,
+                                        ProcessWindowFunction<StreamedImage, String, String, TimeWindow>.Context context,
+                                        Iterable<StreamedImage> iterableImages,
+                                        Collector<String> out) throws Exception {
 
-        });
 
+                            List<Image> listOfImages = new ArrayList<Image>();
+                            iterableImages.forEach(x -> {
+                                listOfImages.add(x.getImage());
+                            });
+                        try
+                        {
+                            // batch classify images
+                            List<Classifications> list = classifier.predict(listOfImages);
+                            for (Classifications classifications : list) {
+                                Classifications.Classification cl = classifications.best();
+                                String ret = cl.getClassName() + ": " + cl.getProbability();
+                                out.collect(ret);
+                            }
+                        } catch (ModelException | IOException | TranslateException e) {
+                            logger.error("Failed predict", e);
+                        }
+                        }
+                    });
 
         final FileSink<String> sink = FileSink
                 .forRowFormat(new Path(s3SinkPath), new SimpleStringEncoder<String>("UTF-8"))
@@ -96,7 +112,7 @@ public class EMI {
                                 .withMaxPartSize(MemorySize.ofMebiBytes(256))
                                 .build())
                 .build();
-        out.sinkTo(sink);
+        classifications.sinkTo(sink);
 
         env.execute("Embedded Model Inference");
     }
@@ -124,13 +140,13 @@ public class EMI {
 
 
             // set up your s3 bucket(s) in s3.source.path and s3.sink.path or update these variables here
-            String bucket = "sample-images";
+            String bucket = "my-sample-images";
             String prefix = "";
             String fullPathSource = "s3://" + bucket + "/" + prefix;
             String fullPathSink = "s3://" + bucket + "/" + prefix + "/output";
             s3SourcePath = System.getProperty("s3.source.path", fullPathSource);
             s3SinkPath = System.getProperty("s3.sink.path", fullPathSink);
-            listOfImagesBufferSize = Integer.parseInt(System.getProperty("image.buffer.size", "100"));
+            listOfImagesBufferDuration = Integer.parseInt(System.getProperty("image.buffer.duration", "60"));
 
         } else // remote server on KDA
         {
@@ -141,7 +157,7 @@ public class EMI {
             Properties properties = applicationProperties.get("appProperties");
             s3SourcePath = properties.getProperty("s3.source.path");
             s3SinkPath = properties.getProperty("s3.sink.path");
-            listOfImagesBufferSize = Integer.parseInt(properties.getProperty("image.buffer.size", "100"));
+            listOfImagesBufferDuration = Integer.parseInt(properties.getProperty("image.buffer.duration", "60"));
 
         }
         return env;
