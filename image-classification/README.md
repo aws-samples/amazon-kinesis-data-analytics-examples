@@ -28,19 +28,9 @@ DataStream<StreamedImage> stream =
         "file-source");
 ```
 
-You can modify the listOfImagesBufferSize to make larger or smaller
-buffered images. This can be configured on Kinesis Data Analytics
-for Apache Flink by using the application property image.buffer
-size, but is defaulted to 100 images at a time.
+Next, we create a Tumbling window of a variable time window duration, specified in configuration, defaulting to 60 seconds. Every window close creates a batch (list) of images to be classified using a `ProcessWindowFunction`.
 
-```java
-DataStream<List<StreamedImage>> listOfImagesStream =
-        stream.keyBy(x-> x.getId())
-        .process(new CollectImagesInList(listOfImagesBufferSize));
-```
-
-Finally, we have our batches in the stream and are ready to send them to a flatMap function for classifying images via the
-Classifier.java class. This flatMap function will call the
+This ProcessWindowFunction will call the
 classifier predict function on the list of images and return the
 best probability of classification from each image. This result is
 then sent back to the Flink operator where it is promptly written
@@ -54,7 +44,7 @@ In Classifier.java, we read the image and apply crop, transpose, reshape, and fi
 - Java 11
 - Maven
 - Apache Flink
--
+
 ## Getting Started
 After cloning the application locally, you can create your application jar by navigating to the directory that contains your pom.xml and running the following command:
 
@@ -83,20 +73,26 @@ When we click on one of the data-partitioned folders, we will see partition file
 
 ### CloudFormation Script
 
-In order to run this codebase on Kinesis Data Analytics for Apache Flink, we have a helpful CloudFormation template that will spin up the necessary resources.
+Note - Be sure to replace the first two line's BUCKET variables with your own source bucket and sink bucket, which will contain the source images and the classifications respectively.
 
-Simply open [AWS CloudShell](https://aws.amazon.com/cloudshell/) or your local machine's Terminal and paste the following command:
+Command 1 – Setting up CDK Environment
+If you do not have CDK Bootstrapped in your account, run the following command, substituting your account number and current region:
 
-! Note - Be sure to replace the first two line's BUCKET variables with your own source bucket and sink bucket, which will contain the source images and the classifications respectively.
+`cdk bootstrap aws://ACCOUNT-NUMBER/REGION`
 
-```bash
+Command 2 – Setting up S3 Bucket and Launching AWS CloudFormation Script
+The script will clone a GitHub Repo of images to classify and upload them to your source Amazon S3 bucket. Then it will launch the CloudFormation stack given your input parameters.
+
+
+
+
 export SOURCE_BUCKET=s3://SAMPLE-BUCKET/PATH;
 export SINK_BUCKET=s3://SAMPLE_BUCKET/PATH;
 git clone https://github.com/EliSchwartz/imagenet-sample-images;
 cd imagenet-sample-images;
 aws s3 cp . $SOURCE_BUCKET --recursive --exclude "*/";
 aws cloudformation create-stack --stack-name KDAImageClassification --template-url https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/BDB-3098/BlogStack.template.json --parameters ParameterKey=inputBucketPath,ParameterValue=$SOURCE_BUCKET ParameterKey=outputBucketPath,ParameterValue=$SINK_BUCKET --capabilities CAPABILITY_IAM;
-```
+
 
 The script will clone a Github Repo of images to classify and upload them to your source Amazon S3 bucket. Then it will launch the CloudFormation stack given your input parameters.
 
