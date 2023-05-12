@@ -22,11 +22,11 @@ import java.io.Serializable;
 
 public class Threshold implements Serializable {
 
-    private Double sum = 0.0;
-    private Double squaredSum = 0.0;
+    private double sum = 0.0;
+    private double squaredSum = 0.0;
     private int counter = 0;
 
-    public void update(Double record) {
+    public void update(double record) {
         sum += record;
         squaredSum = squaredSum + record*record;
         counter = counter + 1;
@@ -37,8 +37,8 @@ public class Threshold implements Serializable {
      *
      * @return an estimated threshold
      */
-    public Double getThreshold() {
-        Double mean = sum/counter;
+    public double getThreshold() {
+        double mean = sum/counter;
 
         return mean + 2 * Math.sqrt(squaredSum / counter - mean * mean);
     }

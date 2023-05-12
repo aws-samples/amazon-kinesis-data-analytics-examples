@@ -26,7 +26,7 @@ public class OutputWithLabel {
 
     public OutputWithLabel() {}
 
-    public OutputWithLabel(int index, Double input, Double mp, String anomalyTag) {
+    public OutputWithLabel(int index, double input, double mp, String anomalyTag) {
         this.index = index;
         this.input = input;
         this.mp = mp;

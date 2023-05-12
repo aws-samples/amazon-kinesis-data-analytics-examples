@@ -54,11 +54,11 @@ public class MPProcessFunction extends ProcessFunction<String, OutputWithLabel> 
     public void processElement(String dataPoint, ProcessFunction<String, OutputWithLabel>.Context context,
                                Collector<OutputWithLabel> collector) {
 
-        Double record = Double.parseDouble(dataPoint);
+        double record = Double.parseDouble(dataPoint);
 
         int currentIndex = timeSeriesData.add(record);
 
-        Double minDistance = 0.0;
+        double minDistance = 0.0;
         String anomalyTag = "INITIALISING";
 
         if (timeSeriesData.readyToCompute()) {

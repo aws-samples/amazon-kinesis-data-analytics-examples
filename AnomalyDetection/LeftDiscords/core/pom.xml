@@ -21,12 +21,11 @@ under the License.
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>software.amazon.flink.example</groupId>
-    <artifactId>matrix-profile</artifactId>
+    <artifactId>left-discords</artifactId>
     <version>1.0.0</version>
 
     <properties>
         <java.version>11</java.version>
-        <kda.runtime.version>1.2.0</kda.runtime.version>
         <flink.version>1.15.4</flink.version>
     </properties>
 
