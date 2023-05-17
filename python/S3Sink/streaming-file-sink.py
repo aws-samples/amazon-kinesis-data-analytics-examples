@@ -95,7 +95,7 @@ def create_sink_table(table_name, bucket_name):
               WITH (
                   'connector'='filesystem',
                   'path'='s3a://{1}/',
-                  'format'='csv',
+                  'format'='json',
                   'sink.partition-commit.policy.kind'='success-file',
                   'sink.partition-commit.delay' = '1 min'
               ) """.format(table_name, bucket_name)
