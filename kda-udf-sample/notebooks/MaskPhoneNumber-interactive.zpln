@@ -4,7 +4,7 @@
       "title": "#1 : Import User Defined Function (UDF)",
       "text": "%flink(parallelism=1)\nimport com.mycompany.app.MaskPhoneNumber\nstenv.registerFunction(\"MaskPhoneNumber\", new MaskPhoneNumber())",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:18:10+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -28,20 +28,18 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272483_988818764",
+      "jobName": "paragraph_1684358028216_2145058751",
       "id": "paragraph_1663728447152_569068632",
-      "dateCreated": "2023-03-07T00:17:52+0000",
-      "dateStarted": "2023-03-07T00:18:10+0000",
-      "dateFinished": "2023-03-07T00:18:13+0000",
-      "status": "FINISHED",
+      "dateCreated": "2023-05-17T21:13:48+0000",
+      "status": "READY",
       "focus": true,
-      "$$hashKey": "object:1369"
+      "$$hashKey": "object:1998"
     },
     {
       "title": "#2 : Create In memory table to read input data from input kinesis stream",
       "text": "%flink.ssql(type=update)\n\nDROP TABLE IF EXISTS customer_reviews;\n\nCREATE TABLE customer_reviews (\ncustomer_id VARCHAR,\nproduct VARCHAR,\nreview VARCHAR,\nphone VARCHAR\n)\nWITH (\n'connector' = 'kinesis',\n'stream' = 'KinesisUDFSampleInputStream',\n'aws.region' = 'us-east-1',\n'scan.stream.initpos' = 'LATEST',\n'format' = 'json');\n",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:18:15+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -65,19 +63,17 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272483_1412889764",
+      "jobName": "paragraph_1684358028217_2028690699",
       "id": "paragraph_1663729382164_1505719242",
-      "dateCreated": "2023-03-07T00:17:52+0000",
-      "dateStarted": "2023-03-07T00:18:16+0000",
-      "dateFinished": "2023-03-07T00:18:18+0000",
-      "status": "FINISHED",
-      "$$hashKey": "object:1370"
+      "dateCreated": "2023-05-17T21:13:48+0000",
+      "status": "READY",
+      "$$hashKey": "object:1999"
     },
     {
       "title": "#3 : Read data from in-memory table",
       "text": "%flink.ssql(type=update)\nselect * from customer_reviews\n",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -132,17 +128,17 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272483_542521123",
+      "jobName": "paragraph_1684358028217_109732345",
       "id": "paragraph_1663729595574_981361977",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1371"
+      "$$hashKey": "object:2000"
     },
     {
       "title": "#4 : Invoke MaskPhoneNumber UDF and get masked number  ",
       "text": "%flink.ssql(type=update)\nselect customer_id, product, review, MaskPhoneNumber('mask_phone', phone) as phoneNumber from customer_reviews",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -197,17 +193,17 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272484_1664590831",
+      "jobName": "paragraph_1684358028217_802442002",
       "id": "paragraph_1663729646576_1294660027",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1372"
+      "$$hashKey": "object:2001"
     },
     {
       "title": "#5 : Create in-memory view with customer data",
       "text": "%flink.ssql(type=update)\n\nDROP VIEW IF EXISTS sentiments_view;\n\nCREATE VIEW  \n    sentiments_view\nAS\n  select customer_id, product, review, MaskPhoneNumber('mask_phone', phone) as phoneNumber from customer_reviews",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -231,17 +227,17 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272484_1196150322",
+      "jobName": "paragraph_1684358028217_1353825541",
       "id": "paragraph_1663729994637_969035624",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1373"
+      "$$hashKey": "object:2002"
     },
     {
       "title": "#6 : Display data from in-memory view",
       "text": "%flink.ssql(type=update)\nselect * from sentiments_view",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -296,17 +292,17 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272484_943155559",
+      "jobName": "paragraph_1684358028221_2135857084",
       "id": "paragraph_1663730574742_634513711",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1374"
+      "$$hashKey": "object:2003"
     },
     {
       "title": "#7 : Create in-memory table for loading data into output (sink) kinesis stream",
-      "text": "%flink.ssql(type=update)\n\nDROP TABLE IF EXISTS customer_reviews_stream_table;\n\nCREATE TABLE customer_reviews_stream_table (\ncustomer_id VARCHAR,\nproduct VARCHAR,\nreview VARCHAR,\nphoneNumber varchar \n)\nWITH (\n'connector' = 'kinesis',\n'stream' = 'KinesisUDFSampleOutPutStream',\n'aws.region' = 'us-east-1',\n'scan.stream.initpos' = 'TRIM_HORIZON',\n'format' = 'json');\n",
+      "text": "%flink.ssql(type=update)\n\nDROP TABLE IF EXISTS customer_reviews_stream_table;\n\nCREATE TABLE customer_reviews_stream_table (\ncustomer_id VARCHAR,\nproduct VARCHAR,\nreview VARCHAR,\nphoneNumber varchar \n)\nWITH (\n'connector' = 'kinesis',\n'stream' = 'KinesisUDFSampleOutputStream',\n'aws.region' = 'us-east-1',\n'scan.stream.initpos' = 'TRIM_HORIZON',\n'format' = 'json');\n",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:14:47+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -330,17 +326,17 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272484_210048704",
+      "jobName": "paragraph_1684358028223_2026075436",
       "id": "paragraph_1663730603503_21833702",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1375"
+      "$$hashKey": "object:2004"
     },
     {
       "title": "#8 : Load data into output (sink) kinesis stream",
       "text": "%flink.ssql(type=update)\nINSERT INTO customer_reviews_stream_table\nSELECT customer_id, product, review, phoneNumber\nFROM sentiments_view",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -364,17 +360,17 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272484_230346975",
+      "jobName": "paragraph_1684358028223_1406652117",
       "id": "paragraph_1663730765039_1351736395",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1376"
+      "$$hashKey": "object:2005"
     },
     {
       "title": "#9 Verify data from target (sink) kinesis stream",
       "text": "%flink.ssql(type=update)\nselect * from customer_reviews_stream_table\n",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -429,16 +425,16 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272485_1677810793",
+      "jobName": "paragraph_1684358028223_1282435440",
       "id": "paragraph_1663732040099_376000435",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1377"
+      "$$hashKey": "object:2006"
     },
     {
       "text": "%md\n*** Cleanup code ***\n",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -462,16 +458,16 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272486_764721766",
+      "jobName": "paragraph_1684358028223_797706564",
       "id": "paragraph_1665179849813_665938556",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1378"
+      "$$hashKey": "object:2007"
     },
     {
       "text": "%flink.ssql(type=update)\ndrop table customer_reviews_stream_table",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -494,16 +490,16 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272486_692008511",
+      "jobName": "paragraph_1684358028223_1485532038",
       "id": "paragraph_1663730860130_1081008704",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1379"
+      "$$hashKey": "object:2008"
     },
     {
       "text": "%flink.ssql(type=update)\ndrop table customer_reviews",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "tableHide": false,
@@ -526,16 +522,16 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272486_1974817088",
+      "jobName": "paragraph_1684358028251_18893526",
       "id": "paragraph_1663785196703_1362342117",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1380"
+      "$$hashKey": "object:2009"
     },
     {
       "text": "%flink.ssql(type=update)\ndrop view sentiments_view\n",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "editorSetting": {
@@ -557,16 +553,16 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272487_690807975",
+      "jobName": "paragraph_1684358028252_766642994",
       "id": "paragraph_1676640469911_12510913",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1381"
+      "$$hashKey": "object:2010"
     },
     {
       "text": "%flink.ssql\n",
       "user": "anonymous",
-      "dateUpdated": "2023-03-07T00:17:52+0000",
+      "dateUpdated": "2023-05-17T21:13:48+0000",
       "progress": 0,
       "config": {
         "editorSetting": {
@@ -588,15 +584,15 @@
       "apps": [],
       "runtimeInfos": {},
       "progressUpdateIntervalMs": 500,
-      "jobName": "paragraph_1678148272487_467806906",
+      "jobName": "paragraph_1684358028252_444561482",
       "id": "paragraph_1676640521959_1507071173",
-      "dateCreated": "2023-03-07T00:17:52+0000",
+      "dateCreated": "2023-05-17T21:13:48+0000",
       "status": "READY",
-      "$$hashKey": "object:1382"
+      "$$hashKey": "object:2011"
     }
   ],
   "name": "MaskPhoneNumber",
-  "id": "2HTHF2TVT",
+  "id": "2HZQBH3Y1",
   "defaultInterpreterGroup": "flink",
   "version": "0.9.0",
   "noteParams": {},
