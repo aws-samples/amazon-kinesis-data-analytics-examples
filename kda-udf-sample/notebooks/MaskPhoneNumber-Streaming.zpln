@@ -1,0 +1,189 @@
+﻿{
+  "paragraphs": [
+    {
+      "title": "#1 : Import User Defined Function (UDF)",
+      "text": "%flink(parallelism=1)\nimport com.mycompany.app.MaskPhoneNumber\nstenv.registerFunction(\"MaskPhoneNumber\", new MaskPhoneNumber())",
+      "user": "anonymous",
+      "dateUpdated": "2023-05-17T21:13:58+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1684358038217_464162171",
+      "id": "paragraph_1663728447152_569068632",
+      "dateCreated": "2023-05-17T21:13:58+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:1449"
+    },
+    {
+      "title": "#2 : Create In memory table to read input data from input kinesis stream",
+      "text": "%flink.ssql(type=update)\n\nDROP TABLE IF EXISTS customer_reviews;\n\nCREATE TABLE customer_reviews (\ncustomer_id VARCHAR,\nproduct VARCHAR,\nreview VARCHAR,\nphone VARCHAR\n)\nWITH (\n'connector' = 'kinesis',\n'stream' = 'KinesisUDFSampleInputStream',\n'aws.region' = 'us-east-1',\n'scan.stream.initpos' = 'LATEST',\n'format' = 'json');\n",
+      "user": "anonymous",
+      "dateUpdated": "2023-05-17T21:13:58+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1684358038229_1554004211",
+      "id": "paragraph_1663729382164_1505719242",
+      "dateCreated": "2023-05-17T21:13:58+0000",
+      "status": "READY",
+      "$$hashKey": "object:1450"
+    },
+    {
+      "title": "#3 : Create in-memory view with customer data",
+      "text": "%flink.ssql(type=update)\n\nDROP VIEW IF EXISTS sentiments_view;\n\nCREATE VIEW  \n    sentiments_view\nAS\n  select customer_id, product, review, MaskPhoneNumber('mask_phone', phone) as phoneNumber from customer_reviews",
+      "user": "anonymous",
+      "dateUpdated": "2023-05-17T21:13:58+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1684358038230_48163765",
+      "id": "paragraph_1663729994637_969035624",
+      "dateCreated": "2023-05-17T21:13:58+0000",
+      "status": "READY",
+      "$$hashKey": "object:1451"
+    },
+    {
+      "title": "#4 : Create in-memory table for loading data into output (sink) kinesis stream",
+      "text": "%flink.ssql(type=update)\n\nDROP TABLE IF EXISTS customer_reviews_stream_table;\n\nCREATE TABLE customer_reviews_stream_table (\ncustomer_id VARCHAR,\nproduct VARCHAR,\nreview VARCHAR,\nphoneNumber varchar \n)\nWITH (\n'connector' = 'kinesis',\n'stream' = 'KinesisUDFSampleOutputStream',\n'aws.region' = 'us-east-1',\n'scan.stream.initpos' = 'TRIM_HORIZON',\n'format' = 'json');\n",
+      "user": "anonymous",
+      "dateUpdated": "2023-05-17T21:16:10+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1684358038232_144201836",
+      "id": "paragraph_1663730603503_21833702",
+      "dateCreated": "2023-05-17T21:13:58+0000",
+      "status": "READY",
+      "$$hashKey": "object:1452"
+    },
+    {
+      "title": "#5 : Load data into output (sink) kinesis stream",
+      "text": "%flink.ssql(type=update)\nINSERT INTO customer_reviews_stream_table\nSELECT customer_id, product, review, phoneNumber\nFROM sentiments_view",
+      "user": "anonymous",
+      "dateUpdated": "2023-05-17T21:13:58+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "sql",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sql",
+        "fontSize": 9,
+        "title": true,
+        "results": {},
+        "enabled": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1684358038233_433312559",
+      "id": "paragraph_1663730765039_1351736395",
+      "dateCreated": "2023-05-17T21:13:58+0000",
+      "status": "READY",
+      "$$hashKey": "object:1453"
+    }
+  ],
+  "name": "MaskPhoneNumber-Streaming",
+  "id": "2J2K764YU",
+  "defaultInterpreterGroup": "flink",
+  "version": "0.9.0",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/MaskPhoneNumber-Streaming"
+}
