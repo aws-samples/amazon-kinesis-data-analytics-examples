@@ -176,7 +176,7 @@ Resources:
           def handler(event, context):
             s3 = boto3.client('s3')
 
-            kda_udf_application_source = urlopen('https://github.com/sthakkar22/amazon-kinesis-data-analytics-examples/archive/refs/heads/master.zip')
+            kda_udf_application_source = urlopen('https://github.com/aws-samples/amazon-kinesis-data-analytics-examples/archive/refs/heads/master.zip')
             s3.put_object(Bucket='${ArtifactBucket}',Key='sources/amazon-kda-udf-application.zip',Body=kda_udf_application_source.read())
 
             cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
