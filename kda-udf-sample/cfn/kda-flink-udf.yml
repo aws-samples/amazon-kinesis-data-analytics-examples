@@ -521,6 +521,7 @@ Resources:
             except Exception as err:
               logger.error(err)
               cfnresponse.send(event,context, cfnresponse.FAILED, {"Data": str(err)})
+  
   StartApplicationLambdaInvoke:
     Description: Invokes StartApplicationLambda to start an application.
     Type: AWS::CloudFormation::CustomResource
