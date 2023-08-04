@@ -132,7 +132,7 @@ public class CloudWatchLogsSinkWriter<T> extends AsyncSinkWriter<T, LogEvent> {
 
                 if (successStartIndex > 0) {
                     log.warn("Failed to deliver {} too old/expired logs. {}",
-                            successEndIndex, logsToSend.subList(0, successEndIndex));
+                            successEndIndex, logsToSend.subList(0, successStartIndex));
                 }
 
                 log.debug("Sent batch of {} logs", successEndIndex - successStartIndex);
