@@ -1,4 +1,4 @@
-## Amazon Kinesis Data Analytics Examples
+## Amazon Managed Service for Apache Flink examples
 
 --------
 
