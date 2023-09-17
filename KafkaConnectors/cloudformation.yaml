@@ -1,0 +1,202 @@
+Description: Simple KDA Flink application
+Parameters:
+  ApplicationName:
+    Type: String
+    Default: FlinkAppCFT
+  FlinkRuntimeEnvironment:
+    Type: String
+    Default: FLINK-1_15
+  CodeBucketArn:
+    Type: String
+    Default: "arn:aws:s3:::aksh-code-binaries"
+  CodeKey:
+    Type: String
+    Default: flink/KafkaGettingStartedJob-1.0.jar
+  KafkaBootstrapserver:
+    Type: String
+    Default: boot-z6eo0mfk.c1.kafka-serverless.ap-south-1.amazonaws.com:9098
+  Clustername:
+    Type: String
+    Default: demo-cluster-1
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+    Default: sg-28d5f054
+  SubnetOne:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-08710af059f886114
+  SubnetTwo:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-7d90f906
+  SubnetThree:
+    Type: AWS::EC2::Subnet::Id
+    Default: subnet-02e1e451e78007768
+
+Resources:
+  FlinkApplication:
+    Type: AWS::KinesisAnalyticsV2::Application
+    Properties:
+      ApplicationName: !Ref ApplicationName
+      RuntimeEnvironment: !Ref FlinkRuntimeEnvironment
+      ServiceExecutionRole: !GetAtt FlinkApplicationServiceExecutionRole.Arn
+      ApplicationConfiguration:
+        ApplicationCodeConfiguration:
+          CodeContent:
+            S3ContentLocation:
+              BucketARN: !Ref CodeBucketArn
+              FileKey: !Ref CodeKey
+          CodeContentType: 'ZIPFILE'
+        VpcConfigurations:
+          - SecurityGroupIds:
+              - !Ref SecurityGroup
+            SubnetIds:
+              - !Ref SubnetOne
+              - !Ref SubnetTwo
+              - !Ref SubnetThree
+        ApplicationSnapshotConfiguration:
+          SnapshotsEnabled: false
+        EnvironmentProperties:
+          PropertyGroups:
+            - PropertyGroupId: KafkaSource
+              PropertyMap:
+                bootstrap.servers: !Ref KafkaBootstrapserver
+                topic: AWSKafkaTutorialTopic
+                sasl.mechanism: AWS_MSK_IAM
+                sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
+                sasl.jaas.config: "software.amazon.msk.auth.iam.IAMLoginModule required;"
+                security.protocol: SASL_SSL
+                ssl.truststore.location: /usr/lib/jvm/java-11-amazon-corretto/lib/security/cacerts
+                ssl.truststore.password: changeit
+
+            - PropertyGroupId: KafkaSink
+              PropertyMap:
+                bootstrap.servers: !Ref KafkaBootstrapserver
+                topic: AWSKafkaTutorialTopicDestination
+                transaction.timeout.ms: 1000
+                sasl.mechanism: AWS_MSK_IAM
+                sasl.client.callback.handler.class: software.amazon.msk.auth.iam.IAMClientCallbackHandler
+                sasl.jaas.config: "software.amazon.msk.auth.iam.IAMLoginModule required;"
+                security.protocol: SASL_SSL
+                ssl.truststore.location: /usr/lib/jvm/java-11-amazon-corretto/lib/security/cacerts
+                ssl.truststore.password: changeit
+        FlinkApplicationConfiguration:
+          MonitoringConfiguration:
+            ConfigurationType: CUSTOM
+            LogLevel: INFO
+            MetricsLevel: APPLICATION
+          ParallelismConfiguration:
+            ConfigurationType: CUSTOM
+            AutoScalingEnabled: true
+            Parallelism: 1
+            ParallelismPerKPU: 1
+  FlinkApplicationLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+      LogGroupName: !Sub "/aws/kinesis-analytics/${ApplicationName}"
+  FlinkApplicationLogStream:
+    Type: AWS::Logs::LogStream
+    Properties:
+      LogGroupName: !Ref FlinkApplicationLogGroup
+      LogStreamName: "kinesis-analytics-log-stream"
+  FlinkApplicationLoggingOption:
+    Type: AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption
+    Properties:
+      ApplicationName:
+        Ref: FlinkApplication
+      CloudWatchLoggingOption:
+        LogStreamARN:
+          Fn::Join:
+            - ":"
+            - - arn:aws:logs
+              - Ref: AWS::Region
+              - Ref: AWS::AccountId
+              - log-group
+              - Ref: FlinkApplicationLogGroup
+              - log-stream
+              - kinesis-analytics-log-stream
+
+  MSKIAMManagedPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: Policy for MSK access
+      Path: /
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - kafka-cluster:Connect
+              - kafka-cluster:AlterCluster
+              - kafka-cluster:DescribeCluster
+            Resource: !Sub "arn:aws:kafka:${AWS::Region}:${AWS::AccountId}:cluster/${Clustername}/*"
+          - Effect: Allow
+            Action:
+              - kafka-cluster:*Topic*
+              - kafka-cluster:WriteData
+              - kafka-cluster:ReadData
+            Resource: !Sub "arn:aws:kafka:${AWS::Region}:${AWS::AccountId}:topic/${Clustername}/*"
+          - Effect: Allow
+            Action:
+              - kafka-cluster:AlterGroup
+              - kafka-cluster:AlterGroup
+            Resource: !Sub "arn:aws:kafka:${AWS::Region}:${AWS::AccountId}:group/${Clustername}/*"
+          - Effect: Allow
+            Action:
+              - kafka-cluster:*TransactionalId*
+            Resource: !Sub "arn:aws:kafka:${AWS::Region}:${AWS::AccountId}:transactional-id/${Clustername}/*"
+  FlinkApplicationServiceExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: kinesisanalytics.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - !Ref MSKIAMManagedPolicy
+      Policies:
+        - PolicyName: ListCloudwatchLogGroups
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:DescribeLogGroups
+                  - logs:DescribeLogStreams
+                  - logs:PutLogEvents
+                Resource:  "*"
+        - PolicyName: VPCReadOnlyPermissions
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeVpcs
+                  - ec2:DescribeSubnets
+                  - ec2:DescribeSecurityGroups
+                  - ec2:DescribeDhcpOptions
+                Resource: "*"
+        - PolicyName: ENIReadWritePermissions
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:CreateNetworkInterface
+                  - ec2:CreateNetworkInterfacePermission
+                  - ec2:DescribeNetworkInterfaces
+                  - ec2:DeleteNetworkInterface
+                Resource:
+                  - "*"
+        - PolicyName: s3-code-access
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource:
+                  - !Sub "${CodeBucketArn}/${CodeKey}"

@@ -60,6 +60,7 @@ public class TumblingWindowStreamingJob {
                 .setGroupId("kafka-replication")
                 .setStartingOffsets(OffsetsInitializer.earliest())
                 .setValueOnlyDeserializer(new SimpleStringSchema())
+                .setProperties(sourceProperties)
                 .build();
 
         return env.fromSource(source, WatermarkStrategy.noWatermarks(), "Kafka Source");
@@ -70,6 +71,7 @@ public class TumblingWindowStreamingJob {
 
         return KafkaSink.<String>builder()
                 .setBootstrapServers(sinkProperties.getProperty("bootstrap.servers"))
+                .setKafkaProducerConfig(sinkProperties)
                 .setRecordSerializer(KafkaRecordSerializationSchema.builder()
                         .setTopic((String) sinkProperties.get("topic"))
                         .setKeySerializationSchema(new SimpleStringSchema())
