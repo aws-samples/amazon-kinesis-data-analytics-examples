@@ -1,4 +1,4 @@
-# Image Classification using Kinesis Data Analytics on Apahce Flink
+# Image Classification using Kinesis Data Analytics on Apache Flink
 
 In this code sample, we leverage the [Deep Java Library](https://djl.ai/), an open source, high-level, engine agnostic Java framework for deep learning, in order to classify images using Apache Flink on Kinesis Data Analytics.
 
