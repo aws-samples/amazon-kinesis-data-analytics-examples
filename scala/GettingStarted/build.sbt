@@ -23,6 +23,11 @@ artifactName := { (_: ScalaVersion, _: ModuleID, _: Artifact) => jarName }
 
 assembly / assemblyJarName := jarName
 assembly / assemblyMergeStrategy := {
-  case PathList("META-INF", _*) => MergeStrategy.discard
+  case PathList("META-INF", xs @ _*) =>
+    (xs map {_.toLowerCase}) match {
+      case "services" :: xs =>
+        MergeStrategy.filterDistinctLines
+      case _ => MergeStrategy.discard
+    }
   case _ => MergeStrategy.first
 }
