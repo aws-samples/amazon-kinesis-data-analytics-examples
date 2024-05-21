@@ -1,5 +1,7 @@
 # Custom keystore for Table API Kafka connector
 
+> #### ⚠️This repository is obsolete. Please refer to the new [Amazon Managed Service for Apache Flink examples repo](https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples).
+
 This sample shows how to drop certificate files associated with [custom keystore and truststore for Kafka](https://kafka.apache.org/documentation/streams/developer-guide/security.html#id2). When using the Flink Table API connector for Kafka, you have to specify the truststore location (when using TLS for encryption in transit) and the keystore location (when using mTLS for authentication). In order to ensure that the certificate files are available on each of the nodes on which the connector runs, we have to do custom initialization. Note that this initialization approach is different for the Datastream connector - [see this sample](https://docs.aws.amazon.com/kinesisanalytics/latest/java/example-keystore.html).
 
 This sample also shows how to package a fat jar containing both the underlying Kafka connector as well as our custom initialization.

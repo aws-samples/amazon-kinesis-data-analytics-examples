@@ -1,5 +1,8 @@
 # AVRO serialization in KafkaSource and KafkaSink using AWS Glue Schema Registry
 
+> #### ⚠️This repository is obsolete. Please refer to the new [Amazon Managed Service for Apache Flink examples repo](https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples).
+
+
 This example demonstrates how to serialize/deserialize AVRO messages in Kafka sources and sinks, using 
 [AWS Glue Schema Registry](https://docs.aws.amazon.com/glue/latest/dg/schema-registry.html).
 

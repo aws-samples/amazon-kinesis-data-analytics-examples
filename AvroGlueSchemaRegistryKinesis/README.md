@@ -1,5 +1,8 @@
 # AVRO serialization in FlinkKinesisConsumer and KinesisStreamsSink using AWS Glue Schema Registry
 
+> #### ⚠️This repository is obsolete. Please refer to the new [Amazon Managed Service for Apache Flink examples repo](https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples).
+
+
 This example demonstrates how to serialize/deserialize AVRO messages in Amazon Kinesis Data Streams sources and sinks, using
 [AWS Glue Schema Registry](https://docs.aws.amazon.com/glue/latest/dg/schema-registry.html).
 

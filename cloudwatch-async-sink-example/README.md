@@ -1,5 +1,8 @@
 # CloudWatch Metrics Async Sink Example
 
+> #### ⚠️This repository is obsolete. Please refer to the new [Amazon Managed Service for Apache Flink examples repo](https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples).
+
+
 This sample project demonstrates how to build a simple Sink using the Async Sink framework.
 
 The example application uses two dummy data generator sources and delivers metrics to Amazon CloudWatch Metrics. 
