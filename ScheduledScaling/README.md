@@ -1,5 +1,8 @@
 # Sample: Scheduled Scaling of KDA app w/ Amazon EventBridge and AWS Lambda
 
+> #### ⚠️This repository is obsolete. Please refer to the new [Amazon Managed Service for Apache Flink examples repo](https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples).
+
+
 IMPORTANT: <strong>We strongly recommend that you disable autoscaling within your Kinesis Data Analytics application if using the approach described here.</strong>
 
 This sample illustrates how to scale your KDA Flink application on a schedule using Amazon EventBridge and AWS Lambda. Here's the high level approach:
