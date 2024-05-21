@@ -1,5 +1,9 @@
 # Custom keystore for Kafka connector
 
+> #### ⚠️ This example and the pattern described are obsolete.
+> Please refer to the [example solving the same problem](https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples/tree/main/java/KafkaCustomKeystoreWithConfigProviders), 
+> in the new [Amazon Managed Service for Apache Flink examples](https://github.com/aws-samples/amazon-managed-service-for-apache-flink-examples) repository
+
 This sample shows how to include certificate files associated with [custom keystore and truststore for Kafka](https://kafka.apache.org/documentation/streams/developer-guide/security.html#id2). When using the Flink connector for Kafka, you 
 have to specify the truststore location. In order to ensure that the certificate files are available on each of the nodes on which the connector runs, we have to perform a custom initialization.
 
